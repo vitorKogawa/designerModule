@@ -1,0 +1,51 @@
+.container {
+    float: right;
+    width: 15vw;
+    min-height: 100vh;
+    background-color: #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttonNewGame {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    border:none;
+    border-radius: 5px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.25);
+    padding: .5rem 1rem;
+    background-color: #0ac247;
+    color: #fff;
+    font: 100% Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+
+.buttonNewGame:hover {
+    background-color: #59e086;
+}
+
+.plusIcon {
+    font-weight: bold;
+    font-size: 20px;
+    font-family: Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif;
+    margin-right: 5px;
+}
+
+.signOut {
+    color: white;
+    cursor: pointer;
+    position: fixed;
+    bottom: 15px;
+}
+
+.signOut:hover {
+    color: #0ac247;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    margin: 30px 0 20px 0;
+}
