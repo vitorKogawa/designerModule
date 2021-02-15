@@ -3,6 +3,7 @@ import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elem
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
 import ConnectionLine from '../Components/EditorComponents/ConnectionLine';
 import Sidebar from '../Components/EditorComponents/Sidebar';
+import NodeEdit from '../Components/EditorComponents/NodeEdit';
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -24,6 +25,7 @@ function EditorScreen(){
   const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
   const [history, setHistory] = useState('');
   const [NodeId, setNodeId] = useState(0);
+  const [modalIsOpen, setIsOpen] = useState(false);
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
@@ -56,13 +58,15 @@ function EditorScreen(){
       id: idNumber,
       type: type,
       position,
-      data: {history: '', text: 'Card', onChange: onChange},
+      data: {history: '', title: 'Card'},
     };
 
     setElements((es: Elements) => es.concat(newNode));
   }
 
   const onElementClick = (event: any, element: any) => { 
+    if(element.id.search('react') === -1)
+      setIsOpen(true);
     setNodeId(element.id);
   }
 
@@ -87,6 +91,11 @@ function EditorScreen(){
   const claick = () => {
     console.log(elements);
   }
+
+  const onRequestClose = () => {
+    setIsOpen(false);
+  }
+
   return (
     <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: 'black' }}>
       <ReactFlow 
@@ -107,6 +116,12 @@ function EditorScreen(){
                   default: return ' #fea18d ';
                 }
               }}
+            />
+            <NodeEdit 
+              openModal={modalIsOpen} 
+              closeModal={onRequestClose} 
+              onChange={onChange} 
+              title='Titulo'
             />
         <Controls />
         <Background color="#aaa" gap={16} />

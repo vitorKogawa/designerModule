@@ -1,5 +1,5 @@
 import React from 'react';
-import './Sidebar.css';
+import './EditorComponentsStyles/Sidebar.css';
 import nodeImg from '../../Assets/img/node1.png';
 
 export default function Sidebar(){
