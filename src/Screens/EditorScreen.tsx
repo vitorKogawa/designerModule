@@ -97,7 +97,7 @@ function EditorScreen(){
   }
 
   return (
-    <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: 'black' }}>
+    <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: '#262626' }}>
       <ReactFlow 
         onPaneClick={claick}
         connectionLineComponent={ConnectionLine} 
