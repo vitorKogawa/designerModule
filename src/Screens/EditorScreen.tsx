@@ -24,6 +24,7 @@ function EditorScreen(){
   const [idNumber, setIdNumber] = useState('0');
   const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
   const [history, setHistory] = useState('');
+  const [title, setTitle] = useState('');
   const [NodeId, setNodeId] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
 
@@ -58,7 +59,7 @@ function EditorScreen(){
       id: idNumber,
       type: type,
       position,
-      data: {history: '', title: 'Card'},
+      data: {history: '', title: ''},
     };
 
     setElements((es: Elements) => es.concat(newNode));
@@ -67,26 +68,47 @@ function EditorScreen(){
   const onElementClick = (event: any, element: any) => { 
     if(element.id.search('react') === -1)
       setIsOpen(true);
-    setNodeId(element.id);
+    setNodeId(element.id);    
   }
 
-  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const onChangeDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setHistory(event.target.value)
+  }
+  const onChangeTitle = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTitle(event.target.value)
   }
 
   const registerHistory = (NodeId: number) => {
     if(NodeId.toString().search('react') === -1){
       elements.forEach((item: any) => {
         if(item.id === NodeId)
-          item.data.history = history;
+          if(history !== '')
+            item.data.history = history;
       })
     }
+    setHistory('');
+  }
+
+  const registerTitle = (NodeId: number) => {
+    if(NodeId.toString().search('react') === -1){
+      elements.forEach((item: any) => {
+        if(item.id === NodeId)
+          if(title !== '')
+            item.data.title = title;
+      })
+    }
+    setTitle('');
   }
 
   useEffect(() => {
     registerHistory(NodeId);
    },
   [history, NodeId])
+
+  useEffect(() => {
+    registerTitle(NodeId);
+   },
+  [title, NodeId])
 
   const claick = () => {
     console.log(elements);
@@ -120,8 +142,8 @@ function EditorScreen(){
             <NodeEdit 
               openModal={modalIsOpen} 
               closeModal={onRequestClose} 
-              onChange={onChange} 
-              title='Titulo'
+              onChangeDescription={onChangeDescription} 
+              onChangeTitle={onChangeTitle}
             />
         <Controls />
         <Background color="#aaa" gap={16} />

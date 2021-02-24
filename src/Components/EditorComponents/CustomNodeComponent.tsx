@@ -20,7 +20,7 @@ function CustomNodeComponent({ data }: any){
       })}
       <div>
         <h2>{data.title}</h2>
-        <p>Clique no card para editar suas informações</p>
+        <p>{data.history}</p>
       </div>
     </div>
   );

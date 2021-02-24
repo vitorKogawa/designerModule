@@ -45,11 +45,11 @@ export default function NodeEdit(props: any){
         <form>
           <div className="form_row">
             <div className="form_group field">
-              <input className="form_field" name="title" placeholder="Title" type="text"/>
+              <input className="form_field" name="title" placeholder="Title" type="text" onChange={props.onChangeTitle}/>
               <label className="form_label" >Título</label>
             </div>
             <div className="form_group">
-              <textarea className="form_field" placeholder="Descrição" rows={1} style={{resize: 'none', overflow: 'auto'}} onChange={props.onChange}/>
+              <textarea className="form_field" placeholder="Descrição" rows={1} style={{resize: 'none', overflow: 'auto'}} onChange={props.onChangeDescription}/>
               <label className="form_label">Descrição</label>
             </div>
           </div>
