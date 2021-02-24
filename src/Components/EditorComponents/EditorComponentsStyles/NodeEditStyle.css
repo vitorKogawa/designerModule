@@ -1,4 +1,4 @@
-.formRow {
+.form_row {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -7,17 +7,36 @@
     width: 50vw;
 }
 
-.nodeTitle {
+.right {
+    justify-content: flex-end !important;
+}
+
+.end {
+    padding-bottom: 0 !important;
+}
+
+.node_title {
     text-align: center;
 }
 
-.form__group {
+.form_group {
     position: relative;
     padding: 15px 0 0;
     width: 45%;
 }
 
-.form__field {
+.three_cols {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 35% !important;
+}
+
+.three_cols > .inpt_file {
+    width: 80%;
+}
+
+.form_field {
     font-family: inherit;
     width: 100%;
     border: 0;
@@ -32,17 +51,17 @@
     font-weight: 'lighter'
 }
 
-.form__field::placeholder {
+.form_field::placeholder {
     color: transparent;
 }
 
-.form__field:placeholder-shown ~ .form__label {
+.form_field:placeholder-shown ~ .form_label {
     font-size: 1.3rem;
     cursor: text;
     top: 20px;
 }
 
-.form__label {
+.form_label {
     position: absolute;
     top: 0;
     display: block;
@@ -50,13 +69,13 @@
     font-size: 1rem;
     color: #8b927d;
 }
-.form__field:focus {
+.form_field:focus {
     padding-bottom: 6px;
     border-width: 3px;
     border-image: linear-gradient(to right, #11998e, #38ef7d);
     border-image-slice: 1;
 }
-.form__field:focus ~ .form__label {
+.form_field:focus ~ .form_label {
     position: absolute;
     top: 0;
     display: block;
@@ -65,7 +84,7 @@
     color: #11998e;
 }
 
-.form__field:required, .form__field:invalid {
+.form_field:required, .form_field:invalid {
     box-shadow: none;
 }
 
@@ -79,6 +98,32 @@
     cursor: pointer;
 }
 
-.img-inpt {
-    margin-left: 2%;
+.button_style {
+	border-radius:13px;
+	border:1px solid #13d8c8;
+	display:inline-block;
+	cursor:pointer;
+	color:#13d8c8;
+	font-family:Arial;
+	font-size:17px;
+	padding:10px 30px;
+    margin-right: 5%;
+    margin-top: 2%;
+}
+
+
+.button_style:hover {
+    color: #00ff62;
+    border:1px solid #00ff62;
+}
+
+.cancel {
+    font-size:17px;
+    margin-top: 2%;
+    cursor:pointer;
+    margin-right: 5%;
+}
+
+.cancel:hover {
+    color:rgb(245, 71, 71);
 }
