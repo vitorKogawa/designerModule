@@ -19,9 +19,15 @@ function CustomNodeComponent({ data }: any){
         return <Handle key={index} type={item.type as HandleType} id={item.id} position={Position.Bottom} style={{ border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, left: item.position, borderRadius: '50%' }} />
       })}
       <div>
-        <h2>{data.title}</h2>
-        <p>{data.history}</p>
+        <label className="title">{data.title ? data.title : 'Cartão sem nome'}</label>
+        <p className="description">{data.history ? data.history : 'Descrição do cartão - clique em editar.'}</p>
       </div>
+      <div className="edit_container">
+        <div className="edit_button" onClick={data.onEditClick}>
+          <span>editar</span>
+        </div> 
+      </div>
+      
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams } from 'react-flow-renderer';
+import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
 import ConnectionLine from '../Components/EditorComponents/ConnectionLine';
 import Sidebar from '../Components/EditorComponents/Sidebar';
@@ -30,7 +30,7 @@ function EditorScreen(){
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
-  const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, style: { color: 'white', stroke: 'white' } }, els));
+  const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, arrowHeadType: 'arrowclosed' as ArrowHeadType, style: { color: 'white', stroke: 'white' } }, els));
   const onLoad = (_reactFlowInstance : OnLoadParams) =>
     setReactFlowInstance(_reactFlowInstance);
   
@@ -38,6 +38,10 @@ function EditorScreen(){
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   };
+
+  const onEditClick = (event: any) => {
+      setIsOpen(true);
+  }
 
   const onDrop = (event: any) => {
     if(elements[0].id.search('1000') !== -1)
@@ -59,15 +63,13 @@ function EditorScreen(){
       id: idNumber,
       type: type,
       position,
-      data: {history: '', title: ''},
+      data: {history: '', title: '', onEditClick:onEditClick},
     };
 
     setElements((es: Elements) => es.concat(newNode));
   }
 
   const onElementClick = (event: any, element: any) => { 
-    if(element.id.search('react') === -1)
-      setIsOpen(true);
     setNodeId(element.id);    
   }
 
@@ -119,7 +121,7 @@ function EditorScreen(){
   }
 
   return (
-    <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: '#262626' }}>
+    <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: '#010c18' }}>
       <ReactFlow 
         onPaneClick={claick}
         connectionLineComponent={ConnectionLine} 
@@ -146,7 +148,12 @@ function EditorScreen(){
               onChangeTitle={onChangeTitle}
             />
         <Controls />
-        <Background color="#aaa" gap={16} />
+        <Background 
+          variant={'lines' as BackgroundVariant | undefined} 
+          size={0.1} 
+          color="#98c8ff" 
+          gap={35} 
+        />
       </ReactFlow>   
       <Sidebar />
     </div>
