@@ -27,6 +27,10 @@ function EditorScreen(){
   const [title, setTitle] = useState('');
   const [NodeId, setNodeId] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [checkedStart, setCheckedStart] = useState(false);
+  const [checkedEnd, setCheckedEnd] = useState(false);
+  const [duration, setDuration] = useState('0');
+  const [reg, setReg] = useState(false);
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
@@ -44,8 +48,9 @@ function EditorScreen(){
   }
 
   const onDrop = (event: any) => {
-    if(elements[0].id.search('1000') !== -1)
-      elements.splice(0, 1);      
+    if(elements.length >= 1)
+      if(elements[0].id.search('1000') !== -1)
+        elements.splice(0, 1);      
 
     event.preventDefault();
 
@@ -63,7 +68,7 @@ function EditorScreen(){
       id: idNumber,
       type: type,
       position,
-      data: {history: '', title: '', onEditClick:onEditClick},
+      data: {history: '', title: '', nodeStart: false, nodeEnd: false, duration: '0', onEditClick:onEditClick},
     };
 
     setElements((es: Elements) => es.concat(newNode));
@@ -73,51 +78,100 @@ function EditorScreen(){
     setNodeId(element.id);    
   }
 
-  const onChangeDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setHistory(event.target.value)
-  }
-  const onChangeTitle = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(event.target.value)
-  }
-
-  const registerHistory = (NodeId: number) => {
+  //Save node history
+  useEffect(() => {
     if(NodeId.toString().search('react') === -1){
       elements.forEach((item: any) => {
         if(item.id === NodeId)
-          if(history !== '')
+          if(history !== ' ')
             item.data.history = history;
       })
     }
-    setHistory('');
-  }
-
-  const registerTitle = (NodeId: number) => {
-    if(NodeId.toString().search('react') === -1){
-      elements.forEach((item: any) => {
-        if(item.id === NodeId)
-          if(title !== '')
-            item.data.title = title;
-      })
-    }
-    setTitle('');
-  }
-
-  useEffect(() => {
-    registerHistory(NodeId);
+    setHistory(' ');
    },
   [history, NodeId])
 
+  //Save node title
   useEffect(() => {
-    registerTitle(NodeId);
+    if(NodeId.toString().search('react') === -1){
+      elements.forEach((item: any) => {
+        if(item.id === NodeId)
+          if(title !== ' ')
+            item.data.title = title;
+      })
+    }
+    setTitle(' ');
    },
   [title, NodeId])
 
-  const claick = () => {
-    console.log(elements);
-  }
+  //Save if the node is a start node
+  useEffect(() => {
+    if(reg){
+      if(NodeId.toString().search('react') === -1){
+        elements.forEach((item: any) => {
+          if(item.id === NodeId)
+            item.data.nodeStart = checkedStart;
+        })
+      }
+      setReg(false);
+    }
+   },
+  [checkedStart, NodeId])
+
+  //Save if the node is a end node
+  useEffect(() => {
+    if(reg){
+      if(NodeId.toString().search('react') === -1){
+        elements.forEach((item: any) => {
+          if(item.id === NodeId)
+            item.data.nodeEnd = checkedEnd;
+        })
+      }
+      setReg(false);
+    }
+   },
+  [checkedEnd, NodeId])
+
+  //Save node duration
+  useEffect(() => {
+    if(NodeId.toString().search('react') === -1){
+      elements.forEach((item: any) => {
+        if(item.id === NodeId)
+          if(duration !== ' ')
+            item.data.duration = duration;
+      })
+    }
+    setDuration(' ')
+   },
+  [duration, NodeId])
 
   const onRequestClose = () => {
     setIsOpen(false);
+  }
+
+  const onChangeDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setHistory(event.target.value)
+  }
+  const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value)
+  }
+
+  const onChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDuration(event.target.value)  
+  }
+
+  const onChangeNodeEnd = () => {
+    setReg(true);
+    setCheckedEnd(!checkedEnd)
+  }
+
+  const onChangeNodeStart = () => {
+    setReg(true);
+    setCheckedStart(!checkedStart)
+  }
+
+  const claick = () => {
+    console.log(elements);
   }
 
   return (
@@ -146,6 +200,11 @@ function EditorScreen(){
               closeModal={onRequestClose} 
               onChangeDescription={onChangeDescription} 
               onChangeTitle={onChangeTitle}
+              onChangeNodeStart={onChangeNodeStart}
+              checkedStart={checkedStart}
+              onChangeNodeEnd={onChangeNodeEnd}
+              checkedEnd={checkedEnd}
+              onChangeDuration={onChangeDuration}
             />
         <Controls />
         <Background 

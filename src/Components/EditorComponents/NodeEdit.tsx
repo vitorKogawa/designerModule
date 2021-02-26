@@ -5,8 +5,6 @@ import Switch from "react-switch";
 import './EditorComponentsStyles/NodeEditStyle.css';
 
 export default function NodeEdit(props: any){
-  const [checkedStart, setCheckedStart] = useState(false);
-  const [checkedEnd, setCheckedEnd] = useState(false);
 
   const customStyles = {
       overlay: {
@@ -59,7 +57,7 @@ export default function NodeEdit(props: any){
               <label className="form_label">Labels</label>
             </div>
             <div className="form_group field">
-              <input className="form_field" name="duracao" placeholder="Duração" type="number" />
+              <input className="form_field" name="duracao" placeholder="Duração" type="number" onChange={props.onChangeDuration} />
               <label className="form_label">Duração</label>
             </div>
           </div>
@@ -80,11 +78,11 @@ export default function NodeEdit(props: any){
           <div className="form_row">
             <div  className="form_group three_cols">
               <p>Cartão de início</p>
-              <Switch onChange={() => {setCheckedStart(!checkedStart)}} checked={checkedStart} />
+              <Switch onChange={props.onChangeNodeStart} checked={props.checkedStart} />
             </div>
             <div  className="form_group three_cols">
               <p>Cartão final</p>
-              <Switch onChange={() => {setCheckedEnd(!checkedEnd)}} checked={checkedEnd} />
+              <Switch onChange={props.onChangeNodeEnd} checked={props.checkedEnd} />
             </div>
             <div  className="form_group three_cols">
               <p>Imagem de fundo:</p>
