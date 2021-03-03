@@ -1,6 +1,6 @@
 import './App.css';
-import { RightMenu } from './Components/RightMenu';
-import { CardGame } from './Components/CardGame';
+import { RightMenu } from './Components/PublicComponents/RightMenu';
+import { CardGame } from './Components/PublicComponents/CardGame';
 
 function App() {
   return (

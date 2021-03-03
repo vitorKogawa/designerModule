@@ -1,4 +1,4 @@
-import './CardGameStyle.css';
+import './ComponentsStyle/CardGameStyle.css';
 
 export const CardGame = (props: any) => {
     return(
