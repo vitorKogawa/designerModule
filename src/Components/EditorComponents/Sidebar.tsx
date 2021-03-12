@@ -1,6 +1,6 @@
 import React from 'react';
 import './EditorComponentsStyles/Sidebar.css';
-import nodeImg from '../../Assets/img/node1.png';
+import nodeImg from '../../Assets/img/node.png';
 
 export default function Sidebar(){
   const onDragStart = (event: any, nodeType: any) => {
@@ -12,10 +12,6 @@ export default function Sidebar(){
       <div className="SidebarSubContainer">
         <div className="NodeCard" onDragStart={(event) => onDragStart(event, 'special')} draggable>
           <img className="ImgStyle" alt="node1" src={nodeImg}/>
-        </div>
-
-        <div className="NodeCard" onDragStart={(event) => onDragStart(event, 'special')} draggable>
-          <img className="ImgStyle" alt="node2" src={nodeImg}/>
         </div>
       </div> 
     </div>

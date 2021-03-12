@@ -62,6 +62,16 @@ export default function NodeEdit(props: any){
             </div>
           </div>
           <div className="form_row">
+            <div className="form_group field"> 
+              <input className="form_field" name="Option" placeholder="Alternativa" type="text"/>
+              <label className="form_label">Alternativa</label>
+            </div>
+            <div className="form_group field">
+              <input className="form_field" name="Node" placeholder="Nó" type="text" onChange={props.onChangeNoLigacao} />
+              <label className="form_label">Nó</label>
+            </div>
+          </div>
+          <div className="form_row">
             <div className="form_group three_cols">
               <p>Node Color:</p>
               <input className="color_front" type="color" />
@@ -92,7 +102,7 @@ export default function NodeEdit(props: any){
           <hr></hr>
           <div className="form_row right end">
             <span className="cancel" onClick={props.closeModal}>Cancelar</span> 
-            <span className="button_style" onClick={props.closeModal}>Salvar</span> 
+            <span className="button_style" onClick={props.onSaveChanges}>Salvar</span> 
           </div>
         </form>
       </Modal>

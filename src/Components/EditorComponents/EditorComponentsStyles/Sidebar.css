@@ -15,14 +15,15 @@
     position: absolute;
     bottom: 8px;
     left: 5vw;
-    width: 40vw;
+    width: 20vw;
     height: 20vh;
     background-color: transparent;
-    box-shadow: inset 0px -80px 36px -40px rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0px -80px 36px -40px rgba(255, 255, 255, 0.4);
 }
 
 .SidebarSubContainer {
     display: flex;
     flex-direction: row;
-
+    justify-content: center;
+    align-items: center;
 }

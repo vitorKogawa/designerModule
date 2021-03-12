@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Modal from 'react-modal';
 import { Link } from 'react-router-dom'
+import Switch from "react-switch";
 import '../EditorComponents/EditorComponentsStyles/NodeEditStyle.css';
 
 export default function CreateGame(props: any){
@@ -55,24 +56,36 @@ export default function CreateGame(props: any){
               <input className="form_field" name="labels" placeholder="Labels" type="text"/>
               <label className="form_label">Labels</label>
             </div>
+            <div className="form_group field"> 
+              <input className="form_field" name="attributes" placeholder="Atributos" type="text"/>
+              <label className="form_label">Atributos</label>
+            </div>
           </div>
           <div className="form_row">
             <div className="form_group three_cols">
-              <p>Node Color:</p>
+              <p>Default Node Color:</p>
               <input className="color_front" type="color" />
             </div>
             <div  className="form_group three_cols">
-              <p>Text Color:</p>
+              <p>Default Text Color:</p>
               <input className="color_front" type="color" />
             </div>
             <div  className="form_group three_cols">
-              <p>Background Color:</p>
+              <p>Default Background Color:</p>
               <input className="color_front" type="color" />
             </div>
           </div>
           <div className="form_row">
             <div  className="form_group three_cols">
-              <p>Imagem de fundo:</p>
+              <p>Imagem de fundo</p>
+              <input className="inpt_file" type="file" />
+            </div>
+            <div  className="form_group three_cols">
+              <p>Template</p>
+              <Switch onChange={props.onChangeIsTemplate} checked={props.isTemplate} />
+            </div>
+            <div  className="form_group three_cols">
+              <p>Logo do jogo</p>
               <input className="inpt_file" type="file" />
             </div>
           </div>

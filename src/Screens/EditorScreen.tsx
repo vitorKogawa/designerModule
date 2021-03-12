@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
+import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType, ConnectionLineType } from 'react-flow-renderer';
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
 import ConnectionLine from '../Components/EditorComponents/ConnectionLine';
 import Sidebar from '../Components/EditorComponents/Sidebar';
@@ -25,6 +25,7 @@ function EditorScreen(){
   const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
   const [history, setHistory] = useState('');
   const [title, setTitle] = useState('');
+  const [noLigacao, setNoLigacao] = useState('');
   const [NodeId, setNodeId] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [checkedStart, setCheckedStart] = useState(false);
@@ -47,6 +48,32 @@ function EditorScreen(){
       setIsOpen(true);
   }
 
+  const createNode = (position: any, type: string, origin: number) => {
+    let idToInt = parseInt(idNumber)+1;
+    setIdNumber(idToInt.toString());
+    console.log(noLigacao + " dadsadasda")
+    const newNode = {
+      id: idNumber,
+      type: type,
+      position,
+      data: {history: '', title: origin === 0 ? '' : noLigacao, nodeStart: false, nodeEnd: false, duration: '0', onEditClick:onEditClick},
+    };
+    console.log(newNode)
+    setElements((es: Elements) => es.concat(newNode));
+  }
+
+  const createConnection = (idSource: string, idTarget: string) => {
+    const newConnection = {
+      id: 'react' + idNumber,
+      source: idSource,
+      target: idTarget,
+      animated: true, 
+      arrowHeadType: 'arrowclosed' as ArrowHeadType,
+    };
+
+    setElements((es: Elements) => es.concat(newConnection));
+  }
+
   const onDrop = (event: any) => {
     if(elements.length >= 1)
       if(elements[0].id.search('1000') !== -1)
@@ -61,17 +88,7 @@ function EditorScreen(){
       y: event.clientY - reactFlowBounds.top,
     });
 
-    let idToInt = parseInt(idNumber)+1;
-    setIdNumber(idToInt.toString());
-
-    const newNode = {
-      id: idNumber,
-      type: type,
-      position,
-      data: {history: '', title: '', nodeStart: false, nodeEnd: false, duration: '0', onEditClick:onEditClick},
-    };
-
-    setElements((es: Elements) => es.concat(newNode));
+    createNode(position, type, 0);
   }
 
   const onElementClick = (event: any, element: any) => { 
@@ -160,6 +177,10 @@ function EditorScreen(){
     setDuration(event.target.value)  
   }
 
+  const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNoLigacao(event.target.value)
+  }
+
   const onChangeNodeEnd = () => {
     setReg(true);
     setCheckedEnd(!checkedEnd)
@@ -174,11 +195,36 @@ function EditorScreen(){
     console.log(elements);
   }
 
+  const onSaveChanges = () => {
+    let exist = false;
+    let idTarget = idNumber;
+    elements.forEach((element: any) => {
+      if(element.id.search('react') === -1){
+        if(element.data.title === noLigacao){
+          exist = true
+          idTarget = element.id;
+        }
+      }
+    });
+    if(exist){
+      createConnection(NodeId.toString(), idTarget)
+    }else{
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const position = reactFlowInstance.project({
+        x: reactFlowBounds.right - window.innerWidth/5 ,
+        y: window.innerHeight/2,
+      });
+
+      createNode(position, 'special', 1);
+      createConnection(NodeId.toString(), idTarget)
+    }
+    onRequestClose();
+  }
+
   return (
     <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: '#010c18' }}>
       <ReactFlow 
         onPaneClick={claick}
-        connectionLineComponent={ConnectionLine} 
         onLoad={onLoad}
         onElementClick={onElementClick} 
         elements={elements} 
@@ -205,6 +251,8 @@ function EditorScreen(){
               onChangeNodeEnd={onChangeNodeEnd}
               checkedEnd={checkedEnd}
               onChangeDuration={onChangeDuration}
+              onChangeNoLigacao={onChangeNoLigacao}
+              onSaveChanges={onSaveChanges}
             />
         <Controls />
         <Background 
