@@ -196,27 +196,30 @@ function EditorScreen(){
   }
 
   const onSaveChanges = () => {
-    let exist = false;
-    let idTarget = idNumber;
-    elements.forEach((element: any) => {
-      if(element.id.search('react') === -1){
-        if(element.data.title === noLigacao){
-          exist = true
-          idTarget = element.id;
+    if(noLigacao !== ''){
+      let exist = false;
+      let idTarget = idNumber;
+      elements.forEach((element: any) => {
+        if(element.id.search('react') === -1){
+          if(element.data.title === noLigacao){
+            exist = true
+            idTarget = element.id;
+          }
         }
-      }
-    });
-    if(exist){
-      createConnection(NodeId.toString(), idTarget)
-    }else{
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const position = reactFlowInstance.project({
-        x: reactFlowBounds.right - window.innerWidth/5 ,
-        y: window.innerHeight/2,
       });
+      if(exist){
+        createConnection(NodeId.toString(), idTarget)
+      }else{
+        const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+        const position = reactFlowInstance.project({
+          x: reactFlowBounds.right - window.innerWidth/5 ,
+          y: window.innerHeight/2,
+        });
 
-      createNode(position, 'special', 1);
-      createConnection(NodeId.toString(), idTarget)
+        createNode(position, 'special', 1);
+        createConnection(NodeId.toString(), idTarget)
+      }
+      setNoLigacao('');
     }
     onRequestClose();
   }
