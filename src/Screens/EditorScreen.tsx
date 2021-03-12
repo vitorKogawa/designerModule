@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType, ConnectionLineType } from 'react-flow-renderer';
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
-import ConnectionLine from '../Components/EditorComponents/ConnectionLine';
 import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
+import TopMenu from '../Components/EditorComponents/TopMenu';
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -257,6 +257,7 @@ function EditorScreen(){
               onChangeNoLigacao={onChangeNoLigacao}
               onSaveChanges={onSaveChanges}
             />
+            <TopMenu />
         <Controls />
         <Background 
           variant={'lines' as BackgroundVariant | undefined} 
