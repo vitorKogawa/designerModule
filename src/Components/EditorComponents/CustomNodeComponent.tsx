@@ -1,6 +1,7 @@
-import { Position, Handle, HandleType } from 'react-flow-renderer';
-import { handleRight, handleTop, handleLeft, handleBottom } from './Data/data'
+import { Position, Handle } from 'react-flow-renderer';
 import './EditorComponentsStyles/CustomNodeComponent.css';
+import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
 
 function CustomNodeComponent({ data }: any){
  
@@ -11,7 +12,7 @@ function CustomNodeComponent({ data }: any){
         <Handle type='source' id='c' position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: '60%', borderRadius: '50%' }} />
       <div>
         <label className="title">{data.title? data.title : 'Cartão sem nome'}</label>
-        <p className="description">{data.history ? data.history : 'Descrição do cartão - clique em editar.'}</p>
+        <ReactMarkdown plugins={[gfm]} children={data.history ? data.history : 'Descrição do cartão - clique em editar.'} />
       </div>
       <div className="edit_container">
         <div className="edit_button" onClick={data.onEditClick}>
