@@ -52,7 +52,7 @@ function EditorScreen(){
   }
 
   const saveTags = () => {
-    setTags(tags.concat({"name": tagName, "color": tagColor == "" ? "#000" : tagColor}))
+    setTags(tags.concat({"label": tagName, "value": tagName, "color": tagColor == "" ? "#000" : tagColor}))
     onRequestClose();
     setTagColor("#000");
     setTagName("");
@@ -61,7 +61,6 @@ function EditorScreen(){
   const createNode = (position: any, type: string, origin: number) => {
     let idToInt = parseInt(idNumber)+1;
     setIdNumber(idToInt.toString());
-    console.log(noLigacao + " dadsadasda")
     const newNode = {
       id: idNumber,
       type: type,
@@ -273,6 +272,7 @@ function EditorScreen(){
               onChangeDuration={onChangeDuration}
               onChangeNoLigacao={onChangeNoLigacao}
               onSaveChanges={onSaveChanges}
+              tagOptions={tags}
             />
             <TopMenu 
               saveTags={saveTags} 

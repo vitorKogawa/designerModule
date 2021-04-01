@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import Switch from "react-switch";
+import Select from 'react-select';
 
 import './EditorComponentsStyles/NodeEditStyle.css';
 
@@ -59,6 +60,20 @@ export default function NodeEdit(props: any){
             <div className="form_group field">
               <input className="form_field" name="duracao" placeholder="Duração" type="number" onChange={props.onChangeDuration} />
               <label className="form_label">Duração</label>
+            </div>
+          </div>
+          <div className="form_row">
+            <div className="form_group field"> 
+              <label className="form_label alone">Tags:</label>  
+            </div>
+            <div className="form_group field"> 
+              <Select
+                isMulti
+                name="colors"
+                options={props.tagOptions}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
             </div>
           </div>
           <div className="form_row">
