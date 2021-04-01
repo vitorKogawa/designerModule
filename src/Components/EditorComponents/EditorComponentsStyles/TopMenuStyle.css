@@ -52,3 +52,8 @@
 .menu-options:hover {
     color:#6eaef7
 }
+
+.form_buttons{
+    display: flex;
+    justify-content: center;
+}

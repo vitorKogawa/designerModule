@@ -32,6 +32,9 @@ function EditorScreen(){
   const [checkedEnd, setCheckedEnd] = useState(false);
   const [duration, setDuration] = useState('0');
   const [reg, setReg] = useState(false);
+  const [tags, setTags] = useState(Array());
+  const [tagName, setTagName] = useState('');
+  const [tagColor, setTagColor] = useState('');
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
@@ -46,6 +49,13 @@ function EditorScreen(){
 
   const onEditClick = (event: any) => {
       setIsOpen(true);
+  }
+
+  const saveTags = () => {
+    setTags(tags.concat({"name": tagName, "color": tagColor == "" ? "#000" : tagColor}))
+    onRequestClose();
+    setTagColor("#000");
+    setTagName("");
   }
 
   const createNode = (position: any, type: string, origin: number) => {
@@ -180,6 +190,12 @@ function EditorScreen(){
   const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNoLigacao(event.target.value)
   }
+  const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTagName(event.target.value)
+  }
+  const onChangeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTagColor(event.target.value);
+  }
 
   const onChangeNodeEnd = () => {
     setReg(true);
@@ -192,7 +208,8 @@ function EditorScreen(){
   }
 
   const claick = () => {
-    console.log(elements);
+    console.log("Elements: ", elements);
+    console.log("Tags: ", tags)
   }
 
   const onSaveChanges = () => {
@@ -257,7 +274,11 @@ function EditorScreen(){
               onChangeNoLigacao={onChangeNoLigacao}
               onSaveChanges={onSaveChanges}
             />
-            <TopMenu />
+            <TopMenu 
+              saveTags={saveTags} 
+              onChangeTagName={onChangeTagName} 
+              onChangeColor={onChangeColor}
+              />
         <Controls />
         <Background 
           variant={'lines' as BackgroundVariant | undefined} 
