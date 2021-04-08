@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Modal from 'react-modal';
-import Switch from "react-switch";
 
 import './EditorComponentsStyles/NodeEditStyle.css';
 

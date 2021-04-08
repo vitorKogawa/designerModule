@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType, ConnectionLineType } from 'react-flow-renderer';
+import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
 import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
@@ -32,7 +32,9 @@ function EditorScreen(){
   const [checkedEnd, setCheckedEnd] = useState(false);
   const [duration, setDuration] = useState('0');
   const [reg, setReg] = useState(false);
+  // eslint-disable-next-line
   const [tags, setTags] = useState(Array());
+  // eslint-disable-next-line
   const [selectedTags, setSelectedTags] = useState(Array());
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
@@ -54,7 +56,7 @@ function EditorScreen(){
   }
 
   const saveTags = () => {
-    setTags(tags.concat({"label": tagName, "value": tagName, "color": tagColor == "" ? "#000" : tagColor}))
+    setTags(tags.concat({"label": tagName, "value": tagName, "color": tagColor === "" ? "#000" : tagColor}))
     onRequestClose();
     setTagColor("#000");
     setTagName("");
@@ -74,6 +76,7 @@ function EditorScreen(){
         nodeEnd: false, 
         duration: '0', 
         onEditClick:onEditClick,
+        // eslint-disable-next-line
         tagsArray: Array()
       },
     };
@@ -124,6 +127,7 @@ function EditorScreen(){
     }
     setHistory(' ');
    },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   [history, NodeId])
 
   //Save node title
@@ -137,6 +141,7 @@ function EditorScreen(){
     }
     setTitle(' ');
    },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   [title, NodeId])
 
   //Save if the node is a start node
@@ -151,6 +156,7 @@ function EditorScreen(){
       setReg(false);
     }
    },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   [checkedStart, NodeId])
 
   //Save if the node is a end node
@@ -165,6 +171,7 @@ function EditorScreen(){
       setReg(false);
     }
    },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   [checkedEnd, NodeId])
 
   //add tags
@@ -176,7 +183,8 @@ function EditorScreen(){
         })
       }
    },
-  [selectedTags, NodeId])
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+  [selectedTags])
 
   //Save node duration
   useEffect(() => {
@@ -189,6 +197,7 @@ function EditorScreen(){
     }
     setDuration(' ')
    },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   [duration, NodeId])
 
   const onRequestClose = () => {
@@ -220,11 +229,10 @@ function EditorScreen(){
     setSelectedTags(selectedTags.splice(0, selectedTags.length))
     let x: Array<Object> = [];
     event.map((item:any) => {
-      console.log(item.label)
       x.push({'name':item.label, 'color': item.color});
       setSelectedTags(x);
+      return 0
     })
-    console.log(selectedTags)
   }
 
   const onChangeNodeEnd = () => {
