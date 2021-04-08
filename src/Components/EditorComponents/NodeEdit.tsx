@@ -73,6 +73,7 @@ export default function NodeEdit(props: any){
                 options={props.tagOptions}
                 className="basic-multi-select"
                 classNamePrefix="select"
+                onChange={props.handleInputChange}
               />
             </div>
           </div>

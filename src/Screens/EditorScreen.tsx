@@ -33,6 +33,7 @@ function EditorScreen(){
   const [duration, setDuration] = useState('0');
   const [reg, setReg] = useState(false);
   const [tags, setTags] = useState(Array());
+  const [selectedTags, setSelectedTags] = useState(Array());
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
 
@@ -49,6 +50,7 @@ function EditorScreen(){
 
   const onEditClick = (event: any) => {
       setIsOpen(true);
+      setSelectedTags([])
   }
 
   const saveTags = () => {
@@ -65,9 +67,16 @@ function EditorScreen(){
       id: idNumber,
       type: type,
       position,
-      data: {history: '', title: origin === 0 ? '' : noLigacao, nodeStart: false, nodeEnd: false, duration: '0', onEditClick:onEditClick},
+      data: {
+        history: '', 
+        title: origin === 0 ? '' : noLigacao, 
+        nodeStart: false, 
+        nodeEnd: false, 
+        duration: '0', 
+        onEditClick:onEditClick,
+        tagsArray: Array()
+      },
     };
-    console.log(newNode)
     setElements((es: Elements) => es.concat(newNode));
   }
 
@@ -158,6 +167,17 @@ function EditorScreen(){
    },
   [checkedEnd, NodeId])
 
+  //add tags
+  useEffect(() => {
+      if(NodeId.toString().search('react') === -1){
+        elements.forEach((item: any) => {
+          if(item.id === NodeId)
+            item.data.tagsArray = selectedTags;
+        })
+      }
+   },
+  [selectedTags, NodeId])
+
   //Save node duration
   useEffect(() => {
     if(NodeId.toString().search('react') === -1){
@@ -195,6 +215,17 @@ function EditorScreen(){
   const onChangeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagColor(event.target.value);
   }
+  
+  const handleInputChange = (event: any) => {
+    setSelectedTags(selectedTags.splice(0, selectedTags.length))
+    let x: Array<Object> = [];
+    event.map((item:any) => {
+      console.log(item.label)
+      x.push({'name':item.label, 'color': item.color});
+      setSelectedTags(x);
+    })
+    console.log(selectedTags)
+  }
 
   const onChangeNodeEnd = () => {
     setReg(true);
@@ -209,6 +240,7 @@ function EditorScreen(){
   const claick = () => {
     console.log("Elements: ", elements);
     console.log("Tags: ", tags)
+    console.log("SelectedTags: ", selectedTags)
   }
 
   const onSaveChanges = () => {
@@ -273,6 +305,7 @@ function EditorScreen(){
               onChangeNoLigacao={onChangeNoLigacao}
               onSaveChanges={onSaveChanges}
               tagOptions={tags}
+              handleInputChange={handleInputChange}
             />
             <TopMenu 
               saveTags={saveTags} 
