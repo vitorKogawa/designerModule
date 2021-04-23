@@ -131,3 +131,7 @@
 .cancel:hover {
     color:rgb(245, 71, 71);
 }
+
+.one {
+    width: 100% !important;
+}

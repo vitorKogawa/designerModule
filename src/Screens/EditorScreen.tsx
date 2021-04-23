@@ -18,7 +18,7 @@ function EditorScreen(){
       position: { x: 10000, y: 100000 }
     }
   ];
-
+  const apiUrl = 'http://localhost:8080/';
   const reactFlowWrapper = useRef(null as any | null);
   const [elements, setElements] = useState(initialElements as any);
   const [idNumber, setIdNumber] = useState('0');
@@ -34,6 +34,7 @@ function EditorScreen(){
   const [reg, setReg] = useState(false);
   // eslint-disable-next-line
   const [tags, setTags] = useState(Array());
+  const [tags1, setTags1] = useState(Array());
   // eslint-disable-next-line
   const [selectedTags, setSelectedTags] = useState(Array());
   const [tagName, setTagName] = useState('');
@@ -55,8 +56,31 @@ function EditorScreen(){
       setSelectedTags([])
   }
 
-  const saveTags = () => {
-    setTags(tags.concat({"label": tagName, "value": tagName, "color": tagColor === "" ? "#000" : tagColor}))
+  const saveTags = async () => {
+    try{
+      await fetch(apiUrl+'label/create', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ label: tagName, color: tagColor === "" ? "#000" : tagColor })
+      });
+    } catch(err){
+        console.log("erro ao criar tag: "+err)
+    }
+    
+    const labelList = await fetch(apiUrl+'label', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const result = await labelList.json();
+    setTags1(result.label)
+    console.log("LALALALALAL: ",result.label);
+    setTags(tags.concat({"id": 1,"label": tagName, "value": tagName, "color": tagColor === "" ? "#000" : tagColor}))
+    console.log("Tagssss: ",tags);
     onRequestClose();
     setTagColor("#000");
     setTagName("");
@@ -204,8 +228,8 @@ function EditorScreen(){
     setIsOpen(false);
   }
 
-  const onChangeDescription = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setHistory(event.target.value)
+  const onChangeDescription = (event: any) => {
+    setHistory(event)
   }
   const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
@@ -312,7 +336,7 @@ function EditorScreen(){
               onChangeDuration={onChangeDuration}
               onChangeNoLigacao={onChangeNoLigacao}
               onSaveChanges={onSaveChanges}
-              tagOptions={tags}
+              tagOptions={tags1}
               handleInputChange={handleInputChange}
             />
             <TopMenu 

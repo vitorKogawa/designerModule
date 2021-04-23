@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Modal from 'react-modal';
 import Switch from "react-switch";
 import Select from 'react-select';
+import MDEditor from '@uiw/react-md-editor';
 
 import './EditorComponentsStyles/NodeEditStyle.css';
 
@@ -43,19 +44,19 @@ export default function NodeEdit(props: any){
       >
         <form>
           <div className="form_row">
-            <div className="form_group field">
-              <input className="form_field" name="title" placeholder="Title" type="text" onChange={props.onChangeTitle}/>
-              <label className="form_label" >Título</label>
-            </div>
-            <div className="form_group">
-              <textarea className="form_field" placeholder="Descrição" rows={1} style={{resize: 'none', overflow: 'auto'}} onChange={props.onChangeDescription}/>
-              <label className="form_label">Descrição</label>
+            <div className="form_group one">
+              <MDEditor
+                value=''
+                onChange={props.onChangeDescription}
+                style={{marginTop: '20px'}}
+              />
+              <label className="form_label alone">Descrição</label>
             </div>
           </div>
           <div className="form_row">
-            <div className="form_group field"> 
-              <input className="form_field" name="labels" placeholder="Labels" type="text"/>
-              <label className="form_label">Labels</label>
+            <div className="form_group field">
+              <input className="form_field" name="title" placeholder="Title" type="text" onChange={props.onChangeTitle}/>
+              <label className="form_label" >Título</label>
             </div>
             <div className="form_group field">
               <input className="form_field" name="duracao" placeholder="Duração" type="number" onChange={props.onChangeDuration} />
