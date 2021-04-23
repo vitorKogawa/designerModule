@@ -24,13 +24,16 @@ function EditorScreen(){
   const [idNumber, setIdNumber] = useState('0');
   const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
   const [history, setHistory] = useState('');
+  const [constHistory, setConstHistory] = useState('');
   const [title, setTitle] = useState('');
+  const [constTitle, setConstTitle]= useState('');
   const [noLigacao, setNoLigacao] = useState('');
   const [NodeId, setNodeId] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [checkedStart, setCheckedStart] = useState(false);
   const [checkedEnd, setCheckedEnd] = useState(false);
   const [duration, setDuration] = useState('0');
+  const [constDuration, setConstDuration] = useState('0');
   const [reg, setReg] = useState(false);
   // eslint-disable-next-line
   const [tags, setTags] = useState(Array());
@@ -51,9 +54,18 @@ function EditorScreen(){
     event.dataTransfer.dropEffect = 'move';
   };
 
-  const onEditClick = (event: any) => {
+  const onEditClick = async (event: any) => {
       setIsOpen(true);
       setSelectedTags([])
+      const labelList = await fetch(apiUrl+'label', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await labelList.json();
+
+      setTags1(result.label)
   }
 
   const saveTags = async () => {
@@ -64,23 +76,12 @@ function EditorScreen(){
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ label: tagName, color: tagColor === "" ? "#000" : tagColor })
+        body: JSON.stringify({ label: tagName, value: tagName, color: tagColor === "" ? "#000" : tagColor })
       });
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
-    
-    const labelList = await fetch(apiUrl+'label', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    const result = await labelList.json();
-    setTags1(result.label)
-    console.log("LALALALALAL: ",result.label);
-    setTags(tags.concat({"id": 1,"label": tagName, "value": tagName, "color": tagColor === "" ? "#000" : tagColor}))
-    console.log("Tagssss: ",tags);
+    setTags(tags.concat({"label": tagName, "value": tagName, "color": tagColor === "" ? "#000" : tagColor}))
     onRequestClose();
     setTagColor("#000");
     setTagName("");
@@ -230,13 +231,16 @@ function EditorScreen(){
 
   const onChangeDescription = (event: any) => {
     setHistory(event)
+    setConstHistory(event);
   }
   const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
+    setConstTitle(event.target.value)
   }
 
   const onChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDuration(event.target.value)  
+    setConstDuration(event.target.value);
   }
 
   const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,8 +278,7 @@ function EditorScreen(){
     console.log("Tags: ", tags)
     console.log("SelectedTags: ", selectedTags)
   }
-
-  const onSaveChanges = () => {
+  const createNodeConnection = () => {
     if(noLigacao !== ''){
       let exist = false;
       let idTarget = idNumber;
@@ -301,6 +304,34 @@ function EditorScreen(){
       }
       setNoLigacao('');
     }
+    
+  }
+
+  const onSaveChanges = async () => {
+    createNodeConnection();
+    console.log(constTitle, checkedStart, checkedEnd, constDuration, constHistory)
+    console.log(selectedTags)
+    try{
+      await fetch(apiUrl+'node/create', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          name: constTitle, 
+          startNode: checkedStart,
+          endNode: checkedEnd,
+          duration: constDuration,
+          markdownContent: constHistory,
+          labels: selectedTags,
+          //nodeColor: ,textColor: , backgroundColor:  
+        })
+      });
+    } catch(err){
+        console.log("erro ao criar tag: "+err)
+    }
+
     onRequestClose();
   }
 
