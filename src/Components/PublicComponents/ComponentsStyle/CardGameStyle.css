@@ -5,6 +5,7 @@
     background-color: #ebebeb;
     box-shadow: 0 1px 8px rgba(0,0,0,.5);
     border-radius: 8px;
+    cursor: pointer;
 }
 
 .ImgContainer {
@@ -19,6 +20,7 @@
     object-fit: contain;
     height: 100%;
     width: 100%;
+    cursor: pointer !important;
 }
 
 .CardDescription {

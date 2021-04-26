@@ -4,6 +4,7 @@ import CustomNodeComponent from '../Components/EditorComponents/CustomNodeCompon
 import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
+import { api_url } from '../public/variables';
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -18,7 +19,9 @@ function EditorScreen(props: any){
       position: { x: 10000, y: 100000 }
     }
   ];
-  const apiUrl = 'http://localhost:8080/';
+
+  let savedElements:any = [];
+  let savedElementsLabels:any = [];
   const reactFlowWrapper = useRef(null as any | null);
   const [elements, setElements] = useState(initialElements as any);
   const [idNumber, setIdNumber] = useState('0');
@@ -37,11 +40,53 @@ function EditorScreen(props: any){
   const [reg, setReg] = useState(false);
   // eslint-disable-next-line
   const [tags, setTags] = useState(Array());
+  // eslint-disable-next-line
   const [tags1, setTags1] = useState(Array());
   // eslint-disable-next-line
   const [selectedTags, setSelectedTags] = useState(Array());
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
+  const [position, setPosition] = useState(null as any | null)
+
+  useEffect(() => {
+    async function getNodes() {
+      const gamesResult = await fetch(api_url+'game/'+props.location.state.gameId, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await gamesResult.json();
+      result.game.nodes.map((item: any, index:any) => {
+        item.labels.map((item:any) => {
+          savedElementsLabels.push(
+            {'name':item.label, 'color': item.color}
+          )
+        })
+        savedElements.push({
+          id: item._id,
+          type: 'special',
+          data: {
+            history: item.markdownContent, 
+            title: item.name, 
+            nodeStart: item.startNode, 
+            nodeEnd: item.endNode, 
+            duration: item.duration, 
+            onEditClick:onEditClick,
+            // eslint-disable-next-line
+            tagsArray: savedElementsLabels
+          },
+          position: item.position
+        })
+      })
+      if(savedElements.length !== 0){
+        setElements(savedElements);
+      }
+      //setElements(result.game.nodes);
+      console.log(savedElements)
+    }  
+    getNodes()
+  }, [])
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
@@ -57,7 +102,7 @@ function EditorScreen(props: any){
   const onEditClick = async (event: any) => {
       setIsOpen(true);
       setSelectedTags([])
-      const labelList = await fetch(apiUrl+'label', {
+      const labelList = await fetch(api_url+'label', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -70,7 +115,7 @@ function EditorScreen(props: any){
 
   const saveTags = async () => {
     try{
-      await fetch(apiUrl+'label/create', {
+      await fetch(api_url+'label/create', {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -162,6 +207,7 @@ function EditorScreen(props: any){
         if(item.id === NodeId)
           if(title !== ' ')
             item.data.title = title;
+            setPosition(item.position);
       })
     }
     setTitle(' ');
@@ -310,7 +356,7 @@ function EditorScreen(props: any){
   const onSaveChanges = async () => {
     createNodeConnection();
     try{
-      await fetch(apiUrl+'node/create', {
+      await fetch(api_url+'node/create', {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -323,7 +369,8 @@ function EditorScreen(props: any){
           duration: constDuration,
           markdownContent: constHistory,
           labels: selectedTags,
-          id: props.location.state.id
+          id: props.location.state.gameId,
+          position: position
           //nodeColor: ,textColor: , backgroundColor:  
         })
       });

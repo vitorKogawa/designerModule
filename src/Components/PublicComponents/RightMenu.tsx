@@ -3,10 +3,10 @@ import { fireApp } from '../../Screens/SignInScreen';
 import React, { useState, useEffect } from 'react';
 import CreateGame from './CreateGame';
 import { useHistory } from "react-router-dom";
+import { api_url } from '../../public/variables';
 
 export const RightMenu = () => {
     const history = useHistory();
-    const apiUrl = 'http://localhost:8080/';
     const [openModal, setOpenModal] = useState(false);
     const [isTemplate, setIsTemplate] = useState(false);
     const [gameTitle, setGameTitle] = useState('');
@@ -16,7 +16,6 @@ export const RightMenu = () => {
     const [backgroundColor, setBackgroundColor] = useState('');
     const [backgroundImage, setBackgroundImage] = useState(null as any | null);
     const [gameCreatedId, setGameCreatedId] = useState(null as any | null);
-    const [aux, setAux] = useState(false);
 
     const OnNewGameClick = () => {
         setOpenModal(true)
@@ -58,9 +57,10 @@ export const RightMenu = () => {
         if(gameCreatedId !== null){
             history.push({
                 pathname: '/editor',
-                state: { id: gameCreatedId }
+                state: { gameId: gameCreatedId }
             })
         }
+        // eslint-disable-next-line
       }, [gameCreatedId]);
 
     const saveGame = async () => {
@@ -72,8 +72,7 @@ export const RightMenu = () => {
         data.append("template", isTemplate ? 'true' : 'false');
         data.append("background_color", backgroundColor);
         data.append("background_image", backgroundImage);
-
-        await fetch(apiUrl+'game/create', {
+        await fetch(api_url+'game/create', {
             method: 'POST',
             body: data
         }).then(result => result.json())

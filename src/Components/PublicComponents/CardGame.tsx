@@ -2,7 +2,7 @@ import './ComponentsStyle/CardGameStyle.css';
 
 export const CardGame = (props: any) => {
     return(
-        <div className="CardContainer">
+        <div className="CardContainer" onClick={props.onCardClick}>
             <div className="ImgContainer">
                 <img className="ImgStyle" alt="imagem" src={props.src} />
             </div>

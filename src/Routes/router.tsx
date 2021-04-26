@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import App from '../App';
+import App from '../Screens/Dashboard';
 import SignInScreen from '../Screens/SignInScreen';
 import PrivateRoute from './PrivateRoute';
 import { AuthProvider } from "./Auth";
