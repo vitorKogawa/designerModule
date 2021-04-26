@@ -9,7 +9,7 @@ const nodeTypes = {
   special: CustomNodeComponent,
 };
 
-function EditorScreen(){
+function EditorScreen(props: any){
   let initialElements = [
     {
       id: "1000",
@@ -309,8 +309,6 @@ function EditorScreen(){
 
   const onSaveChanges = async () => {
     createNodeConnection();
-    console.log(constTitle, checkedStart, checkedEnd, constDuration, constHistory)
-    console.log(selectedTags)
     try{
       await fetch(apiUrl+'node/create', {
         method: 'POST',
@@ -325,6 +323,7 @@ function EditorScreen(){
           duration: constDuration,
           markdownContent: constHistory,
           labels: selectedTags,
+          id: props.location.state.id
           //nodeColor: ,textColor: , backgroundColor:  
         })
       });

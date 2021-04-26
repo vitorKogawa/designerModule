@@ -43,42 +43,32 @@ export default function CreateGame(props: any){
         <form>
           <div className="form_row">
             <div className="form_group field">
-              <input className="form_field" name="title" placeholder="Title" type="text"/>
+              <input className="form_field" name="title" placeholder="Title" type="text" onChange={props.onChangeTitle}/>
               <label className="form_label" >Título</label>
             </div>
             <div className="form_group">
-              <textarea className="form_field" placeholder="Descrição" rows={1} style={{resize: 'none', overflow: 'auto'}} />
+              <textarea className="form_field" placeholder="Descrição" rows={1} style={{resize: 'none', overflow: 'auto'}} onChange={props.onChangeDescription}/>
               <label className="form_label">Descrição</label>
-            </div>
-          </div>
-          <div className="form_row">
-            <div className="form_group field"> 
-              <input className="form_field" name="labels" placeholder="Labels" type="text"/>
-              <label className="form_label">Labels</label>
-            </div>
-            <div className="form_group field"> 
-              <input className="form_field" name="attributes" placeholder="Atributos" type="text"/>
-              <label className="form_label">Atributos</label>
             </div>
           </div>
           <div className="form_row">
             <div className="form_group three_cols">
               <p>Default Node Color:</p>
-              <input className="color_front" type="color" />
+              <input className="color_front" type="color" onChange={props.onChangeNodeColor}/>
             </div>
             <div  className="form_group three_cols">
               <p>Default Text Color:</p>
-              <input className="color_front" type="color" />
+              <input className="color_front" type="color" onChange={props.onChangeTextColor}/>
             </div>
-            <div  className="form_group three_cols">
+            <div className="form_group three_cols">
               <p>Default Background Color:</p>
-              <input className="color_front" type="color" />
+              <input className="color_front" type="color" onChange={props.onChangeBackgroundColor}/>
             </div>
           </div>
           <div className="form_row">
             <div  className="form_group three_cols">
               <p>Imagem de fundo</p>
-              <input className="inpt_file" type="file" />
+              <input className="inpt_file" type="file" onChange={props.onChangeBackgroundImage} />
             </div>
             <div  className="form_group three_cols">
               <p>Template</p>
@@ -92,7 +82,7 @@ export default function CreateGame(props: any){
           <hr></hr>
           <div className="form_row right end">
             <span className="cancel" onClick={props.closeModal}>Cancelar</span> 
-            <Link to="/editor" className="button_style">Criar</Link>
+            <span className="button_style" onClick={props.saveGame}>Criar</span>
           </div>
         </form>
       </Modal>

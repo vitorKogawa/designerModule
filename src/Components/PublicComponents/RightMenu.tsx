@@ -1,11 +1,22 @@
 import './ComponentsStyle/RightMenuStyle.css';
 import { fireApp } from '../../Screens/SignInScreen';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CreateGame from './CreateGame';
+import { useHistory } from "react-router-dom";
 
 export const RightMenu = () => {
+    const history = useHistory();
+    const apiUrl = 'http://localhost:8080/';
     const [openModal, setOpenModal] = useState(false);
     const [isTemplate, setIsTemplate] = useState(false);
+    const [gameTitle, setGameTitle] = useState('');
+    const [gameDescription, setGameDescription] = useState('');
+    const [nodeColor, setNodeColor] = useState('');
+    const [textColor, setTextColor] = useState('');
+    const [backgroundColor, setBackgroundColor] = useState('');
+    const [backgroundImage, setBackgroundImage] = useState(null as any | null);
+    const [gameCreatedId, setGameCreatedId] = useState(null as any | null);
+    const [aux, setAux] = useState(false);
 
     const OnNewGameClick = () => {
         setOpenModal(true)
@@ -16,7 +27,60 @@ export const RightMenu = () => {
     }
 
     const onChangeIsTemplate = () => {
-        setIsTemplate(!isTemplate)
+        setIsTemplate(!isTemplate);
+    }
+
+    const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGameTitle(event.target.value);
+    }
+
+    const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGameDescription(event.target.value);
+    }
+
+    const onChangeNodeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNodeColor(event.target.value);
+    }
+
+    const onChangeTextColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTextColor(event.target.value);
+    }
+
+    const onChangeBackgroundColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setBackgroundColor(event.target.value);
+    }   
+
+    const onChangeBackgroundImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setBackgroundImage(event.target.files ? event.target.files[0] : event.target.files)
+    } 
+
+    useEffect(() => {
+        if(gameCreatedId !== null){
+            history.push({
+                pathname: '/editor',
+                state: { id: gameCreatedId }
+            })
+        }
+      }, [gameCreatedId]);
+
+    const saveGame = async () => {
+        const data = new FormData();
+        data.append("title", gameTitle);
+        data.append("description", gameDescription);
+        data.append("default_node_color", nodeColor);
+        data.append("default_text_color", textColor);
+        data.append("template", isTemplate ? 'true' : 'false');
+        data.append("background_color", backgroundColor);
+        data.append("background_image", backgroundImage);
+
+        await fetch(apiUrl+'game/create', {
+            method: 'POST',
+            body: data
+        }).then(result => result.json())
+        .then(res => setGameCreatedId(res.game._id))
+        .catch(error => {
+            console.log(error)
+        });
     }
 
     return(
@@ -28,6 +92,14 @@ export const RightMenu = () => {
                 closeModal={onRequestClose}
                 onChangeIsTemplate={onChangeIsTemplate}
                 isTemplate={isTemplate}
+                onChangeTitle={onChangeTitle}
+                onChangeDescription={onChangeDescription}
+                onChangeNodeColor={onChangeNodeColor}
+                onChangeTextColor={onChangeTextColor}
+                onChangeBackgroundColor={onChangeBackgroundColor}
+                onChangeBackgroundImage={onChangeBackgroundImage}
+                saveGame={saveGame}
+                gameId={gameCreatedId}
             />
             <label className="signOut" onClick={() => fireApp.auth().signOut()}>Sign out</label>
         </div>
