@@ -47,6 +47,9 @@ function EditorScreen(props: any){
   const [tagName, setTagName] = useState('');
   const [tagColor, setTagColor] = useState('');
   const [position, setPosition] = useState(null as any | null)
+  const [currentNodeInfo, setCurrentNodeInfo] = useState(null as any | null)
+  const [currentID, setCurrentID] = useState(null as any | null)
+  const [update, setUpdate] = useState(0)
 
   useEffect(() => {
     async function getNodes() {
@@ -72,7 +75,7 @@ function EditorScreen(props: any){
             nodeStart: item.startNode, 
             nodeEnd: item.endNode, 
             duration: item.duration, 
-            onEditClick:onEditClick,
+            onEditClick:() => onEditClick(item._id),
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
           },
@@ -82,11 +85,9 @@ function EditorScreen(props: any){
       if(savedElements.length !== 0){
         setElements(savedElements);
       }
-      //setElements(result.game.nodes);
-      console.log(savedElements)
     }  
     getNodes()
-  }, [])
+  }, [update])
 
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
@@ -99,18 +100,37 @@ function EditorScreen(props: any){
     event.dataTransfer.dropEffect = 'move';
   };
 
-  const onEditClick = async (event: any) => {
+  useEffect(() => {
+    if(currentNodeInfo !== null){
       setIsOpen(true);
-      setSelectedTags([])
-      const labelList = await fetch(api_url+'label', {
+    }
+  }, [currentNodeInfo])
+
+  const onEditClick = async (id: any) => {
+    
+    setSelectedTags([])
+    const labelList = await fetch(api_url+'label', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    setCurrentID(id);
+    const result = await labelList.json();
+    setTags1(result.label);
+    let typeId = typeof id;
+    if(typeId !== 'object'){
+      const nodeResult = await fetch(api_url+'node/'+id, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      const result = await labelList.json();
-
-      setTags1(result.label)
+      const resultNode = await nodeResult.json();
+      setCurrentNodeInfo(resultNode);
+    }else{
+      setCurrentNodeInfo('unsaved');
+    }
   }
 
   const saveTags = async () => {
@@ -151,8 +171,10 @@ function EditorScreen(props: any){
       },
     };
     setElements((es: Elements) => es.concat(newNode));
-    if(origin == 1){
-      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position);
+    if(origin === 1){
+      apiSaveNodes('save', noLigacao, false, false, '0', '', Array(), position);
+    }else{
+      apiSaveNodes('save', '', false, false, '0', '', Array(), position);
     }
   }
 
@@ -165,7 +187,7 @@ function EditorScreen(props: any){
       arrowHeadType: 'arrowclosed' as ArrowHeadType,
     };
     setElements((es: Elements) => es.concat(newConnection));
-    
+
   }
 
   const onDrop = (event: any) => {
@@ -306,7 +328,7 @@ function EditorScreen(props: any){
     setSelectedTags(selectedTags.splice(0, selectedTags.length))
     let x: Array<Object> = [];
     event.map((item:any) => {
-      x.push({'name':item.label, 'color': item.color});
+      x.push({'label':item.label, 'value': item.label, 'color': item.color});
       setSelectedTags(x);
       return 0
     })
@@ -350,17 +372,27 @@ function EditorScreen(props: any){
         });
 
         createNode(position, 'special', 1);
-        createConnection(NodeId.toString(), idTarget)
+        createConnection(NodeId.toString(), idTarget);
       }
       setNoLigacao('');
     }
-    
   }
 
-  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
+  const apiSaveNodes = async (reqType:string, name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
+    let url = '';
+    let method = '';
+    if(reqType === 'edit'){
+      url = `${api_url}node/edit/${currentID}`;
+      method = 'PUT';
+    }
+    else{
+      url = `${api_url}node/create`;
+      method = 'POST';
+    }
+      console.log(labels)
     try{
-      await fetch(api_url+'node/create', {
-        method: 'POST',
+      await fetch(url, {
+        method: method,
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json'
@@ -380,11 +412,12 @@ function EditorScreen(props: any){
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
+    setUpdate(update => update = update + 1)
   }
 
   const onSaveChanges = async () => {
     createNodeConnection();
-    apiSaveNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
+    apiSaveNodes('edit', constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
     onRequestClose();
   }
 
@@ -422,6 +455,7 @@ function EditorScreen(props: any){
               onSaveChanges={onSaveChanges}
               tagOptions={tags1}
               handleInputChange={handleInputChange}
+              currentNodeInfo='unsaved' //currentNodeInfo
             />
             <TopMenu 
               saveTags={saveTags} 
