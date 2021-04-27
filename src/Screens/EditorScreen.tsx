@@ -151,6 +151,9 @@ function EditorScreen(props: any){
       },
     };
     setElements((es: Elements) => es.concat(newNode));
+    if(origin == 1){
+      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position);
+    }
   }
 
   const createConnection = (idSource: string, idTarget: string) => {
@@ -161,8 +164,8 @@ function EditorScreen(props: any){
       animated: true, 
       arrowHeadType: 'arrowclosed' as ArrowHeadType,
     };
-
     setElements((es: Elements) => es.concat(newConnection));
+    
   }
 
   const onDrop = (event: any) => {
@@ -324,6 +327,7 @@ function EditorScreen(props: any){
     console.log("Tags: ", tags)
     console.log("SelectedTags: ", selectedTags)
   }
+  
   const createNodeConnection = () => {
     if(noLigacao !== ''){
       let exist = false;
@@ -353,8 +357,7 @@ function EditorScreen(props: any){
     
   }
 
-  const onSaveChanges = async () => {
-    createNodeConnection();
+  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
     try{
       await fetch(api_url+'node/create', {
         method: 'POST',
@@ -363,12 +366,12 @@ function EditorScreen(props: any){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          name: constTitle, 
-          startNode: checkedStart,
-          endNode: checkedEnd,
-          duration: constDuration,
-          markdownContent: constHistory,
-          labels: selectedTags,
+          name: name, 
+          startNode: startNode,
+          endNode: endNode,
+          duration: duration,
+          markdownContent: markdownContent,
+          labels: labels,
           id: props.location.state.gameId,
           position: position
           //nodeColor: ,textColor: , backgroundColor:  
@@ -377,7 +380,11 @@ function EditorScreen(props: any){
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
+  }
 
+  const onSaveChanges = async () => {
+    createNodeConnection();
+    apiSaveNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
     onRequestClose();
   }
 
