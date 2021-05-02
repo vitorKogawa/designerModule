@@ -5,6 +5,7 @@ import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
 import { api_url } from '../public/variables';
+import { exists } from 'fs';
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -50,15 +51,36 @@ function EditorScreen(props: any){
   const [currentNodeInfo, setCurrentNodeInfo] = useState(null as any | null)
   const [currentID, setCurrentID] = useState(null as any | null)
   const [update, setUpdate] = useState(0)
+  const [targetID, setTargetID] = useState('');
+  const [updateCon, setUpdateCon] = useState(false);
+
+  const getNodes = async () => {
+    const gamesResult = await fetch(api_url+'game/'+props.location.state.gameId, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return gamesResult;
+  }
+
+  const getConnections = async () => {
+    const connectionsResult = await fetch(api_url+'connection/'+props.location.state.gameId, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return connectionsResult;
+  }
 
   useEffect(() => {
-    async function getNodes() {
-      const gamesResult = await fetch(api_url+'game/'+props.location.state.gameId, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+    async function populate() {
+      const connectionsResult = await getConnections();
+      const connRes = await connectionsResult.json();
+      const gamesResult = await getNodes();
       const result = await gamesResult.json();
       result.game.nodes.map((item: any, index:any) => {
         item.labels.map((item:any) => {
@@ -82,11 +104,23 @@ function EditorScreen(props: any){
           position: item.position
         })
       })
+      connRes.nodeConnection.map((item:any, index:any) => {
+        savedElements.push({
+          id: item._id,
+          source: item.source,
+          target: item.target,
+          animated: true,
+          arrowHeadType: 'arrowclosed' as ArrowHeadType,
+          style: { color: "white", stroke: "white" },
+          sourceHandle: "b",
+          targetHandle: "a"
+        })
+      })
       if(savedElements.length !== 0){
         setElements(savedElements);
       }
     }  
-    getNodes()
+    populate()
   }, [update])
 
   const onElementsRemove = (elementsToRemove : Elements) =>
@@ -172,13 +206,35 @@ function EditorScreen(props: any){
     };
     setElements((es: Elements) => es.concat(newNode));
     if(origin === 1){
-      apiSaveNodes('save', noLigacao, false, false, '0', '', Array(), position);
+      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position);
     }else{
-      apiSaveNodes('save', '', false, false, '0', '', Array(), position);
+      apiSaveNodes('', false, false, '0', '', Array(), position);
     }
   }
 
-  const createConnection = (idSource: string, idTarget: string) => {
+  useEffect(() => {
+    const createConn = async () => {
+    //  console.log(updateCon)
+      if(updateCon){
+        await fetch(api_url+'connection/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            _id: 'react' + NodeId.toString() + '-' + targetID, 
+            source: NodeId.toString(),
+            target: targetID,
+            gameId: props.location.state.gameId
+          })
+        });
+      }
+    }
+    createConn();
+  }, [targetID])
+
+  const createConnection = async (idSource: string, idTarget: string) => {
+    console.log("targetID: ", targetID);
     const newConnection = {
       id: 'react' + idNumber,
       source: idSource,
@@ -187,7 +243,17 @@ function EditorScreen(props: any){
       arrowHeadType: 'arrowclosed' as ArrowHeadType,
     };
     setElements((es: Elements) => es.concat(newConnection));
-
+    await fetch(api_url+'connection/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        _id: 'react' + idSource + '-' + idTarget, 
+        source: idSource,
+        target: idTarget,  
+      })
+    });
   }
 
   const onDrop = (event: any) => {
@@ -353,46 +419,30 @@ function EditorScreen(props: any){
   const createNodeConnection = () => {
     if(noLigacao !== ''){
       let exist = false;
-      let idTarget = idNumber;
       elements.forEach((element: any) => {
         if(element.id.search('react') === -1){
           if(element.data.title === noLigacao){
-            exist = true
-            idTarget = element.id;
+            exist = true;
           }
         }
       });
-      if(exist){
-        createConnection(NodeId.toString(), idTarget)
-      }else{
+      if(!exist){
         const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
         const position = reactFlowInstance.project({
           x: reactFlowBounds.right - window.innerWidth/5 ,
           y: window.innerHeight/2,
         });
-
         createNode(position, 'special', 1);
-        createConnection(NodeId.toString(), idTarget);
       }
+      setUpdateCon(true);
       setNoLigacao('');
     }
   }
 
-  const apiSaveNodes = async (reqType:string, name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
-    let url = '';
-    let method = '';
-    if(reqType === 'edit'){
-      url = `${api_url}node/edit/${currentID}`;
-      method = 'PUT';
-    }
-    else{
-      url = `${api_url}node/create`;
-      method = 'POST';
-    }
-      console.log(labels)
+  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
     try{
-      await fetch(url, {
-        method: method,
+      await fetch(`${api_url}node/create`, {
+        method: 'POST',
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json'
@@ -408,7 +458,34 @@ function EditorScreen(props: any){
           position: position
           //nodeColor: ,textColor: , backgroundColor:  
         })
-      });
+      }).then(result => result.json())
+        .then(res => setTargetID(res.gameNode._id));
+    } catch(err){
+        console.log("erro ao criar tag: "+err)
+    }
+    setUpdate(update => update = update + 1)
+  }
+
+  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
+    try{
+      await fetch(`${api_url}node/edit/${currentID}`, {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          name: name, 
+          startNode: startNode,
+          endNode: endNode,
+          duration: duration,
+          markdownContent: markdownContent,
+          labels: labels,
+          id: props.location.state.gameId,
+          position: position
+          //nodeColor: ,textColor: , backgroundColor:  
+        })
+      })
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
@@ -417,7 +494,7 @@ function EditorScreen(props: any){
 
   const onSaveChanges = async () => {
     createNodeConnection();
-    apiSaveNodes('edit', constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
+    apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
     onRequestClose();
   }
 
@@ -476,3 +553,21 @@ function EditorScreen(props: any){
 };
 
 export default EditorScreen;
+
+/**
+ * animated: true
+​​
+arrowHeadType: "arrowclosed"
+​​
+id: "reactflow__edge-608b2032c086b8284c7bb12bb-608b20c9c086b8284c7bb137a"
+​​
+source: "608b2032c086b8284c7bb12b"
+​​
+sourceHandle: "b"
+​​
+style: Object { color: "white", stroke: "white" }
+​​
+target: "608b20c9c086b8284c7bb137"
+​​
+targetHandle: "a"
+ */
