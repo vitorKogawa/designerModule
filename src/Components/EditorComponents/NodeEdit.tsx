@@ -9,6 +9,14 @@ import './EditorComponentsStyles/NodeEditStyle.css';
 export default function NodeEdit(props: any){
   
   const [nodeInfo, setNodeInfo] = useState(false);
+  const [nodeName, setNodeName] = useState('');
+  const [duration, setDuration] = useState(0);
+  const [nodeColor, setNodeColor] = useState('');
+  const [textColor, setTextColor] = useState('');
+  const [backgroundColor, setBackgroundColor] = useState('');
+  const [startNode, setStartNode] = useState(false);
+  const [endNode, setEndNode] = useState(false);
+
 
   const customStyles = {
       overlay: {
@@ -38,8 +46,44 @@ export default function NodeEdit(props: any){
       Modal.setAppElement('#root');
       if(props.currentNodeInfo !== null){
         setNodeInfo(true);
+        setNodeName(props.currentNodeInfo.gameNode.name);
+        setDuration(props.currentNodeInfo.gameNode.duration);
+        setNodeColor(props.currentNodeInfo.gameNode.nodeColor);
+        setTextColor(props.currentNodeInfo.gameNode.textColor);
+        setBackgroundColor(props.currentNodeInfo.gameNode.backgroundColor);
+        setStartNode(props.currentNodeInfo.gameNode.startNode);
+        setEndNode(props.currentNodeInfo.gameNode.endNode);
       }    
   }, [props.currentNodeInfo])
+
+  const onNameChange = (event:any) => {
+    setNodeName(event.target.value);
+    props.onChangeTitle(event);
+  }
+  const onDurationChange = (event:any) => {
+    setDuration(event.target.value);
+    props.onChangeDuration(event)
+  }
+  const onNodeColorChange = (event:any) => {
+    setNodeColor(event.target.value);
+    props.onChangeNodeColor(event);
+  }
+  const onTextColorChange = (event:any) => {
+    setTextColor(event.target.value);
+    props.onChangeTextColor(event);
+  }
+  const onBgColorChange = (event:any) => {
+    setBackgroundColor(event.target.value);
+    props.onChangeBgColor(event);
+  }
+  const onStartNodechange = () => {
+    setStartNode(!startNode);
+    props.onChangeNodeStart();
+  }
+  const onEndNodechange = () => {
+    setEndNode(!endNode);
+    props.onChangeNodeEnd();
+  }
 
   return(
       <Modal
@@ -63,11 +107,11 @@ export default function NodeEdit(props: any){
           </div>
           <div className="form_row">
             <div className="form_group field">
-              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined :props.currentNodeInfo.gameNode.name} name="title" placeholder="Title" type="text" onChange={props.onChangeTitle}/>
+              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : nodeName} name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
               <label className="form_label" >Título</label>
             </div>
             <div className="form_group field">
-              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined :props.currentNodeInfo.gameNode.duration} name="duracao" placeholder="Duração" type="number" onChange={props.onChangeDuration} />
+              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : duration} name="duracao" placeholder="Duração" type="number" onChange={e => onDurationChange(e)}/>
               <label className="form_label">Duração</label>
             </div>
           </div>
@@ -77,7 +121,7 @@ export default function NodeEdit(props: any){
             </div>
             <div className="form_group field"> 
               <Select
-                value={props.currentNodeInfo === 'unsaved' ? undefined :props.currentNodeInfo.gameNode.labels}
+                value={props.currentNodeInfo === 'unsaved' ? undefined : props.currentNodeInfo.gameNode.labels}
                 isMulti
                 name="colors"
                 options={props.tagOptions}
@@ -89,7 +133,7 @@ export default function NodeEdit(props: any){
           </div>
           <div className="form_row">
             <div className="form_group field"> 
-              <input className="form_field" name="Option" placeholder="Alternativa" type="text"/>
+              <input className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={props.onChangeOption}/>
               <label className="form_label">Alternativa</label>
             </div>
             <div className="form_group field">
@@ -100,25 +144,25 @@ export default function NodeEdit(props: any){
           <div className="form_row">
             <div className="form_group three_cols">
               <p>Node Color:</p>
-              <input className="color_front" type="color" />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : nodeColor} className="color_front" type="color" onChange={e => onNodeColorChange(e)}/>
             </div>
             <div  className="form_group three_cols">
               <p>Text Color:</p>
-              <input className="color_front" type="color" />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : textColor} className="color_front" type="color" onChange={e => onTextColorChange(e)} />
             </div>
             <div  className="form_group three_cols">
               <p>Background Color:</p>
-              <input className="color_front" type="color" />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : backgroundColor} className="color_front" type="color" onChange={e => onBgColorChange(e)} />
             </div>
           </div>
           <div className="form_row">
             <div  className="form_group three_cols">
               <p>Cartão de início</p>
-              <Switch onChange={props.onChangeNodeStart} checked={props.currentNodeInfo === 'unsaved' ? props.checkedStart : props.currentNodeInfo.gameNode.startNode} />
+              <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedStart : startNode} onChange={() => onStartNodechange()} />
             </div>
             <div  className="form_group three_cols">
               <p>Cartão final</p>
-              <Switch onChange={props.onChangeNodeEnd} checked={props.currentNodeInfo === 'unsaved' ? props.checkedEnd :props.currentNodeInfo.gameNode.endNode} />
+              <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedEnd : endNode} onChange={() => onEndNodechange()}/>
             </div>
             <div  className="form_group three_cols">
               <p>Imagem de fundo:</p>

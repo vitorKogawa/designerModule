@@ -5,7 +5,6 @@ import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
 import { api_url } from '../public/variables';
-import { exists } from 'fs';
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -22,8 +21,19 @@ function EditorScreen(props: any){
   ];
 
   let savedElements:any = [];
+  let arrayCheck:any = {
+    title: false, 
+    desc: false, 
+    duration: false, 
+    option: false, 
+    noLigacao: false, 
+    nodeColor: false,
+    textColor: false,
+    bgColor: false,
+  };
   let savedElementsLabels:any = [];
   const reactFlowWrapper = useRef(null as any | null);
+  const [checkStatus, setCheckStatus] = useState(arrayCheck)
   const [elements, setElements] = useState(initialElements as any);
   const [idNumber, setIdNumber] = useState('0');
   const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
@@ -31,6 +41,13 @@ function EditorScreen(props: any){
   const [constHistory, setConstHistory] = useState('');
   const [title, setTitle] = useState('');
   const [constTitle, setConstTitle]= useState('');
+  const [option, setOption]= useState('');
+  const [nodeColor, setNodeColor]= useState('');
+  const [constNodeColor, setConstNodeColor]= useState('');
+  const [textColor, setTextColor]= useState('');
+  const [constTextColor, setConstTextColor]= useState('');
+  const [bgColor, setBgColor]= useState('');
+  const [constBgColor, setConstBgColor]= useState('');
   const [noLigacao, setNoLigacao] = useState('');
   const [NodeId, setNodeId] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -53,6 +70,8 @@ function EditorScreen(props: any){
   const [update, setUpdate] = useState(0)
   const [targetID, setTargetID] = useState('');
   const [updateCon, setUpdateCon] = useState(false);
+  // eslint-disable-next-line
+  const [nextNodes, setNextNodes] = useState(Array());
 
   const getNodes = async () => {
     const gamesResult = await fetch(api_url+'game/'+props.location.state.gameId, {
@@ -97,6 +116,9 @@ function EditorScreen(props: any){
             nodeStart: item.startNode, 
             nodeEnd: item.endNode, 
             duration: item.duration, 
+            textColor: item.textColor,
+            bgColor: item.backgroundColor,
+            nodeColor: item.nodeColor,
             onEditClick:() => onEditClick(item._id),
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
@@ -160,6 +182,7 @@ function EditorScreen(props: any){
           'Content-Type': 'application/json'
         }
       });
+      
       const resultNode = await nodeResult.json();
       setCurrentNodeInfo(resultNode);
     }else{
@@ -198,7 +221,10 @@ function EditorScreen(props: any){
         title: origin === 0 ? '' : noLigacao, 
         nodeStart: false, 
         nodeEnd: false, 
-        duration: '0', 
+        duration: '0',
+        nodeColor: '#000000', 
+        textColor: '#000000', 
+        backgroundColor: '#000000', 
         onEditClick:onEditClick,
         // eslint-disable-next-line
         tagsArray: Array()
@@ -206,16 +232,16 @@ function EditorScreen(props: any){
     };
     setElements((es: Elements) => es.concat(newNode));
     if(origin === 1){
-      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position);
+      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor);
     }else{
-      apiSaveNodes('', false, false, '0', '', Array(), position);
+      apiSaveNodes('', false, false, '0', '', Array(), position,  nodeColor, textColor, bgColor);
     }
   }
 
   useEffect(() => {
     const createConn = async () => {
-    //  console.log(updateCon)
       if(updateCon){
+        setNextNodes([...nextNodes, {id:targetID, choice:""}]);
         await fetch(api_url+'connection/create', {
           method: 'POST',
           headers: {
@@ -233,28 +259,12 @@ function EditorScreen(props: any){
     createConn();
   }, [targetID])
 
-  const createConnection = async (idSource: string, idTarget: string) => {
-    console.log("targetID: ", targetID);
-    const newConnection = {
-      id: 'react' + idNumber,
-      source: idSource,
-      target: idTarget,
-      animated: true, 
-      arrowHeadType: 'arrowclosed' as ArrowHeadType,
-    };
-    setElements((es: Elements) => es.concat(newConnection));
-    await fetch(api_url+'connection/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ 
-        _id: 'react' + idSource + '-' + idTarget, 
-        source: idSource,
-        target: idTarget,  
-      })
-    });
-  }
+  useEffect(() => {
+    if(updateCon){
+      console.log('next: ', nextNodes)
+      apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor, nextNodes);
+    }
+  }, [nextNodes])
 
   const onDrop = (event: any) => {
     if(elements.length >= 1)
@@ -305,6 +315,42 @@ function EditorScreen(props: any){
    },
    // eslint-disable-next-line react-hooks/exhaustive-deps
   [title, NodeId])
+
+  useEffect(() => {
+    if(NodeId.toString().search('react') === -1){
+      elements.forEach((item: any) => {
+        if(item.id === NodeId)
+          item.data.nodeColor = nodeColor;
+      })
+    }
+    setNodeColor('#000000');
+  },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+  [nodeColor, NodeId])
+
+  useEffect(() => {
+    if(NodeId.toString().search('react') === -1){
+      elements.forEach((item: any) => {
+        if(item.id === NodeId)
+          item.data.textColor = textColor;
+      })
+    }
+    setTextColor('#000000');
+   },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+  [textColor, NodeId])
+
+  useEffect(() => {
+      if(NodeId.toString().search('react') === -1){
+        elements.forEach((item: any) => {
+          if(item.id === NodeId)
+            item.data.backgroundColor = bgColor;
+        })
+      }
+      setBgColor('#000000');
+   },
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+  [bgColor, NodeId])
 
   //Save if the node is a start node
   useEffect(() => {
@@ -369,25 +415,48 @@ function EditorScreen(props: any){
   const onChangeDescription = (event: any) => {
     setHistory(event)
     setConstHistory(event);
+    setCheckStatus((oldState:any) => ({...oldState, desc: true}))
   }
   const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
     setConstTitle(event.target.value)
+    setCheckStatus((oldState:any) => ({...oldState,title: true}))
   }
 
   const onChangeDuration = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDuration(event.target.value)  
     setConstDuration(event.target.value);
+    setCheckStatus((oldState:any) => ({...oldState,duration: true}))
   }
 
   const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNoLigacao(event.target.value)
+    setCheckStatus((oldState:any) => ({...oldState,noLigacao: true}))
   }
   const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagName(event.target.value)
   }
   const onChangeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagColor(event.target.value);
+  }
+  const onChangeOption = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOption(event.target.value);
+    setCheckStatus((oldState:any) => ({...oldState,option: true}))
+  }
+  const onChangeNodeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNodeColor(event.target.value);
+    setConstNodeColor(event.target.value);
+    setCheckStatus((oldState:any) => ({...oldState,nodeColor: true}))
+  }
+  const onChangeTextColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTextColor(event.target.value);
+    setConstTextColor(event.target.value);
+    setCheckStatus((oldState:any) => ({...oldState,textColor: true}))
+  }
+  const onChangeBgColor = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBgColor(event.target.value);
+    setConstBgColor(event.target.value);
+    setCheckStatus((oldState:any) => ({...oldState,bgColor: true}))
   }
   
   const handleInputChange = (event: any) => {
@@ -439,7 +508,7 @@ function EditorScreen(props: any){
     }
   }
 
-  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
+  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, textColor:any, bgColor:any) => {
     try{
       await fetch(`${api_url}node/create`, {
         method: 'POST',
@@ -455,8 +524,10 @@ function EditorScreen(props: any){
           markdownContent: markdownContent,
           labels: labels,
           id: props.location.state.gameId,
-          position: position
-          //nodeColor: ,textColor: , backgroundColor:  
+          position: position,
+          nodeColor: nodeColor,
+          textColor: textColor, 
+          backgroundColor: bgColor
         })
       }).then(result => result.json())
         .then(res => setTargetID(res.gameNode._id));
@@ -466,8 +537,9 @@ function EditorScreen(props: any){
     setUpdate(update => update = update + 1)
   }
 
-  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any) => {
+  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, option: any, textColor:any, bgColor:any, nextNodes:any) => {
     try{
+      console.log(checkStatus)
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
         mode: 'cors',
@@ -475,17 +547,29 @@ function EditorScreen(props: any){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          name: name, 
+          name:  checkStatus.title === false ? currentNodeInfo.gameNode.name : name, 
           startNode: startNode,
           endNode: endNode,
-          duration: duration,
-          markdownContent: markdownContent,
+          duration: checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration,
+          markdownContent: checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent,
           labels: labels,
           id: props.location.state.gameId,
-          position: position
-          //nodeColor: ,textColor: , backgroundColor:  
+          position: position,
+          nodeColor: checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor,
+          textColor: checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor,
+          backgroundColor: checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor, 
+          nextNodes: nextNodes
         })
       })
+      setCheckStatus({ 
+        title: false, 
+        desc: false, 
+        duration: false, 
+        option: false, 
+        noLigacao: false, 
+        nodeColor: false,
+        textColor: false,
+        bgColor: false})
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
@@ -494,7 +578,7 @@ function EditorScreen(props: any){
 
   const onSaveChanges = async () => {
     createNodeConnection();
-    apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position);
+    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor, nextNodes);
     onRequestClose();
   }
 
@@ -532,7 +616,11 @@ function EditorScreen(props: any){
               onSaveChanges={onSaveChanges}
               tagOptions={tags1}
               handleInputChange={handleInputChange}
-              currentNodeInfo='unsaved' //currentNodeInfo
+              onChangeOption={onChangeOption}
+              onChangeNodeColor={onChangeNodeColor}
+              onChangeTextColor={onChangeTextColor}
+              onChangeBgColor={onChangeBgColor}
+              currentNodeInfo={currentNodeInfo} //currentNodeInfo
             />
             <TopMenu 
               saveTags={saveTags} 
@@ -553,21 +641,3 @@ function EditorScreen(props: any){
 };
 
 export default EditorScreen;
-
-/**
- * animated: true
-​​
-arrowHeadType: "arrowclosed"
-​​
-id: "reactflow__edge-608b2032c086b8284c7bb12bb-608b20c9c086b8284c7bb137a"
-​​
-source: "608b2032c086b8284c7bb12b"
-​​
-sourceHandle: "b"
-​​
-style: Object { color: "white", stroke: "white" }
-​​
-target: "608b20c9c086b8284c7bb137"
-​​
-targetHandle: "a"
- */
