@@ -241,7 +241,7 @@ function EditorScreen(props: any){
   useEffect(() => {
     const createConn = async () => {
       if(updateCon){
-        setNextNodes([...nextNodes, {id:targetID, choice:""}]);
+        setNextNodes([...Array({id:targetID, choice:option})]);
         await fetch(api_url+'connection/create', {
           method: 'POST',
           headers: {
@@ -260,9 +260,10 @@ function EditorScreen(props: any){
   }, [targetID])
 
   useEffect(() => {
-    if(updateCon){
+    console.log('useeffect: ', nextNodes);
+    if(updateCon && nextNodes[0].id !== 'err'){
       console.log('next: ', nextNodes)
-      apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor, nextNodes);
+      apiEditNextNodes(nextNodes);
     }
   }, [nextNodes])
 
@@ -492,6 +493,7 @@ function EditorScreen(props: any){
         if(element.id.search('react') === -1){
           if(element.data.title === noLigacao){
             exist = true;
+            setTargetID(NodeId.toString());
           }
         }
       });
@@ -530,14 +532,29 @@ function EditorScreen(props: any){
           backgroundColor: bgColor
         })
       }).then(result => result.json())
-        .then(res => setTargetID(res.gameNode._id));
+        .then(res => name !== '' ? setTargetID(res.gameNode._id) : '');
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
     setUpdate(update => update = update + 1)
   }
+  const apiEditNextNodes = async (nextNodes:any) => {
+    console.log('editnextCOMECO: ', nextNodes);
+    await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        nextNodes: nextNodes
+      })
+    });
+    setNextNodes({...Array({id:'err', choice:'err'})});
+    console.log('editnextFIM: ', nextNodes);
+  }
 
-  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, option: any, textColor:any, bgColor:any, nextNodes:any) => {
+  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
     try{
       console.log(checkStatus)
       await fetch(`${api_url}node/edit/${currentID}`, {
@@ -558,7 +575,6 @@ function EditorScreen(props: any){
           nodeColor: checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor,
           textColor: checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor,
           backgroundColor: checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor, 
-          nextNodes: nextNodes
         })
       })
       setCheckStatus({ 
@@ -577,8 +593,8 @@ function EditorScreen(props: any){
   }
 
   const onSaveChanges = async () => {
+    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor);
     createNodeConnection();
-    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor, nextNodes);
     onRequestClose();
   }
 
