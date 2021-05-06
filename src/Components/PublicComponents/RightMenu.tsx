@@ -57,8 +57,11 @@ export const RightMenu = () => {
         if(gameCreatedId !== null){
             history.push({
                 pathname: '/editor',
-                state: { gameId: gameCreatedId }
-            })
+                search: '?game='+gameCreatedId,
+                state: {
+                  gameId: gameCreatedId
+                }
+              })
         }
         // eslint-disable-next-line
       }, [gameCreatedId]);
