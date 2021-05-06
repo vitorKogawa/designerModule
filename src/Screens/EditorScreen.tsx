@@ -72,9 +72,12 @@ function EditorScreen(props: any){
   const [updateCon, setUpdateCon] = useState(false);
   // eslint-disable-next-line
   const [nextNodes, setNextNodes] = useState(Array());
+  const [nodeDragID, setNodeDragID] = useState('');
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
 
   const getNodes = async () => {
-    const gamesResult = await fetch(api_url+'game/'+props.location.state.gameId, {
+    const gamesResult = await fetch(api_url+'game/'+urlParams.get('game'), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -85,7 +88,7 @@ function EditorScreen(props: any){
   }
 
   const getConnections = async () => {
-    const connectionsResult = await fetch(api_url+'connection/'+props.location.state.gameId, {
+    const connectionsResult = await fetch(api_url+'connection/'+urlParams.get('game'), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -148,8 +151,9 @@ function EditorScreen(props: any){
   const onElementsRemove = (elementsToRemove : Elements) =>
     setElements((els: any) => removeElements(elementsToRemove, els));
   const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, arrowHeadType: 'arrowclosed' as ArrowHeadType, style: { color: 'white', stroke: 'white' } }, els));
-  const onLoad = (_reactFlowInstance : OnLoadParams) =>
+  const onLoad = (_reactFlowInstance : OnLoadParams) =>{
     setReactFlowInstance(_reactFlowInstance);
+  }
   
   const onDragOver = (event: any) => {
     event.preventDefault();
@@ -238,6 +242,7 @@ function EditorScreen(props: any){
     }
   }
 
+  //Create connection
   useEffect(() => {
     const createConn = async () => {
       if(updateCon){
@@ -251,18 +256,18 @@ function EditorScreen(props: any){
             _id: 'react' + NodeId.toString() + '-' + targetID, 
             source: NodeId.toString(),
             target: targetID,
-            gameId: props.location.state.gameId
+            gameId: urlParams.get('game')
           })
         });
+        setOption('')
       }
     }
     createConn();
+    setUpdate(update => update = update + 1)
   }, [targetID])
 
   useEffect(() => {
-    console.log('useeffect: ', nextNodes);
     if(updateCon && nextNodes[0].id !== 'err'){
-      console.log('next: ', nextNodes)
       apiEditNextNodes(nextNodes);
     }
   }, [nextNodes])
@@ -273,7 +278,7 @@ function EditorScreen(props: any){
         elements.splice(0, 1);      
 
     event.preventDefault();
-
+   
     const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
     const type = event.dataTransfer.getData('application/reactflow');
     const position = reactFlowInstance.project({
@@ -309,7 +314,6 @@ function EditorScreen(props: any){
         if(item.id === NodeId)
           if(title !== ' ')
             item.data.title = title;
-            setPosition(item.position);
       })
     }
     setTitle(' ');
@@ -493,7 +497,8 @@ function EditorScreen(props: any){
         if(element.id.search('react') === -1){
           if(element.data.title === noLigacao){
             exist = true;
-            setTargetID(NodeId.toString());
+            setUpdateCon(true);
+            setTargetID(element.id);
           }
         }
       });
@@ -525,7 +530,7 @@ function EditorScreen(props: any){
           duration: duration,
           markdownContent: markdownContent,
           labels: labels,
-          id: props.location.state.gameId,
+          id: urlParams.get('game'),
           position: position,
           nodeColor: nodeColor,
           textColor: textColor, 
@@ -539,7 +544,6 @@ function EditorScreen(props: any){
     setUpdate(update => update = update + 1)
   }
   const apiEditNextNodes = async (nextNodes:any) => {
-    console.log('editnextCOMECO: ', nextNodes);
     await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
       method: 'PUT',
       mode: 'cors',
@@ -551,12 +555,10 @@ function EditorScreen(props: any){
       })
     });
     setNextNodes({...Array({id:'err', choice:'err'})});
-    console.log('editnextFIM: ', nextNodes);
   }
 
-  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
+  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
     try{
-      console.log(checkStatus)
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
         mode: 'cors',
@@ -570,8 +572,7 @@ function EditorScreen(props: any){
           duration: checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration,
           markdownContent: checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent,
           labels: labels,
-          id: props.location.state.gameId,
-          position: position,
+          id: urlParams.get('game'),
           nodeColor: checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor,
           textColor: checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor,
           backgroundColor: checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor, 
@@ -593,11 +594,40 @@ function EditorScreen(props: any){
   }
 
   const onSaveChanges = async () => {
-    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, position, constNodeColor, option, constTextColor, constBgColor);
+    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, constNodeColor, option, constTextColor, constBgColor);
     createNodeConnection();
     onRequestClose();
   }
 
+  const onNodeDrag = (event:any, node:any) => {
+    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+    const pos = reactFlowInstance.project({
+      x: event.clientX - reactFlowBounds.left - 50,
+      y: event.clientY - reactFlowBounds.top - 58,
+    });
+    setPosition(pos);
+    setNodeDragID(node.id);
+  }
+
+  useEffect(() => {
+    if(position !== null && nodeDragID !== ''){
+      putPosition(position, nodeDragID);
+    }
+      
+  }, [position, nodeDragID]);
+
+  const putPosition = async (position:any, nodeDragID:any) => {
+    await fetch(`${api_url}node/edit/position/${nodeDragID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        position: position
+      })
+    });
+  }
   return (
     <div className="reactflow-wrapper" ref={reactFlowWrapper}  style={{ height: '100vh', backgroundColor: '#010c18' }}>
       <ReactFlow 
@@ -608,6 +638,7 @@ function EditorScreen(props: any){
         onConnect={onConnect} 
         onElementsRemove={onElementsRemove} 
         onDrop={onDrop}
+        onNodeDragStop={onNodeDrag}
         onDragOver={onDragOver}
         nodeTypes={nodeTypes} 
       >
