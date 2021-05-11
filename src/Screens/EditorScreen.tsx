@@ -73,6 +73,8 @@ function EditorScreen(props: any){
   // eslint-disable-next-line
   const [nextNodes, setNextNodes] = useState(Array());
   const [nodeDragID, setNodeDragID] = useState('');
+  const [auxStart, setAuxStart] = useState(false);
+  const [auxEnd, setAuxEnd] = useState(false);
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -122,12 +124,14 @@ function EditorScreen(props: any){
             textColor: item.textColor,
             bgColor: item.backgroundColor,
             nodeColor: item.nodeColor,
+            nextNodes: item.nextNodes,
             onEditClick:() => onEditClick(item._id),
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
           },
           position: item.position
         })
+        savedElementsLabels = []
       })
       connRes.nodeConnection.map((item:any, index:any) => {
         savedElements.push({
@@ -167,7 +171,6 @@ function EditorScreen(props: any){
   }, [currentNodeInfo])
 
   const onEditClick = async (id: any) => {
-    
     setSelectedTags([])
     const labelList = await fetch(api_url+'label', {
       method: 'GET',
@@ -466,7 +469,7 @@ function EditorScreen(props: any){
   
   const handleInputChange = (event: any) => {
     setSelectedTags(selectedTags.splice(0, selectedTags.length))
-    let x: Array<Object> = [];
+    let x = Array();
     event.map((item:any) => {
       x.push({'label':item.label, 'value': item.label, 'color': item.color});
       setSelectedTags(x);
@@ -476,13 +479,21 @@ function EditorScreen(props: any){
 
   const onChangeNodeEnd = () => {
     setReg(true);
-    setCheckedEnd(!checkedEnd)
+    setAuxEnd(true);
+    setCheckedEnd(!checkedEnd);
   }
+  useEffect(() => {
+    apiEditEndNode(checkedEnd);
+  }, [checkedEnd, currentID])
 
   const onChangeNodeStart = () => {
     setReg(true);
-    setCheckedStart(!checkedStart)
+    setAuxStart(true);
+    setCheckedStart(!checkedStart);
   }
+  useEffect(() => {
+      apiEditStartNode(checkedStart);
+  }, [checkedStart, currentID])
 
   const claick = () => {
     console.log("Elements: ", elements);
@@ -557,7 +568,36 @@ function EditorScreen(props: any){
     setNextNodes({...Array({id:'err', choice:'err'})});
   }
 
-  const apiEditNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
+  const apiEditEndNode = async (endNode:boolean) => {
+    await fetch(`${api_url}node/edit/end/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        endNode: endNode
+      })
+    });
+    setAuxEnd(false)
+  } 
+
+  const apiEditStartNode = async (startNode:boolean) => {
+    await fetch(`${api_url}node/edit/start/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        startNode: startNode
+      })
+    });
+    setAuxStart(false)
+  } 
+
+  const apiEditNodes = async (name:string, duration:string, markdownContent:string, labels:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
+    console.log(labels)
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
@@ -567,8 +607,6 @@ function EditorScreen(props: any){
         },
         body: JSON.stringify({ 
           name:  checkStatus.title === false ? currentNodeInfo.gameNode.name : name, 
-          startNode: startNode,
-          endNode: endNode,
           duration: checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration,
           markdownContent: checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent,
           labels: labels,
@@ -594,7 +632,7 @@ function EditorScreen(props: any){
   }
 
   const onSaveChanges = async () => {
-    await apiEditNodes(constTitle, checkedStart, checkedEnd, constDuration, constHistory, selectedTags, constNodeColor, option, constTextColor, constBgColor);
+    await apiEditNodes(constTitle, constDuration, constHistory, selectedTags, constNodeColor, option, constTextColor, constBgColor);
     createNodeConnection();
     onRequestClose();
   }

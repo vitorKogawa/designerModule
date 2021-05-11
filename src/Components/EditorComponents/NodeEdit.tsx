@@ -16,6 +16,7 @@ export default function NodeEdit(props: any){
   const [backgroundColor, setBackgroundColor] = useState('');
   const [startNode, setStartNode] = useState(false);
   const [endNode, setEndNode] = useState(false);
+  const [tags, setTags] = useState(Array());
 
 
   const customStyles = {
@@ -53,6 +54,8 @@ export default function NodeEdit(props: any){
         setBackgroundColor(props.currentNodeInfo.gameNode.backgroundColor);
         setStartNode(props.currentNodeInfo.gameNode.startNode);
         setEndNode(props.currentNodeInfo.gameNode.endNode);
+        setTags(props.currentNodeInfo.gameNode.labels);
+        console.log(props.currentNodeInfo.gameNode.labels);
       }    
   }, [props.currentNodeInfo])
 
@@ -83,6 +86,17 @@ export default function NodeEdit(props: any){
   const onEndNodechange = () => {
     setEndNode(!endNode);
     props.onChangeNodeEnd();
+  }
+
+  const onTagsChange = (e:any) => {
+    setTags(tags.splice(0, tags.length))
+    let x = Array();
+    e.map((item:any) => {
+      x.push({'label':item.label, 'value': item.label, 'color': item.color});
+      setTags(x);
+      return 0
+    })
+    props.handleInputChange(e);
   }
 
   return(
@@ -121,13 +135,13 @@ export default function NodeEdit(props: any){
             </div>
             <div className="form_group field"> 
               <Select
-                value={props.currentNodeInfo === 'unsaved' ? undefined : props.currentNodeInfo.gameNode.labels}
+                value={props.currentNodeInfo === 'unsaved' ? undefined : tags}
                 isMulti
                 name="colors"
                 options={props.tagOptions}
                 className="basic-multi-select"
                 classNamePrefix="select"
-                onChange={props.handleInputChange}
+                onChange={(e) => onTagsChange(e)}
               />
             </div>
           </div>
