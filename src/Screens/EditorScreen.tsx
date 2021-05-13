@@ -156,13 +156,7 @@ function EditorScreen(props: any){
   }, [update])
 
   const onElementsRemove = async(elementsToRemove : Elements) => {
-    let connections = Array();
     setElements((els: any) => removeElements(elementsToRemove, els));
-    const connectionsResult = await getConnections();
-    const connRes = await connectionsResult.json();
-    connRes.nodeConnection.map((item:any, index:any) => {
-      connections.push({source: item.source, target: item.target});
-    })
     await fetch(api_url+'node/delete/'+elementsToRemove[0].id, {
       method: 'DELETE',
       headers: {
@@ -172,7 +166,6 @@ function EditorScreen(props: any){
         elements: elementsToRemove
       })
     });
-    console.log(elementsToRemove)
   } 
   const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, arrowHeadType: 'arrowclosed' as ArrowHeadType, style: { color: 'white', stroke: 'white' } }, els));
   const onLoad = (_reactFlowInstance : OnLoadParams) =>{
@@ -269,14 +262,12 @@ function EditorScreen(props: any){
   useEffect(() => {
       if(updateCon){
         setCount(num => num = num + 1);
-        console.log('card: ', targetID, auxCardAlt)
       }
   }, [targetID])
 
   useEffect(() => {
     const createConn = async () => {
-      if(updateCon){
-        console.log('count: ',count)
+      if(updateCon){     
         setNextNodes([...Array({id:targetID, choice:auxCardAlt[count]})]);
         await fetch(api_url+'connection/create', {
           method: 'POST',
@@ -291,11 +282,11 @@ function EditorScreen(props: any){
           })
         });
         setOption('')
-        setUpdateCon(false)
       }
-      if(count == 1){
+      if(count === auxCardName.length-1){
         setAuxCardName(Array());
         setAuxCardAlt(Array());
+        setUpdateCon(false)
       }
     }
     createConn();
@@ -537,7 +528,6 @@ function EditorScreen(props: any){
   }
   
   const createNodeConnection = () => {
-    console.log(auxCardName)
     auxCardName.forEach(no => {
       if(no !== ''){
         let exist = false;
@@ -566,7 +556,7 @@ function EditorScreen(props: any){
 
   const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, textColor:any, bgColor:any) => {
     try{
-      await fetch(`${api_url}node/create`, {
+      const saved = await fetch(`${api_url}node/create`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -585,8 +575,12 @@ function EditorScreen(props: any){
           textColor: textColor, 
           backgroundColor: bgColor
         })
-      }).then(result => result.json())
-        .then(res => name !== '' ? setTargetID(res.gameNode._id) : '');
+      });
+        const jsonSaved = await saved.json();
+        if(name !== ''){
+          setTargetID(jsonSaved.gameNode._id)
+          setUpdateCon(true)
+        }
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }

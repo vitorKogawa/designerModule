@@ -67,6 +67,12 @@ export default function NodeEdit(props: any){
             setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
           }
         }
+        else{
+          setAlt1('');
+          setCard1('');
+          setAlt2('');
+          setCard2('');
+        }
       }    
   }, [props.currentNodeInfo])
 
