@@ -155,8 +155,25 @@ function EditorScreen(props: any){
     populate()
   }, [update])
 
-  const onElementsRemove = (elementsToRemove : Elements) =>
+  const onElementsRemove = async(elementsToRemove : Elements) => {
+    let connections = Array();
     setElements((els: any) => removeElements(elementsToRemove, els));
+    const connectionsResult = await getConnections();
+    const connRes = await connectionsResult.json();
+    connRes.nodeConnection.map((item:any, index:any) => {
+      connections.push({source: item.source, target: item.target});
+    })
+    await fetch(api_url+'node/delete/'+elementsToRemove[0].id, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        elements: elementsToRemove
+      })
+    });
+    console.log(elementsToRemove)
+  } 
   const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, arrowHeadType: 'arrowclosed' as ArrowHeadType, style: { color: 'white', stroke: 'white' } }, els));
   const onLoad = (_reactFlowInstance : OnLoadParams) =>{
     setReactFlowInstance(_reactFlowInstance);

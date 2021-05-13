@@ -61,9 +61,11 @@ export default function NodeEdit(props: any){
         setTags(props.currentNodeInfo.gameNode.labels);
         if(props.currentNodeInfo.gameNode.nextNodes.length !== 0){
           setAlt1(props.currentNodeInfo.gameNode.nextNodes[0].choice);
-          setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
           setCard1(props.currentNodeInfo.gameNode.nextNodes[0].id);
-          setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
+          if(props.currentNodeInfo.gameNode.nextNodes.length === 2){
+            setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
+            setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
+          }
         }
       }    
   }, [props.currentNodeInfo])
