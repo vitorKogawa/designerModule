@@ -16,6 +16,10 @@ export default function NodeEdit(props: any){
   const [backgroundColor, setBackgroundColor] = useState('');
   const [startNode, setStartNode] = useState(false);
   const [endNode, setEndNode] = useState(false);
+  const [alt1, setAlt1] = useState('');
+  const [alt2, setAlt2] = useState('');
+  const [card1, setCard1] = useState('');
+  const [card2, setCard2] = useState('');
   const [tags, setTags] = useState(Array());
 
 
@@ -55,7 +59,12 @@ export default function NodeEdit(props: any){
         setStartNode(props.currentNodeInfo.gameNode.startNode);
         setEndNode(props.currentNodeInfo.gameNode.endNode);
         setTags(props.currentNodeInfo.gameNode.labels);
-        console.log(props.currentNodeInfo.gameNode.labels);
+        if(props.currentNodeInfo.gameNode.nextNodes.length !== 0){
+          setAlt1(props.currentNodeInfo.gameNode.nextNodes[0].choice);
+          setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
+          setCard1(props.currentNodeInfo.gameNode.nextNodes[0].id);
+          setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
+        }
       }    
   }, [props.currentNodeInfo])
 
@@ -86,6 +95,22 @@ export default function NodeEdit(props: any){
   const onEndNodechange = () => {
     setEndNode(!endNode);
     props.onChangeNodeEnd();
+  }
+  const onAlt1Change = (event:any) => {
+  //  setAlt1(event.target.value);
+    props.onChangeOption(event);
+  }
+  const onAlt2Change = (event:any) => {
+   // setAlt2(event.target.value);
+    props.onChangeOption(event);
+  }
+  const onCard1Change = (event:any) => {
+  //  setCard1(event.target.value);
+    props.onChangeNoLigacao(event);
+  }
+  const onCard2Change = (event:any) => {
+   // setCard2(event.target.value);
+    props.onChangeNoLigacao(event);
   }
 
   const onTagsChange = (e:any) => {
@@ -147,14 +172,26 @@ export default function NodeEdit(props: any){
           </div>
           <div className="form_row">
             <div className="form_group field"> 
-              <input className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={props.onChangeOption}/>
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)}/>
               <label className="form_label">Alternativa</label>
             </div>
             <div className="form_group field">
-              <input className="form_field" name="Node" placeholder="Nó" type="text" onChange={props.onChangeNoLigacao} />
-              <label className="form_label">Nó</label>
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="form_field" name="Node" placeholder="Nó" type="text" onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
+              <label className="form_label">Card</label>
             </div>
           </div>
+          {/************************************************************************* */}
+          <div className="form_row">
+            <div className="form_group field"> 
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)}/>
+              <label className="form_label">Alternativa</label>
+            </div>
+            <div className="form_group field">
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="form_field" name="Node" placeholder="Nó" type="text" onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
+              <label className="form_label">Card</label>
+            </div>
+          </div>
+          {/************************************************************************* */}
           <div className="form_row">
             <div className="form_group three_cols">
               <p>Node Color:</p>

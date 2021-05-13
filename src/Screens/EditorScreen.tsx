@@ -75,6 +75,9 @@ function EditorScreen(props: any){
   const [nodeDragID, setNodeDragID] = useState('');
   const [auxStart, setAuxStart] = useState(false);
   const [auxEnd, setAuxEnd] = useState(false);
+  const [auxCardName, setAuxCardName] = useState(Array());
+  const [auxCardAlt, setAuxCardAlt] = useState(Array());
+  const [count, setCount] = useState(-1);
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -216,7 +219,7 @@ function EditorScreen(props: any){
     setTagName("");
   }
 
-  const createNode = (position: any, type: string, origin: number) => {
+  const createNode = (position: any, type: string, origin: number, title:string) => {
     let idToInt = parseInt(idNumber)+1;
     setIdNumber(idToInt.toString());
     const newNode = {
@@ -225,7 +228,7 @@ function EditorScreen(props: any){
       position,
       data: {
         history: '', 
-        title: origin === 0 ? '' : noLigacao, 
+        title: origin === 0 ? '' : title, 
         nodeStart: false, 
         nodeEnd: false, 
         duration: '0',
@@ -239,7 +242,7 @@ function EditorScreen(props: any){
     };
     setElements((es: Elements) => es.concat(newNode));
     if(origin === 1){
-      apiSaveNodes(noLigacao, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor);
+      apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor);
     }else{
       apiSaveNodes('', false, false, '0', '', Array(), position,  nodeColor, textColor, bgColor);
     }
@@ -247,9 +250,17 @@ function EditorScreen(props: any){
 
   //Create connection
   useEffect(() => {
+      if(updateCon){
+        setCount(num => num = num + 1);
+        console.log('card: ', targetID, auxCardAlt)
+      }
+  }, [targetID])
+
+  useEffect(() => {
     const createConn = async () => {
       if(updateCon){
-        setNextNodes([...Array({id:targetID, choice:option})]);
+        console.log('count: ',count)
+        setNextNodes([...Array({id:targetID, choice:auxCardAlt[count]})]);
         await fetch(api_url+'connection/create', {
           method: 'POST',
           headers: {
@@ -263,11 +274,16 @@ function EditorScreen(props: any){
           })
         });
         setOption('')
+        setUpdateCon(false)
+      }
+      if(count == 1){
+        setAuxCardName(Array());
+        setAuxCardAlt(Array());
       }
     }
     createConn();
     setUpdate(update => update = update + 1)
-  }, [targetID])
+  }, [count])
 
   useEffect(() => {
     if(updateCon && nextNodes[0].id !== 'err'){
@@ -289,7 +305,7 @@ function EditorScreen(props: any){
       y: event.clientY - reactFlowBounds.top,
     });
 
-    createNode(position, type, 0);
+    createNode(position, type, 0, '');
   }
 
   const onElementClick = (event: any, element: any) => { 
@@ -436,9 +452,10 @@ function EditorScreen(props: any){
     setConstDuration(event.target.value);
     setCheckStatus((oldState:any) => ({...oldState,duration: true}))
   }
-
+  
   const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNoLigacao(event.target.value)
+    setAuxCardName((oldArray:any) => [...oldArray, event.target.value]);
     setCheckStatus((oldState:any) => ({...oldState,noLigacao: true}))
   }
   const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -449,6 +466,7 @@ function EditorScreen(props: any){
   }
   const onChangeOption = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOption(event.target.value);
+    setAuxCardAlt((oldArray:any) => [...oldArray, event.target.value])
     setCheckStatus((oldState:any) => ({...oldState,option: true}))
   }
   const onChangeNodeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -502,28 +520,31 @@ function EditorScreen(props: any){
   }
   
   const createNodeConnection = () => {
-    if(noLigacao !== ''){
-      let exist = false;
-      elements.forEach((element: any) => {
-        if(element.id.search('react') === -1){
-          if(element.data.title === noLigacao){
-            exist = true;
-            setUpdateCon(true);
-            setTargetID(element.id);
+    console.log(auxCardName)
+    auxCardName.forEach(no => {
+      if(no !== ''){
+        let exist = false;
+        elements.forEach((element: any) => {
+          if(element.id.search('react') === -1){
+            if(element.data.title === no){
+              exist = true;
+              setUpdateCon(true);
+              setTargetID(element.id);
+            }
           }
-        }
-      });
-      if(!exist){
-        const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-        const position = reactFlowInstance.project({
-          x: reactFlowBounds.right - window.innerWidth/5 ,
-          y: window.innerHeight/2,
         });
-        createNode(position, 'special', 1);
+        if(!exist){
+          const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+          const position = reactFlowInstance.project({
+            x: reactFlowBounds.right - window.innerWidth/5 ,
+            y: window.innerHeight/2,
+          });
+          createNode(position, 'special', 1, no);
+        }
+        setUpdateCon(true);
+        setNoLigacao('');
       }
-      setUpdateCon(true);
-      setNoLigacao('');
-    }
+    })
   }
 
   const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, textColor:any, bgColor:any) => {
@@ -597,7 +618,6 @@ function EditorScreen(props: any){
   } 
 
   const apiEditNodes = async (name:string, duration:string, markdownContent:string, labels:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
-    console.log(labels)
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
@@ -628,7 +648,8 @@ function EditorScreen(props: any){
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
-    setUpdate(update => update = update + 1)
+    setUpdate(update => update = update + 1);
+    setCount(-1);
   }
 
   const onSaveChanges = async () => {
