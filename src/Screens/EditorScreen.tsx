@@ -5,6 +5,9 @@ import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
 import { api_url } from '../public/variables';
+import firebase from 'firebase/app';
+import "firebase/auth";
+
 
 const nodeTypes = {
   special: CustomNodeComponent,
@@ -163,7 +166,8 @@ function EditorScreen(props: any){
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        elements: elementsToRemove
+        elements: elementsToRemove,
+        game: urlParams.get('game')
       })
     });
   } 

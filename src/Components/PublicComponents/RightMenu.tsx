@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import CreateGame from './CreateGame';
 import { useHistory } from "react-router-dom";
 import { api_url } from '../../public/variables';
+import firebase from 'firebase/app';
+import "firebase/auth";
 
 export const RightMenu = () => {
     const history = useHistory();
@@ -67,6 +69,7 @@ export const RightMenu = () => {
       }, [gameCreatedId]);
 
     const saveGame = async () => {
+        const uid = firebase.auth();
         const data = new FormData();
         data.append("title", gameTitle);
         data.append("description", gameDescription);
@@ -75,6 +78,8 @@ export const RightMenu = () => {
         data.append("template", isTemplate ? 'true' : 'false');
         data.append("background_color", backgroundColor);
         data.append("background_image", backgroundImage);
+        if(uid.currentUser)
+            data.append("userID", uid.currentUser.uid);
         await fetch(api_url+'game/create', {
             method: 'POST',
             body: data

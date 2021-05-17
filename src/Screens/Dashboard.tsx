@@ -4,6 +4,8 @@ import { CardGame } from '../Components/PublicComponents/CardGame';
 import { useEffect, useState } from 'react';
 import { api_url } from '../public/variables';
 import { useHistory } from "react-router-dom";
+import firebase from 'firebase/app';
+import "firebase/auth";
 
 function App() {
   // eslint-disable-next-line
@@ -12,7 +14,8 @@ function App() {
 
   useEffect(() => {
     async function getGames() {
-      const gamesResult = await fetch(api_url+'game', {
+      console.log('entrou')
+      const gamesResult = await fetch(api_url+'game/userGames/'+firebase.auth().currentUser?.uid, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
