@@ -81,6 +81,7 @@ function EditorScreen(props: any){
   const [auxCardName, setAuxCardName] = useState(Array());
   const [auxCardAlt, setAuxCardAlt] = useState(Array());
   const [count, setCount] = useState(-1);
+  const [image, setImage] = useState(null as any | null)
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -303,6 +304,12 @@ function EditorScreen(props: any){
     }
   }, [nextNodes])
 
+  useEffect(() => {
+    if(selectedTags.length !== 0){
+      apiEditLabels(selectedTags);
+    }
+  }, [selectedTags])
+
   const onDrop = (event: any) => {
     if(elements.length >= 1)
       if(elements[0].id.search('1000') !== -1)
@@ -507,6 +514,10 @@ function EditorScreen(props: any){
     })
   }
 
+  const onChangeNodeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImage(event.target.files ? event.target.files[0] : event.target.files)
+  }
+
   const onChangeNodeEnd = () => {
     setReg(true);
     setAuxEnd(true);
@@ -632,24 +643,33 @@ function EditorScreen(props: any){
     setAuxStart(false)
   } 
 
-  const apiEditNodes = async (name:string, duration:string, markdownContent:string, labels:any, nodeColor:any, option: any, textColor:any, bgColor:any) => {
+  const apiEditLabels = async (labels:any) => {
+    await fetch(`${api_url}node/edit/labels/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        labels: labels
+      })
+    });
+  } 
+
+  const apiEditNodes = async (name:string, duration:string, markdownContent:string, nodeColor:any, option: any, textColor:any, bgColor:any, image:any) => {
+    const data = new FormData();
+    data.append("name", checkStatus.title === false ? currentNodeInfo.gameNode.name : name);
+    data.append("duration", checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration);
+    data.append("markdownContent", checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent);
+    data.append("id", urlParams.get('game') as any);
+    data.append("nodeColor", checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor);
+    data.append("textColor", checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor);
+    data.append("backgroundColor", checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor);
+    data.append("nodeImage", image)
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          name:  checkStatus.title === false ? currentNodeInfo.gameNode.name : name, 
-          duration: checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration,
-          markdownContent: checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent,
-          labels: labels,
-          id: urlParams.get('game'),
-          nodeColor: checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor,
-          textColor: checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor,
-          backgroundColor: checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor, 
-        })
+        body: data
       })
       setCheckStatus({ 
         title: false, 
@@ -659,16 +679,17 @@ function EditorScreen(props: any){
         noLigacao: false, 
         nodeColor: false,
         textColor: false,
-        bgColor: false})
+        bgColor: false
+      })
     } catch(err){
-        console.log("erro ao criar tag: "+err)
+        console.log("erro ao criar card: "+err)
     }
     setUpdate(update => update = update + 1);
     setCount(-1);
   }
 
   const onSaveChanges = async () => {
-    await apiEditNodes(constTitle, constDuration, constHistory, selectedTags, constNodeColor, option, constTextColor, constBgColor);
+    await apiEditNodes(constTitle, constDuration, constHistory, constNodeColor, option, constTextColor, constBgColor, image);
     createNodeConnection();
     onRequestClose();
   }
@@ -741,6 +762,7 @@ function EditorScreen(props: any){
               onChangeNodeColor={onChangeNodeColor}
               onChangeTextColor={onChangeTextColor}
               onChangeBgColor={onChangeBgColor}
+              onChangeNodeImage={onChangeNodeImage}
               currentNodeInfo={currentNodeInfo} //currentNodeInfo
             />
             <TopMenu 

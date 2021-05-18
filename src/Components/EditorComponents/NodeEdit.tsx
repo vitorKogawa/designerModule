@@ -50,6 +50,7 @@ export default function NodeEdit(props: any){
   useEffect(() => {
       Modal.setAppElement('#root');
       if(props.currentNodeInfo !== null){
+        console.log(props.currentNodeInfo)
         setNodeInfo(true);
         setNodeName(props.currentNodeInfo.gameNode.name);
         setDuration(props.currentNodeInfo.gameNode.duration);
@@ -122,7 +123,6 @@ export default function NodeEdit(props: any){
   }
 
   const onTagsChange = (e:any) => {
-    setTags(tags.splice(0, tags.length))
     let x = Array();
     e.map((item:any) => {
       x.push({'label':item.label, 'value': item.label, 'color': item.color});
@@ -225,7 +225,7 @@ export default function NodeEdit(props: any){
             </div>
             <div  className="form_group three_cols">
               <p>Imagem de fundo:</p>
-              <input className="inpt_file" type="file" />
+              <input className="inpt_file" type="file" onChange={props.onChangeNodeImage}/>
             </div>
           </div>
           <hr></hr>
