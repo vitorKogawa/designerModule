@@ -132,6 +132,7 @@ function EditorScreen(props: any){
             bgColor: item.backgroundColor,
             nodeColor: item.nodeColor,
             nextNodes: item.nextNodes,
+            image: item.nodeImage,
             onEditClick:() => onEditClick(item._id),
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
@@ -769,6 +770,7 @@ function EditorScreen(props: any){
               saveTags={saveTags} 
               onChangeTagName={onChangeTagName} 
               onChangeColor={onChangeColor}
+              elem={elements}
               />
         <Controls />
         <Background 

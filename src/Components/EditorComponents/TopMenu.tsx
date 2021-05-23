@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PublicModal from './PublicModal';
+import { useHistory } from "react-router-dom";
 import './EditorComponentsStyles/TopMenuStyle.css'
 
 export default function TopMenu(props: any){
+    const history = useHistory();
     const [openModal, setOpenModal] = useState(false);
     const onRequestClose = () => {
         setOpenModal(false);
@@ -12,6 +14,15 @@ export default function TopMenu(props: any){
     const handleClick = () => {
         props.saveTags()
         onRequestClose();
+    }
+    
+    const onClickPlay = () => {
+        history.push({
+            pathname: '/play',
+            state: {
+              elements: JSON.stringify(props.elem)
+            }
+          })
     }
 
     return(
@@ -24,6 +35,9 @@ export default function TopMenu(props: any){
             </div>
             <div className="menu-options" onClick={() => {setOpenModal(true)}}>
                 <p>Tags</p>
+            </div>
+            <div className="menu-options" onClick={() => onClickPlay()}>
+                <p>Jogar</p>
             </div>
             <div className="back-container">
                 <Link to="/dashboard" className="back-button">Voltar</Link>

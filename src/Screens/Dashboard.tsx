@@ -57,9 +57,4 @@ function App() {
     </div>
   );
 }
-/**
- * {gameList.map((item: any, index: any) => {
-          <CardGame key={index} src="https://cdn.logo.com/hotlink-ok/logo-social-sq.png" title={item.title} description={item.description}/>
-        })}
- */
 export default App;
