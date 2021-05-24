@@ -134,6 +134,7 @@ function EditorScreen(props: any){
             nextNodes: item.nextNodes,
             image: item.nodeImage,
             onEditClick:() => onEditClick(item._id),
+            show: false,
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
           },

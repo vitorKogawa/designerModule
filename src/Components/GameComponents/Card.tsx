@@ -11,7 +11,7 @@ export default function Card(props:any){
             <div>
                 {props.choices.map((item:any, index:any) => {
                     return(
-                        <span className="choices" >{item.choice}</span>
+                        <span className="choices" onClick={() => props.onChoiceClick(item.id)}>{item.choice}</span>
                     )
                 })}     
             </div>  
