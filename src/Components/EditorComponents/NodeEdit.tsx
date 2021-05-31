@@ -183,22 +183,22 @@ export default function NodeEdit(props: any){
           </div>
           <div className="form_row">
             <div className="form_group field"> 
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)}/>
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt1Disabled} onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)}/>
               <label className="form_label">Alternativa</label>
             </div>
             <div className="form_group field">
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="form_field" name="Node" placeholder="Nó" type="text" onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card1Disabled} onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
               <label className="form_label">Card</label>
             </div>
           </div>
           {/************************************************************************* */}
           <div className="form_row">
             <div className="form_group field"> 
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="form_field" name="Option" placeholder="Alternativa" type="text" onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)}/>
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt2Disabled} onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)}/>
               <label className="form_label">Alternativa</label>
             </div>
             <div className="form_group field">
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="form_field" name="Node" placeholder="Nó" type="text" onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card2Disabled} onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
               <label className="form_label">Card</label>
             </div>
           </div>

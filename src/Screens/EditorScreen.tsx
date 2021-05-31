@@ -35,6 +35,9 @@ function EditorScreen(props: any){
     bgColor: false,
   };
   let savedElementsLabels:any = [];
+  let numberPositionY = 500;
+  let numberAux = 0;
+  const[numberPositionX, setNumberPositionX] = useState(800);
   const reactFlowWrapper = useRef(null as any | null);
   const [checkStatus, setCheckStatus] = useState(arrayCheck)
   const [elements, setElements] = useState(initialElements as any);
@@ -83,6 +86,12 @@ function EditorScreen(props: any){
   const [auxCardAlt, setAuxCardAlt] = useState(Array());
   const [count, setCount] = useState(-1);
   const [image, setImage] = useState(null as any | null)
+  const [alt1Disabled, setAlt1Disabled] = useState(false);
+  const [alt2Disabled, setAlt2Disabled] = useState(false);
+  const [card1Disabled, setCard1Disabled] = useState(false);
+  const [card2Disabled, setCard2Disabled] = useState(false);
+  const [disabledAuxAlt, setDisabledAuxAlt] = useState(true);
+  const [disabledAuxCard, setDisabledAuxCard] = useState(true);
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -192,6 +201,12 @@ function EditorScreen(props: any){
   }, [currentNodeInfo])
 
   const onEditClick = async (id: any) => {
+    setAlt1Disabled(false);
+    setAlt2Disabled(false);
+    setCard1Disabled(false);
+    setCard2Disabled(false);
+    setDisabledAuxAlt(true);
+    setDisabledAuxCard(true);
     setSelectedTags([])
     const labelList = await fetch(api_url+'label', {
       method: 'GET',
@@ -486,6 +501,14 @@ function EditorScreen(props: any){
     setNoLigacao(event.target.value)
     setAuxCardName((oldArray:any) => [...oldArray, event.target.value]);
     setCheckStatus((oldState:any) => ({...oldState,noLigacao: true}))
+    if(auxCardName.length === 0 && disabledAuxCard === true){
+      setCard1Disabled(true);
+      setDisabledAuxCard(false);
+    }
+    if(auxCardName.length === 1){
+      setCard2Disabled(true);
+      setCard1Disabled(true);
+    }
   }
   const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagName(event.target.value)
@@ -497,6 +520,14 @@ function EditorScreen(props: any){
     setOption(event.target.value);
     setAuxCardAlt((oldArray:any) => [...oldArray, event.target.value])
     setCheckStatus((oldState:any) => ({...oldState,option: true}))
+    if(auxCardAlt.length === 0 && disabledAuxAlt === true){
+      setAlt1Disabled(true);
+      setDisabledAuxAlt(false);
+    }
+    if(auxCardAlt.length === 1){
+      setAlt2Disabled(true);
+      setAlt1Disabled(true);
+    }
   }
   const onChangeNodeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNodeColor(event.target.value);
@@ -560,12 +591,16 @@ function EditorScreen(props: any){
           }
         });
         if(!exist){
-          const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+          numberAux = numberAux + 1;
           const position = reactFlowInstance.project({
-            x: reactFlowBounds.right - window.innerWidth/5 ,
-            y: window.innerHeight/2,
+            x: window.innerWidth-numberPositionX,
+            y: window.innerHeight-numberPositionY,
           });
           createNode(position, 'special', 1, no);
+          numberPositionY = numberPositionY - 150;
+          if(numberAux%2 === 0){
+            setNumberPositionX(numberPositionX => numberPositionX = numberPositionX - 250);
+          }
         }
         setUpdateCon(true);
         setNoLigacao('');
@@ -767,6 +802,10 @@ function EditorScreen(props: any){
               onChangeTextColor={onChangeTextColor}
               onChangeBgColor={onChangeBgColor}
               onChangeNodeImage={onChangeNodeImage}
+              alt1Disabled={alt1Disabled}
+              alt2Disabled={alt2Disabled}
+              card1Disabled={card1Disabled}
+              card2Disabled={card2Disabled}
               currentNodeInfo={currentNodeInfo} //currentNodeInfo
             />
             <TopMenu 
