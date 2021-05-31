@@ -70,6 +70,7 @@ function EditorScreen(props: any){
   const [position, setPosition] = useState(null as any | null)
   const [currentNodeInfo, setCurrentNodeInfo] = useState(null as any | null)
   const [currentID, setCurrentID] = useState(null as any | null)
+  const [updateCurrentID, setUpdateCurrentID] = useState(false)
   const [update, setUpdate] = useState(0)
   const [targetID, setTargetID] = useState('');
   const [updateCon, setUpdateCon] = useState(false);
@@ -199,6 +200,7 @@ function EditorScreen(props: any){
       }
     });
     setCurrentID(id);
+    setUpdateCurrentID(true);
     const result = await labelList.json();
     setTags1(result.label);
     let typeId = typeof id;
@@ -402,8 +404,11 @@ function EditorScreen(props: any){
     if(reg){
       if(NodeId.toString().search('react') === -1){
         elements.forEach((item: any) => {
-          if(item.id === NodeId)
+          if(item.id === NodeId){
+            console.log('start: ',checkedStart)
             item.data.nodeStart = checkedStart;
+            apiEditStartNode(checkedStart);
+          }
         })
       }
       setReg(false);
@@ -417,8 +422,11 @@ function EditorScreen(props: any){
     if(reg){
       if(NodeId.toString().search('react') === -1){
         elements.forEach((item: any) => {
-          if(item.id === NodeId)
+          if(item.id === NodeId){
+            console.log(checkedEnd)
             item.data.nodeEnd = checkedEnd;
+            apiEditEndNode(checkedEnd);
+          }
         })
       }
       setReg(false);
@@ -525,18 +533,12 @@ function EditorScreen(props: any){
     setAuxEnd(true);
     setCheckedEnd(!checkedEnd);
   }
-  useEffect(() => {
-    apiEditEndNode(checkedEnd);
-  }, [checkedEnd, currentID])
 
   const onChangeNodeStart = () => {
     setReg(true);
     setAuxStart(true);
     setCheckedStart(!checkedStart);
   }
-  useEffect(() => {
-      apiEditStartNode(checkedStart);
-  }, [checkedStart, currentID])
 
   const claick = () => {
     console.log("Elements: ", elements);

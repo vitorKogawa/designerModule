@@ -66,6 +66,9 @@ export default function NodeEdit(props: any){
           if(props.currentNodeInfo.gameNode.nextNodes.length === 2){
             setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
             setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
+          }else{
+            setAlt2('');
+            setCard2('');
           }
         }
         else{
