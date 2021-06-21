@@ -702,18 +702,39 @@ function EditorScreen(props: any){
     });
   } 
 
-  const apiEditNodes = async (name:string, duration:string, markdownContent:string, option: any, image:any, theme:any) => {
+  const apiEditImage = async (img:any) => {
     const data = new FormData();
-    data.append("name", checkStatus.title === false ? currentNodeInfo.gameNode.name : name);
-    data.append("duration", checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration);
-    data.append("markdownContent", checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent);
-    data.append("id", urlParams.get('game') as any);
-    data.append("theme", theme)
-    data.append("nodeImage", image)
+    data.append("nodeImage", img)
+    await fetch(`${api_url}node/edit/image/${currentID}`, {
+      method: 'PUT',
+      body: data
+    })
+  }
+
+  useEffect(() => {
+    console.log('entro')
+    if(image !== null){
+      apiEditImage(image)
+      console.log('lala')
+    }
+      
+  }, [image])
+
+  const apiEditNodes = async (name:string, duration:string, markdownContent:string, theme:any) => {
+   
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
-        body: data
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          name: checkStatus.title === false ? currentNodeInfo.gameNode.name : name,
+          duration: checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration,
+          markdownContent: checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent,
+          id: urlParams.get('game') as any,
+          theme: theme
+        })
       })
       setCheckStatus({ 
         title: false, 
@@ -734,7 +755,7 @@ function EditorScreen(props: any){
 
   const onSaveChanges = async () => {
     selectColors(theme)
-    await apiEditNodes(constTitle, constDuration, constHistory, option, image, theme);
+    await apiEditNodes(constTitle, constDuration, constHistory, theme);
     createNodeConnection();
     onRequestClose();
   }
