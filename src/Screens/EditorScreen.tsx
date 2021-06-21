@@ -92,6 +92,7 @@ function EditorScreen(props: any){
   const [card2Disabled, setCard2Disabled] = useState(false);
   const [disabledAuxAlt, setDisabledAuxAlt] = useState(true);
   const [disabledAuxCard, setDisabledAuxCard] = useState(true);
+  const [theme, setTheme] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -143,6 +144,7 @@ function EditorScreen(props: any){
             nodeColor: item.nodeColor,
             nextNodes: item.nextNodes,
             image: item.nodeImage,
+            theme: item.theme,
             onEditClick:() => onEditClick(item._id),
             show: false,
             // eslint-disable-next-line
@@ -382,37 +384,14 @@ function EditorScreen(props: any){
     if(NodeId.toString().search('react') === -1){
       elements.forEach((item: any) => {
         if(item.id === NodeId)
-          item.data.nodeColor = nodeColor;
+          item.data.theme = theme;
       })
     }
-    setNodeColor('#000000');
+    //setNodeColor('#000000');
   },
    // eslint-disable-next-line react-hooks/exhaustive-deps
-  [nodeColor, NodeId])
+  [theme, NodeId])
 
-  useEffect(() => {
-    if(NodeId.toString().search('react') === -1){
-      elements.forEach((item: any) => {
-        if(item.id === NodeId)
-          item.data.textColor = textColor;
-      })
-    }
-    setTextColor('#000000');
-   },
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [textColor, NodeId])
-
-  useEffect(() => {
-      if(NodeId.toString().search('react') === -1){
-        elements.forEach((item: any) => {
-          if(item.id === NodeId)
-            item.data.backgroundColor = bgColor;
-        })
-      }
-      setBgColor('#000000');
-   },
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-  [bgColor, NodeId])
 
   //Save if the node is a start node
   useEffect(() => {
@@ -529,21 +508,6 @@ function EditorScreen(props: any){
       setAlt1Disabled(true);
     }
   }
-  const onChangeNodeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNodeColor(event.target.value);
-    setConstNodeColor(event.target.value);
-    setCheckStatus((oldState:any) => ({...oldState,nodeColor: true}))
-  }
-  const onChangeTextColor = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTextColor(event.target.value);
-    setConstTextColor(event.target.value);
-    setCheckStatus((oldState:any) => ({...oldState,textColor: true}))
-  }
-  const onChangeBgColor = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBgColor(event.target.value);
-    setConstBgColor(event.target.value);
-    setCheckStatus((oldState:any) => ({...oldState,bgColor: true}))
-  }
   
   const handleInputChange = (event: any) => {
     setSelectedTags(selectedTags.splice(0, selectedTags.length))
@@ -570,6 +534,49 @@ function EditorScreen(props: any){
     setAuxStart(true);
     setCheckedStart(!checkedStart);
   }
+
+  const onChangeTheme = (event:any) => {
+    setTheme(event.value);
+  }
+
+  const selectColors = (theme:any) => {
+    setCheckStatus((oldState:any) => ({...oldState,nodeColor: true}))
+    setCheckStatus((oldState:any) => ({...oldState,bgColor: true}))
+    setCheckStatus((oldState:any) => ({...oldState,textColor: true}))
+    switch (theme){
+      case 'Chocolate':
+        setConstNodeColor('#a1e346')
+        setConstBgColor('#689b22')
+        setConstTextColor('#73766e')
+        break;
+      case 'Vanilla':
+        setConstNodeColor('#257488')
+        setConstBgColor('#9bc7d3')
+        setConstTextColor('#1c1c1c')
+      break;
+    }
+  }
+
+  const editColors = async (nodeColor:string, backgroundColor:string, textColor:string) => {
+    await fetch(`${api_url}node/edit/colors/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+        nodeColor: nodeColor
+      })
+    });
+    setAuxEnd(false)
+  }
+
+  useEffect(() => {
+    if(constNodeColor !== '')
+      editColors(constNodeColor, constBgColor, constTextColor);
+  }, [constNodeColor])
 
   const claick = () => {
     console.log("Elements: ", elements);
@@ -695,15 +702,13 @@ function EditorScreen(props: any){
     });
   } 
 
-  const apiEditNodes = async (name:string, duration:string, markdownContent:string, nodeColor:any, option: any, textColor:any, bgColor:any, image:any) => {
+  const apiEditNodes = async (name:string, duration:string, markdownContent:string, option: any, image:any, theme:any) => {
     const data = new FormData();
     data.append("name", checkStatus.title === false ? currentNodeInfo.gameNode.name : name);
     data.append("duration", checkStatus.duration === false ? currentNodeInfo.gameNode.duration : duration);
     data.append("markdownContent", checkStatus.desc === false ? currentNodeInfo.gameNode.markdownContent : markdownContent);
     data.append("id", urlParams.get('game') as any);
-    data.append("nodeColor", checkStatus.nodeColor === false ? currentNodeInfo.gameNode.nodeColor : nodeColor);
-    data.append("textColor", checkStatus.textColor === false ? currentNodeInfo.gameNode.textColor : textColor);
-    data.append("backgroundColor", checkStatus.bgColor === false ? currentNodeInfo.gameNode.backgroundColor : bgColor);
+    data.append("theme", theme)
     data.append("nodeImage", image)
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
@@ -728,7 +733,8 @@ function EditorScreen(props: any){
   }
 
   const onSaveChanges = async () => {
-    await apiEditNodes(constTitle, constDuration, constHistory, constNodeColor, option, constTextColor, constBgColor, image);
+    selectColors(theme)
+    await apiEditNodes(constTitle, constDuration, constHistory, option, image, theme);
     createNodeConnection();
     onRequestClose();
   }
@@ -746,12 +752,12 @@ function EditorScreen(props: any){
   useEffect(() => {
     if(position !== null && nodeDragID !== ''){
       putPosition(position, nodeDragID);
+      setNodeDragID('');
     }
-      
   }, [position, nodeDragID]);
 
   const putPosition = async (position:any, nodeDragID:any) => {
-    await fetch(`${api_url}node/edit/position/${nodeDragID}`, {
+    await fetch(`${api_url}node/edit/position/${nodeDragID }`, {
       method: 'PUT',
       mode: 'cors',
       headers: {
@@ -798,10 +804,8 @@ function EditorScreen(props: any){
               tagOptions={tags1}
               handleInputChange={handleInputChange}
               onChangeOption={onChangeOption}
-              onChangeNodeColor={onChangeNodeColor}
-              onChangeTextColor={onChangeTextColor}
-              onChangeBgColor={onChangeBgColor}
               onChangeNodeImage={onChangeNodeImage}
+              onChangeTheme={onChangeTheme}
               alt1Disabled={alt1Disabled}
               alt2Disabled={alt2Disabled}
               card1Disabled={card1Disabled}

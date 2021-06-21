@@ -99,7 +99,7 @@
     border-radius: 10px;
     border-color: transparent;
     padding: 5px;
-    cursor: pointer;
+    cursor:not-allowed;
 }
 
 .button_style {

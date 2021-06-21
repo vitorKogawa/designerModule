@@ -20,9 +20,38 @@ export default function NodeEdit(props: any){
   const [alt2, setAlt2] = useState('');
   const [card1, setCard1] = useState('');
   const [card2, setCard2] = useState('');
+  const [themeSwitch, setThemeSwitch] = useState('');
+  const [theme, setTheme] = useState({value: '', label: ''});
   const [tags, setTags] = useState(Array());
 
+  
+const groupStyles = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+};
+const groupBadgeStyles = {
+  backgroundColor: '#EBECF0',
+  borderRadius: '2em',
+  color: '#172B4D',
+  display: 'inline-block',
+  fontSize: 12,
+  lineHeight: '1',
+  minWidth: 1,
+  padding: '0.16666666666667em 0.5em'
+};
 
+const options = [
+  { value: 'Chocolate', label: 'Chocolate' },
+  { value: 'Vanilla', label: 'Vanilla' }
+]
+
+  const formatGroupLabel = (data:any) => (
+    <div style={groupStyles}>
+      <span>{data.label}</span>
+      <span style={groupBadgeStyles}>{data.options.length}</span>
+    </div>
+  );
   const customStyles = {
       overlay: {
           zIndex: 1000,
@@ -50,9 +79,10 @@ export default function NodeEdit(props: any){
   useEffect(() => {
       Modal.setAppElement('#root');
       if(props.currentNodeInfo !== null){
-        console.log(props.currentNodeInfo)
+        const themeType = {value: props.currentNodeInfo.gameNode.theme, label: props.currentNodeInfo.gameNode.theme}
         setNodeInfo(true);
         setNodeName(props.currentNodeInfo.gameNode.name);
+        setTheme(themeType);
         setDuration(props.currentNodeInfo.gameNode.duration);
         setNodeColor(props.currentNodeInfo.gameNode.nodeColor);
         setTextColor(props.currentNodeInfo.gameNode.textColor);
@@ -88,18 +118,7 @@ export default function NodeEdit(props: any){
     setDuration(event.target.value);
     props.onChangeDuration(event)
   }
-  const onNodeColorChange = (event:any) => {
-    setNodeColor(event.target.value);
-    props.onChangeNodeColor(event);
-  }
-  const onTextColorChange = (event:any) => {
-    setTextColor(event.target.value);
-    props.onChangeTextColor(event);
-  }
-  const onBgColorChange = (event:any) => {
-    setBackgroundColor(event.target.value);
-    props.onChangeBgColor(event);
-  }
+
   const onStartNodechange = () => {
     setStartNode(!startNode);
     props.onChangeNodeStart();
@@ -134,6 +153,29 @@ export default function NodeEdit(props: any){
     })
     props.handleInputChange(e);
   }
+
+  const onThemeChange = (e:any) => {
+    setThemeSwitch(e.value);
+    setTheme({value: e.value, label: e.label})
+    props.onChangeTheme(e);
+  }
+
+  useEffect(() => {
+    if(themeSwitch !== ''){
+      switch (themeSwitch){
+        case 'Chocolate':
+          setNodeColor('#a1e346');
+          setBackgroundColor('#689b22');
+          setTextColor('#73766e')
+          break;
+        case 'Vanilla':
+          setNodeColor('#257488');
+          setBackgroundColor('#9bc7d3');
+          setTextColor('#1c1c1c')
+        break;
+      }
+    }
+  }, [themeSwitch])
 
   return(
       <Modal
@@ -204,17 +246,30 @@ export default function NodeEdit(props: any){
           </div>
           {/************************************************************************* */}
           <div className="form_row">
+            <div className="form_group field"> 
+              <label className="form_label alone">Tema:</label>  
+            </div>
+            <div className="form_group field"> 
+              <Select
+                value={theme.value === undefined ? options[0] : theme}
+                options={options}
+                formatGroupLabel={formatGroupLabel}
+                onChange={(e) => onThemeChange(e)}
+              />
+            </div>
+          </div>
+          <div className="form_row">
             <div className="form_group three_cols">
               <p>Node Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : nodeColor} className="color_front" type="color" onChange={e => onNodeColorChange(e)}/>
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : nodeColor} className="color_front" type="color" disabled={true}/>
             </div>
             <div  className="form_group three_cols">
               <p>Text Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : textColor} className="color_front" type="color" onChange={e => onTextColorChange(e)} />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : textColor} className="color_front" type="color" disabled={true} />
             </div>
             <div  className="form_group three_cols">
               <p>Background Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : backgroundColor} className="color_front" type="color" onChange={e => onBgColorChange(e)} />
+              <input value={props.currentNodeInfo === 'unsaved' ? undefined : backgroundColor} className="color_front" type="color" disabled={true} />
             </div>
           </div>
           <div className="form_row">
