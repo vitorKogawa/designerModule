@@ -7,6 +7,7 @@ import TopMenu from '../Components/EditorComponents/TopMenu';
 import { api_url } from '../public/variables';
 import firebase from 'firebase/app';
 import "firebase/auth";
+import showdown from 'showdown';
 
 
 const nodeTypes = {
@@ -37,6 +38,7 @@ function EditorScreen(props: any){
   let savedElementsLabels:any = [];
   let numberPositionY = 500;
   let numberAux = 0;
+  const converter = new showdown.Converter();
   const[numberPositionX, setNumberPositionX] = useState(800);
   const reactFlowWrapper = useRef(null as any | null);
   const [checkStatus, setCheckStatus] = useState(arrayCheck)
@@ -93,6 +95,7 @@ function EditorScreen(props: any){
   const [disabledAuxAlt, setDisabledAuxAlt] = useState(true);
   const [disabledAuxCard, setDisabledAuxCard] = useState(true);
   const [theme, setTheme] = useState('');
+  const [compiledContent, setCompiledContent] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
@@ -135,6 +138,7 @@ function EditorScreen(props: any){
           type: 'special',
           data: {
             history: item.markdownContent, 
+            compiled_content: item.compiled_content,
             title: item.name, 
             nodeStart: item.startNode, 
             nodeEnd: item.endNode, 
@@ -720,8 +724,27 @@ function EditorScreen(props: any){
       
   }, [image])
 
+  const htmlVersion = async (compiledContent:any) => {
+    await fetch(`${api_url}node/edit/compiled_content/${currentID}`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        compiled_content: compiledContent
+      })
+    });
+  }
+
+  useEffect(() => {
+    if(compiledContent !== ''){
+      htmlVersion(compiledContent);
+    }
+  }, [compiledContent])
+
   const apiEditNodes = async (name:string, duration:string, markdownContent:string, theme:any) => {
-   
+    setCompiledContent(converter.makeHtml(markdownContent))
     try{
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',

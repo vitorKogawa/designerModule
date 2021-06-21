@@ -37,6 +37,7 @@
     color: rgb(245, 71, 71);
     margin-right: 40px;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .back-button:hover {

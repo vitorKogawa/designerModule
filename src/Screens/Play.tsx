@@ -25,16 +25,15 @@ function Play(props:any){
     }
     
     return(
-        <div style={{backgroundSize: 'contain', backgroundImage: "url('http://localhost:8080/img2.jpg')", display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <div>
             {ignored === 0 ? elements.map((element:any, index:any) => {
             if(element.data !== undefined){
                 if(element.data.show || index === 0){
-                    console.log('entrou ', elements)
                     return(
                         <Card 
                             key={index}
                             backgroundColor={element.data.bgColor}
-                            history={element.data.history}
+                            history={element.data.compiled_content}
                             src={'http://localhost:8080/'+element.data.image}
                             choices={element.data.nextNodes}
                             title={element.data.title}
@@ -48,12 +47,11 @@ function Play(props:any){
         elemUpdated.map((element:any, index:any) => {
             if(element.data !== undefined){
                 if(element.data.show){
-                    console.log('entrou ', elements)
                     return(
                         <Card 
                             key={index}
                             backgroundColor={element.data.bgColor}
-                            history={element.data.history}
+                            history={element.data.compiled_content}
                             src={'http://localhost:8080/'+element.data.image}
                             choices={element.data.nextNodes}
                             title={element.data.title}

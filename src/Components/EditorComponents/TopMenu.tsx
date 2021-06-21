@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import PublicModal from './PublicModal';
 import { useHistory } from "react-router-dom";
 import './EditorComponentsStyles/TopMenuStyle.css'
+import firebase from 'firebase/app';
+import "firebase/auth";
+import { fireApp } from '../../Screens/SignInScreen';
 
 export default function TopMenu(props: any){
     const history = useHistory();
@@ -41,7 +44,7 @@ export default function TopMenu(props: any){
             </div>
             <div className="back-container">
                 <Link to="/dashboard" className="back-button">Voltar</Link>
-                <Link to="/dashboard" className="back-button">Sair</Link>
+                <label className="back-button" onClick={() => fireApp.auth().signOut()}>Sign out</label>
             </div>
             <div className="img-container">
                 <img className="top-logo" alt="logo" src="https://cdn.logo.com/hotlink-ok/logo-social-sq.png"/>
