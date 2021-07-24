@@ -9,21 +9,17 @@ jobs:
       - image: circleci/node:10.16.3
     working_directory: ~/repo
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-      
+      - checkout      
       - run: npm install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
 
 
 workflows:
   heroku_deploy:
     jobs:
-      - heroku/deploy-via-git
+      - build
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          requires:
+            - build
+          filters:
+            branches:
+              only: development
