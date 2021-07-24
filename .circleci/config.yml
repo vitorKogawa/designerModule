@@ -1,18 +1,7 @@
 version: 2.1
-
 orbs:
+  node: circleci/node@4.1
   heroku: circleci/heroku@1.2
-
-jobs:
-  build:
-    docker:
-      - image: circleci/node:10.16.3
-    working_directory: ~/repo
-    steps:
-      - checkout      
-      - run: npm install
-
-
 workflows:
   heroku_deploy:
     jobs:
