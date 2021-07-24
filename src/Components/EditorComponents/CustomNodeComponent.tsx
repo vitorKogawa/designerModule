@@ -17,7 +17,7 @@ function CustomNodeComponent({ data }: any){
             return (<span style={{backgroundColor: element.color}} className="tag" key={i}>{element.name}</span>)
           })}
         </div>
-        <ReactMarkdown plugins={[gfm]} children={data.history ? data.history : 'Descrição do cartão - clique em editar.'} />
+        <ReactMarkdown className="markHistory" plugins={[gfm]} children={data.history ? data.history : 'Descrição do cartão - clique em editar.'} />
       </div>
       <div className="edit_container">
         <div className="edit_button" onClick={data.onEditClick}>

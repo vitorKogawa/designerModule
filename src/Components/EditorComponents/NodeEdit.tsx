@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import Switch from "react-switch";
 import Select from 'react-select';
 import MDEditor from '@uiw/react-md-editor';
+import { api_url } from '../../public/variables';
 
 import './EditorComponentsStyles/NodeEditStyle.css';
 
@@ -18,11 +19,13 @@ export default function NodeEdit(props: any){
   const [endNode, setEndNode] = useState(false);
   const [alt1, setAlt1] = useState('');
   const [alt2, setAlt2] = useState('');
-  const [card1, setCard1] = useState('');
-  const [card2, setCard2] = useState('');
+  const [card1ID, setCard1ID] = useState('');
+  const [card2ID, setCard2ID] = useState('');
   const [themeSwitch, setThemeSwitch] = useState('');
   const [theme, setTheme] = useState({value: '', label: ''});
   const [tags, setTags] = useState(Array());
+  const [card1, setCard1] = useState('');
+  const [card2, setCard2] = useState('');
 
   
 const groupStyles = {
@@ -76,6 +79,27 @@ const options = [
       }
     };
 
+    const getNode = async (id:number, card:number) => {
+      const nodeResult = await fetch(api_url+'node/'+id, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await nodeResult.json();
+      if(card === 1)
+        setCard1(result.gameNode.name);
+      else if(card === 2)
+        setCard2(result.gameNode.name)
+    }
+
+  useEffect(() => {
+    if(card1 !== '')
+      console.log(card1)
+    if(card2 !== '')
+      console.log(card2)
+  }, [card1, card2])
+
   useEffect(() => {
       Modal.setAppElement('#root');
       if(props.currentNodeInfo !== null){
@@ -91,11 +115,13 @@ const options = [
         setEndNode(props.currentNodeInfo.gameNode.endNode);
         setTags(props.currentNodeInfo.gameNode.labels);
         if(props.currentNodeInfo.gameNode.nextNodes.length !== 0){
+          getNode(props.currentNodeInfo.gameNode.nextNodes[0].id, 1);
           setAlt1(props.currentNodeInfo.gameNode.nextNodes[0].choice);
-          setCard1(props.currentNodeInfo.gameNode.nextNodes[0].id);
+          setCard1ID(props.currentNodeInfo.gameNode.nextNodes[0].id);
           if(props.currentNodeInfo.gameNode.nextNodes.length === 2){
+            getNode(props.currentNodeInfo.gameNode.nextNodes[1].id, 2);
             setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
-            setCard2(props.currentNodeInfo.gameNode.nextNodes[1].id);
+            setCard2ID(props.currentNodeInfo.gameNode.nextNodes[1].id);
           }else{
             setAlt2('');
             setCard2('');

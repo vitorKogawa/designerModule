@@ -50,3 +50,8 @@
 .edit_button:hover {
     color: #6eaef7;
 }
+
+.markHistory > p > img {
+    width: 100px;
+    height: 100px;
+}
