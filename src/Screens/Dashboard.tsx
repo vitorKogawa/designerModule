@@ -18,6 +18,7 @@ function App() {
       const gamesResult = await fetch(api_url+'game/userGames/'+firebase.auth().currentUser?.uid, {
         method: 'GET',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         }
       });

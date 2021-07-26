@@ -83,6 +83,7 @@ const options = [
       const nodeResult = await fetch(api_url+'node/'+id, {
         method: 'GET',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         }
       });

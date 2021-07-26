@@ -103,6 +103,7 @@ function EditorScreen(props: any){
     const gamesResult = await fetch(api_url+'game/'+urlParams.get('game'), {
       method: 'GET',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       }
     });
@@ -114,6 +115,7 @@ function EditorScreen(props: any){
     const connectionsResult = await fetch(api_url+'connection/'+urlParams.get('game'), {
       method: 'GET',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       }
     });
@@ -182,6 +184,7 @@ function EditorScreen(props: any){
     await fetch(api_url+'node/delete/'+elementsToRemove[0].id, {
       method: 'DELETE',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -217,6 +220,7 @@ function EditorScreen(props: any){
     const labelList = await fetch(api_url+'label', {
       method: 'GET',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       }
     });
@@ -229,6 +233,7 @@ function EditorScreen(props: any){
       const nodeResult = await fetch(api_url+'node/'+id, {
         method: 'GET',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         }
       });
@@ -244,8 +249,8 @@ function EditorScreen(props: any){
     try{
       await fetch(api_url+'label/create', {
         method: 'POST',
-        mode: 'cors',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ label: tagName, value: tagName, color: tagColor === "" ? "#000" : tagColor })
@@ -302,6 +307,7 @@ function EditorScreen(props: any){
         await fetch(api_url+'connection/create', {
           method: 'POST',
           headers: {
+            "Access-Control-Allow-Origin" : "*", 
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ 
@@ -482,17 +488,25 @@ function EditorScreen(props: any){
   
   const onChangeNoLigacao = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNoLigacao(event.target.value)
-    setAuxCardName((oldArray:any) => [...oldArray, event.target.value]);
-    setCheckStatus((oldState:any) => ({...oldState,noLigacao: true}))
-    if(auxCardName.length === 0 && disabledAuxCard === true){
-      setCard1Disabled(true);
-      setDisabledAuxCard(false);
-    }
-    if(auxCardName.length === 1){
-      setCard2Disabled(true);
-      setCard1Disabled(true);
+    if(event.target.value !== ""){
+      setAuxCardName((oldArray:any) => [...oldArray, event.target.value]);
+      setCheckStatus((oldState:any) => ({...oldState,noLigacao: true}))
     }
   }
+
+  useEffect(() => {
+    if(auxCardAlt.length !== 0){
+      if(auxCardName.length === 1 && disabledAuxCard === true){
+        setCard1Disabled(true);
+        setDisabledAuxCard(false);
+      }
+      if(auxCardName.length === 2){
+        setCard2Disabled(true);
+        setCard1Disabled(true);
+      }
+    }
+  }, [auxCardName]);
+
   const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagName(event.target.value)
   }
@@ -501,17 +515,25 @@ function EditorScreen(props: any){
   }
   const onChangeOption = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOption(event.target.value);
-    setAuxCardAlt((oldArray:any) => [...oldArray, event.target.value])
-    setCheckStatus((oldState:any) => ({...oldState,option: true}))
-    if(auxCardAlt.length === 0 && disabledAuxAlt === true){
-      setAlt1Disabled(true);
-      setDisabledAuxAlt(false);
-    }
-    if(auxCardAlt.length === 1){
-      setAlt2Disabled(true);
-      setAlt1Disabled(true);
+    if(event.target.value !== ""){
+      setAuxCardAlt((oldArray:any) => [...oldArray, event.target.value])
+      setCheckStatus((oldState:any) => ({...oldState,option: true}))
     }
   }
+
+  useEffect(() => {
+    if(auxCardAlt.length !== 0){
+      if(auxCardAlt.length === 1 && disabledAuxAlt === true){
+        console.log(auxCardAlt);
+          setAlt1Disabled(true);
+          setDisabledAuxAlt(false);
+      }
+      if(auxCardAlt.length === 2){
+        setAlt2Disabled(true);
+        setAlt1Disabled(true);
+      }
+    }
+  }, [auxCardAlt]);
   
   const handleInputChange = (event: any) => {
     setSelectedTags(selectedTags.splice(0, selectedTags.length))
@@ -564,8 +586,8 @@ function EditorScreen(props: any){
   const editColors = async (nodeColor:string, backgroundColor:string, textColor:string) => {
     await fetch(`${api_url}node/edit/colors/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -623,8 +645,8 @@ function EditorScreen(props: any){
     try{
       const saved = await fetch(`${api_url}node/create`, {
         method: 'POST',
-        mode: 'cors',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
@@ -654,8 +676,8 @@ function EditorScreen(props: any){
   const apiEditNextNodes = async (nextNodes:any) => {
     await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -668,8 +690,8 @@ function EditorScreen(props: any){
   const apiEditEndNode = async (endNode:boolean) => {
     await fetch(`${api_url}node/edit/end/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -682,8 +704,8 @@ function EditorScreen(props: any){
   const apiEditStartNode = async (startNode:boolean) => {
     await fetch(`${api_url}node/edit/start/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -696,8 +718,8 @@ function EditorScreen(props: any){
   const apiEditLabels = async (labels:any) => {
     await fetch(`${api_url}node/edit/labels/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -711,6 +733,9 @@ function EditorScreen(props: any){
     data.append("nodeImage", img)
     await fetch(`${api_url}node/edit/image/${currentID}`, {
       method: 'PUT',
+      headers: {
+        "Access-Control-Allow-Origin" : "*"
+      },
       body: data
     })
   }
@@ -727,8 +752,8 @@ function EditorScreen(props: any){
   const htmlVersion = async (compiledContent:any) => {
     await fetch(`${api_url}node/edit/compiled_content/${currentID}`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 
@@ -749,6 +774,7 @@ function EditorScreen(props: any){
       await fetch(`${api_url}node/edit/${currentID}`, {
         method: 'PUT',
         headers: {
+          "Access-Control-Allow-Origin" : "*", 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
@@ -803,8 +829,8 @@ function EditorScreen(props: any){
   const putPosition = async (position:any, nodeDragID:any) => {
     await fetch(`${api_url}node/edit/position/${nodeDragID }`, {
       method: 'PUT',
-      mode: 'cors',
       headers: {
+        "Access-Control-Allow-Origin" : "*", 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ 

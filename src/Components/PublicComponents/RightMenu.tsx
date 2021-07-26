@@ -82,6 +82,9 @@ export const RightMenu = () => {
             data.append("userID", uid.currentUser.uid);
         await fetch(api_url+'game/create', {
             method: 'POST',
+            headers: {
+                "Access-Control-Allow-Origin" : "*", 
+            },
             body: data
         }).then(result => result.json())
         .then(res => setGameCreatedId(res.game._id))
