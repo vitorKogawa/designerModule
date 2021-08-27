@@ -14,7 +14,6 @@ function App() {
 
   useEffect(() => {
     async function getGames() {
-      console.log('entrou')
       const gamesResult = await fetch(api_url+'game/userGames/'+firebase.auth().currentUser?.uid, {
         method: 'GET',
         headers: {
@@ -25,7 +24,7 @@ function App() {
       const result = await gamesResult.json();
       setGameList(result.game);
     }  
-    getGames()
+    getGames();
   }, [])
 
   const onCardClick = (gameId: any) => {
@@ -49,7 +48,8 @@ function App() {
         :       
         <div className="GamesContainer">
         {gameList.map((item: any, index: any) => {
-          return <CardGame onCardClick={() => onCardClick(item._id)} key={index} src="https://cdn.logo.com/hotlink-ok/logo-social-sq.png" title={item.title} description={item.description}/>
+          console.log(item)
+          return <CardGame onCardClick={() => onCardClick(item._id)} key={index} src={`http://localhost:8080/games/${item.image}`} title={item.title} description={item.description}/>
         })}
         </div>
         }

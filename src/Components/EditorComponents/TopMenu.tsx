@@ -23,7 +23,8 @@ export default function TopMenu(props: any){
         history.push({
             pathname: '/play',
             state: {
-              elements: JSON.stringify(props.elem)
+                gameID: props.gameID,
+                elements: JSON.stringify(props.elem)
             }
           })
     }

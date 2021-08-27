@@ -75,7 +75,7 @@ export default function CreateGame(props: any){
             </div>
             <div  className="form_group three_cols">
               <p>Logo do jogo</p>
-              <input className="inpt_file" type="file" />
+              <input className="inpt_file" type="file" onChange={props.onChangeLogoImage} />
             </div>
           </div>
           <hr></hr>

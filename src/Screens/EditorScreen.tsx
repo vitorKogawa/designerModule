@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
 import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
+import CustomNodeForm from '../Components/EditorComponents/CustomNodeForm';
 import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
@@ -12,6 +13,7 @@ import showdown from 'showdown';
 
 const nodeTypes = {
   special: CustomNodeComponent,
+  formType: CustomNodeForm
 };
 
 function EditorScreen(props: any){
@@ -137,7 +139,7 @@ function EditorScreen(props: any){
         })
         savedElements.push({
           id: item._id,
-          type: 'special',
+          type: item.nodeType,
           data: {
             history: item.markdownContent, 
             compiled_content: item.compiled_content,
@@ -287,9 +289,9 @@ function EditorScreen(props: any){
     };
     setElements((es: Elements) => es.concat(newNode));
     if(origin === 1){
-      apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor);
+      apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor, type);
     }else{
-      apiSaveNodes('', false, false, '0', '', Array(), position,  nodeColor, textColor, bgColor);
+      apiSaveNodes('', false, false, '0', '', Array(), position,  nodeColor, textColor, bgColor, type);
     }
   }
 
@@ -641,7 +643,27 @@ function EditorScreen(props: any){
     })
   }
 
-  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, textColor:any, bgColor:any) => {
+  const sendMessage = async () => {
+    try{
+        const gamesResult = await getNodes();
+        const result = await gamesResult.json();
+        console.log(result.game)
+        await fetch(api_url+'message/send', {
+            method: 'POST',
+            headers: {
+                "Access-Control-Allow-Origin" : "*", 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                game: result.game
+            })
+        });
+    } catch(err){
+        console.log("erro ao enviar mensagem: "+err)
+    }
+  }
+
+  const apiSaveNodes = async (name:string, startNode:boolean, endNode:boolean, duration:string, markdownContent:string, labels:any, position:any, nodeColor:any, textColor:any, bgColor:any, type:any) => {
     try{
       const saved = await fetch(`${api_url}node/create`, {
         method: 'POST',
@@ -660,7 +682,8 @@ function EditorScreen(props: any){
           position: position,
           nodeColor: nodeColor,
           textColor: textColor, 
-          backgroundColor: bgColor
+          backgroundColor: bgColor,
+          nodeType: type
         })
       });
         const jsonSaved = await saved.json();
@@ -668,6 +691,7 @@ function EditorScreen(props: any){
           setTargetID(jsonSaved.gameNode._id)
           setUpdateCon(true)
         }
+        sendMessage();
     } catch(err){
         console.log("erro ao criar tag: "+err)
     }
@@ -741,10 +765,8 @@ function EditorScreen(props: any){
   }
 
   useEffect(() => {
-    console.log('entro')
     if(image !== null){
       apiEditImage(image)
-      console.log('lala')
     }
       
   }, [image])
@@ -887,6 +909,7 @@ function EditorScreen(props: any){
               onChangeTagName={onChangeTagName} 
               onChangeColor={onChangeColor}
               elem={elements}
+              gameID={urlParams.get('game')}
               />
         <Controls />
         <Background 

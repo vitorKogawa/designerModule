@@ -13,6 +13,9 @@ export default function Sidebar(){
         <div className="NodeCard" onDragStart={(event) => onDragStart(event, 'special')} draggable>
           <img className="ImgStyle" alt="node1" src={nodeImg}/>
         </div>
+        <div className="NodeCard" onDragStart={(event) => onDragStart(event, 'formType')} draggable>
+          <img className="ImgStyle" alt="node1" src={nodeImg}/>
+        </div>
       </div> 
     </div>
   );

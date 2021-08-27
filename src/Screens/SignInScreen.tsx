@@ -1,6 +1,8 @@
 import firebase from 'firebase/app';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import "firebase/auth";
+import { api_url } from '../public/variables';
+import { Router } from 'react-router';
 
 const config = {
     apiKey: process.env.REACT_APP_FIREBASE_KEY,
@@ -15,6 +17,28 @@ const config = {
 export const fireApp = firebase.initializeApp(config);
 
 const uiConfig = {
+    callbacks: {
+      signInSuccessWithAuthResult: (authResult:any) => {
+        try{
+            console.log("opa")
+            fetch(api_url+'message/send', {
+              method: 'POST',
+              headers: {
+                  "Access-Control-Allow-Origin" : "*", 
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ 
+                userID: firebase.auth().currentUser?.uid,
+                userName: firebase.auth().currentUser?.displayName,
+                userEmail: firebase.auth().currentUser?.email
+              })
+          }).then(() => window.location.assign('/dashboard'));
+        } catch(err){
+            console.log("erro ao enviar mensagem: "+err)
+        }
+        return false;
+      }
+    },
     // Popup signin flow rather than redirect flow.
     signInFlow: 'popup',
     // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
