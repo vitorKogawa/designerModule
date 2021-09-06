@@ -3,6 +3,7 @@ import React, { useReducer, useState } from 'react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Card from '../Components/GameComponents/Card';
+import CardForm from '../Components/GameComponents/CardForm';
 import { api_url } from '../public/variables';
 
 function Play(props:any){
@@ -10,9 +11,10 @@ function Play(props:any){
     let elements = JSON.parse(location.state.elements);
     let gameID = location.state.gameID;
     const [elemUpdated, setElemUpdated] = useState(Array())
-    const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+    const [ignored, forceUpdate] = useState(0);
     const [first, setFirst] = useState(0);
     const [nodes, setNodes] = useState(Array());
+    const [nextFormNode, setNextFormNode] = useState("");
  //   const [lastNode, setLastNode] = useState(0);
 
     let nodeList = Array();
@@ -61,27 +63,24 @@ function Play(props:any){
         }
     }
 
-    const onChoiceClick = (id:any) =>{
+    const onChoiceClick = async (id:any) => {
+        setNextFormNode(id);
         setFirst(first => first = first + 1);
         if(elemUpdated !== undefined)
             setElemUpdated(elemUpdated.splice(0, elemUpdated.length))
         let arrAux = Array();
-        let lastNodeId;
-        elements.map((item:any, index:any) => {
+        await elements.map((item:any, index:any) => {
             arrAux.push(item)
             if(item.id === id){
                 item.data.show = true;
                 arrAux[index].data.show = true;
-                console.log(id);
-                console.log('arrAux: ',arrAux);
                 if(arrAux.length < 3)
-                    sendMessageCard(arrAux[arrAux.length-2])
+                    sendMessageCard(arrAux[arrAux.length-2].id)
                 else
-                    sendMessageCard(arrAux[arrAux.length-3]);
-                
+                    sendMessageCard(arrAux[arrAux.length-3].id);
                 
                 setElemUpdated(arrAux);
-                forceUpdate();
+                forceUpdate(ignored => ignored = ignored + 1);
             }
         })
     }
@@ -91,20 +90,45 @@ function Play(props:any){
             {ignored === 0 ? elements.map((element:any, index:any) => {
             if(element.data !== undefined){
                 if(element.data.show || index === 0){
-                    console.log(element)
+                    if(element.data.duration && element.data.duration > 0){
+                        console.log("DURATION: ", element.data.duration);
+                       
+                        let count = 0;
+                        let interval = setInterval(() => {
+                            console.log(count++);
+                            if(count === element.data.duration){
+                                onChoiceClick(element.data.nextNodes[1].id);
+                                clearInterval(interval);
+                                console.log('clear interval');
+                            }
+                        }, 1000); 
+                    }
+                    console.log('element: ',element)
                     nodes.push(element.id)
                     nodeList = nodes;
-                    return(
-                        <Card 
-                            key={index}
-                            backgroundColor={element.data.bgColor}
-                            history={element.data.compiled_content}
-                            src={`${api_url}nodes/`+element.data.image}
-                            choices={element.data.nextNodes}
-                            title={element.data.title}
-                            onChoiceClick={onChoiceClick}
-                        />  
-                    )
+                    if(element.type === 'formType'){
+                        return(
+                            <CardForm
+                                key={index}
+                                backgroundColor={element.data.bgColor}
+                                choices={nextFormNode}
+                                title={"Formulário"}
+                                onChoiceClick={onChoiceClick}
+                            />  
+                        )
+                    }else{
+                        return(
+                            <Card 
+                                key={index}
+                                backgroundColor={element.data.bgColor}
+                                history={element.data.compiled_content}
+                                src={`${api_url}nodes/`+element.data.image}
+                                choices={element.data.nextNodes}
+                                title={element.data.title}
+                                onChoiceClick={onChoiceClick}
+                            />  
+                        )
+                    }
                 }  
             }
         })
@@ -115,25 +139,45 @@ function Play(props:any){
                     if(first === 1){
                         nodes.push(element.id);
                         nodeList = nodes;
-                     //   setLastNode(nodes[nodes.length-2]);
                     }else{
                         nodes.push(element.id);
                         nodeList = [nodes[nodes.length-2], nodes[nodes.length-1]]
-                     //   setLastNode(nodes[nodes.length-2]);
                     }
-                    console.log(nodeList)
-                   // sendMessageCard();
-                    return(
-                        <Card 
-                            key={index}
-                            backgroundColor={element.data.bgColor}
-                            history={element.data.compiled_content}
-                            src={`${api_url}nodes/`+element.data.image}
-                            choices={element.data.nextNodes}
-                            title={element.data.title}
-                            onChoiceClick={onChoiceClick}
-                        />  
-                    )
+                    if(element.data.nextNodes.length > 0 && element.data.duration && element.data.duration > 0){
+                        console.log("DURATION: ", element.data.duration);
+                      /*   let count = 0;
+                        let interval = setInterval(() => {
+                            console.log(count++);
+                            if(count === element.data.duration){
+                                onChoiceClick(element.data.nextNodes[1].id);
+                                clearInterval(interval);
+                                console.log('clear interval');
+                            }
+                        }, 1000); */
+                    }
+                    if(element.type === 'formType'){
+                        return(
+                            <CardForm
+                                key={index}
+                                backgroundColor={element.data.bgColor}
+                                choices={nextFormNode}
+                                title={"Formulário"}
+                                onChoiceClick={onChoiceClick}
+                            />  
+                        )
+                    }else{
+                        return(
+                            <Card 
+                                key={index}
+                                backgroundColor={element.data.bgColor}
+                                history={element.data.compiled_content}
+                                src={`${api_url}nodes/`+element.data.image}
+                                choices={element.data.nextNodes}
+                                title={element.data.title}
+                                onChoiceClick={onChoiceClick}
+                            />  
+                        )
+                    }
                 }  
             }
         }) 

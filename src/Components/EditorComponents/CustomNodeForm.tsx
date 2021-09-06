@@ -69,13 +69,7 @@ function CustomNodeComponent({ data }: any){
                 formatGroupLabel={formatGroupLabel}
                 onChange={(e) => onFormTypeChange(e)}
               />
-        </div>
-        <div className="edit_container">
-            <div className="edit_button" onClick={data.onEditClick}>
-                <span>editar</span>
-            </div> 
-        </div>
-      
+        </div>      
     </div>
   );
 };
