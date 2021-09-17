@@ -1,13 +1,124 @@
 import { Position, Handle } from 'react-flow-renderer';
 import './EditorComponentsStyles/CustomNodeComponent.css';
-import ReactMarkdown from 'react-markdown'
-import gfm from 'remark-gfm'
 import Select from 'react-select';
 import { useEffect, useState } from 'react';
+import PublicModal from './PublicModal';
+import { api_url } from '../../public/variables';
 
 function CustomNodeComponent({ data }: any){
 
     const [formType, setFormType] = useState({value: '', label: ''});
+    const [title, setTitle] = useState("");
+    const [card, setCard] = useState("");
+    const [openModal, setOpenModal] = useState(false);
+    const [update, setUpdate] = useState(0);
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    const onRequestClose = () => {
+      setOpenModal(false);
+    }
+
+    const handleClick = () => {
+      setUpdate(update => update = update+1);
+      onRequestClose();
+    }
+
+    const onNameChange = (e:any) => {
+      setTitle(e.target.value)
+    }
+    
+    const onCardChange = (e: any) => {
+      setCard(e.target.value)
+    }
+
+    const apiEditFormNode = async (name:string, targetID:string, currentID:string) => {
+      try{
+        console.log(currentID, targetID)
+        await fetch(`${api_url}node/edit/${currentID}`, {
+          method: 'PUT',
+          headers: {
+            "Access-Control-Allow-Origin" : "*", 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            name: name
+          })
+        })
+      } catch(err){
+          console.log("erro ao criar card: "+err)
+      }
+    }
+
+    const apiEditNextNodes = async (targetID:string, currentID:string) => {
+      await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
+        method: 'PUT',
+        headers: {
+          "Access-Control-Allow-Origin" : "*", 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          nextNodes: [...Array({id:targetID, choice:""})]
+        })
+      });
+    }
+
+    const getNodes = async () => {
+      const gamesResult = await fetch(api_url+'game/'+urlParams.get('game'), {
+        method: 'GET',
+        headers: {
+          "Access-Control-Allow-Origin" : "*", 
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return gamesResult;
+    }
+
+    useEffect(() => { 
+      async function createNextNodes(){
+        const gamesResult = await getNodes();
+        const elements = await gamesResult.json();
+        let cID = "";
+        let tID = "";
+        console.log(elements.game.nodes)
+          if(card !== ''){
+            let exist = false;
+            elements.game.nodes.forEach((element: any) => {
+              if(element._id.search('react') === -1){
+                console.log(element.name+" == "+data.title)
+                if(element.name === data.title){
+                  cID = element._id;
+                }
+                if(element.name === card){
+                  tID = element._id;
+                }
+              }
+            });
+          }
+          apiEditFormNode(title, tID, cID);
+          apiEditNextNodes(tID, cID);
+          createConn(cID, tID);
+      }
+      if(update > 0)
+        createNextNodes();
+    },[update])
+
+    const createConn = async (cID: string, tID:string) => {     
+        await fetch(api_url+'connection/create', {
+          method: 'POST',
+          headers: {
+            "Access-Control-Allow-Origin" : "*", 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            _id: 'react' + cID + '-' + tID, 
+            source: cID,
+            target: tID,
+            gameId: urlParams.get('game')
+          })
+        });
+    }
 
     const formatGroupLabel = (data:any) => (
         <div style={groupStyles}>
@@ -52,7 +163,7 @@ function CustomNodeComponent({ data }: any){
         'Content-Type': 'application/json'
       }
     });
-    console.log('AAAa: ',connectionsResult.json());
+    console.log(connectionsResult);
     return connectionsResult;
   }
 
@@ -69,7 +180,29 @@ function CustomNodeComponent({ data }: any){
                 formatGroupLabel={formatGroupLabel}
                 onChange={(e) => onFormTypeChange(e)}
               />
-        </div>      
+        </div>
+        <div className="edit_container">
+        <div className="edit_button" onClick={() => {setOpenModal(true)}}>
+          <span>editar</span>
+        </div> 
+      </div> 
+      <PublicModal openModal={openModal} closeModal={onRequestClose}>
+ 
+        <div className="form_row">
+          <div className="form_group field">
+            <input className="form_field" name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
+            <label className="form_label" >Título</label>
+          </div>
+          <div className="form_group field">
+            <input className="form_field" name="Node" placeholder="Nó" type="text" onChange={e => onCardChange(e)}/>
+            <label className="form_label">Próximo Card</label>
+          </div>
+        </div>
+        <div className="form_buttons">
+          <span className="cancel" onClick={onRequestClose}>Cancelar</span> 
+          <span className="button_style" onClick={handleClick}>Salvar</span> 
+        </div>
+      </PublicModal>     
     </div>
   );
 };

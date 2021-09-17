@@ -71,7 +71,7 @@ function Play(props: any){
                             <CardForm
                                 key={index}
                                 backgroundColor={element.data.bgColor}
-                                choices={nextFormNode}
+                                choices={element.data.nextNodes[0].id}
                                 title={"Formulário"}
                                 onChoiceClick={onChoiceClick}
                             />  

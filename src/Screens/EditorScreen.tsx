@@ -672,7 +672,7 @@ function EditorScreen(props: any){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          name: name, 
+          name: type == "special" ? name : "Formulário", 
           startNode: startNode,
           endNode: endNode,
           duration: duration,
