@@ -141,6 +141,7 @@ function EditorScreen(props: any){
           id: item._id,
           type: item.nodeType,
           data: {
+            id: item._id,
             history: item.markdownContent, 
             compiled_content: item.compiled_content,
             title: item.name, 
@@ -154,6 +155,8 @@ function EditorScreen(props: any){
             image: item.nodeImage,
             theme: item.theme,
             onEditClick:() => onEditClick(item._id),
+            onFormSaveClick: () => onFormSaveClick(),
+            createNodeConnectionForm: (card:any) => createNodeConnectionForm(card),
             show: false,
             // eslint-disable-next-line
             tagsArray: savedElementsLabels
@@ -177,7 +180,11 @@ function EditorScreen(props: any){
       if(savedElements.length !== 0){
         setElements(savedElements);
       }
-    }  
+    }
+    function onFormSaveClick(){
+      setUpdate(update => update = update + 1)
+    }
+
     populate()
   }, [update])
 
@@ -283,6 +290,8 @@ function EditorScreen(props: any){
         textColor: '#000000', 
         backgroundColor: '#000000', 
         onEditClick:onEditClick,
+        onFormSaveClick:() => setUpdate(update => update = update + 1),
+        createNodeConnection: () => createNodeConnection(),
         // eslint-disable-next-line
         tagsArray: Array()
       },
@@ -611,6 +620,22 @@ function EditorScreen(props: any){
     console.log("Tags: ", tags)
     console.log("SelectedTags: ", selectedTags)
   }
+
+  const createNodeConnectionForm = (card:any) => {
+      if(card !== ''){
+        numberAux = numberAux + 1;
+        const position = {
+          x: window.innerWidth-numberPositionX,
+          y: window.innerHeight-numberPositionY};
+        createNode(position, 'special', 1, card);
+        numberPositionY = numberPositionY - 150;
+        if(numberAux%2 === 0){
+          setNumberPositionX(numberPositionX => numberPositionX = numberPositionX - 250);
+        }   
+      setUpdateCon(true);
+      setNoLigacao('');
+      }
+  }
   
   const createNodeConnection = () => {
     auxCardName.forEach(no => {
@@ -672,7 +697,7 @@ function EditorScreen(props: any){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          name: type == "special" ? name : "Formulário", 
+          name: name, 
           startNode: startNode,
           endNode: endNode,
           duration: duration,

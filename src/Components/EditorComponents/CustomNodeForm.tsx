@@ -10,6 +10,7 @@ function CustomNodeComponent({ data }: any){
     const [formType, setFormType] = useState({value: '', label: ''});
     const [title, setTitle] = useState("");
     const [card, setCard] = useState("");
+    const [currentID, setCurrentID] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [update, setUpdate] = useState(0);
     const queryString = window.location.search;
@@ -34,7 +35,6 @@ function CustomNodeComponent({ data }: any){
 
     const apiEditFormNode = async (name:string, targetID:string, currentID:string) => {
       try{
-        console.log(currentID, targetID)
         await fetch(`${api_url}node/edit/${currentID}`, {
           method: 'PUT',
           headers: {
@@ -45,6 +45,7 @@ function CustomNodeComponent({ data }: any){
             name: name
           })
         })
+        data.onFormSaveClick()
       } catch(err){
           console.log("erro ao criar card: "+err)
       }
@@ -58,7 +59,7 @@ function CustomNodeComponent({ data }: any){
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
-          nextNodes: [...Array({id:targetID, choice:""})]
+          nextNodes: Array({id:targetID, choice:""})
         })
       });
     }
@@ -75,36 +76,60 @@ function CustomNodeComponent({ data }: any){
       return gamesResult;
     }
 
+    const getLastConnection = async (id:any) => {
+      const gamesResult = await fetch(api_url+'connection/current/'+id, {
+        method: 'GET',
+        headers: {
+          "Access-Control-Allow-Origin" : "*", 
+          'Content-Type': 'application/json'
+        }
+      });
+      return await gamesResult.json();
+    }
+
     useEffect(() => { 
       async function createNextNodes(){
         const gamesResult = await getNodes();
         const elements = await gamesResult.json();
         let cID = "";
         let tID = "";
+        let count = 0;
         console.log(elements.game.nodes)
           if(card !== ''){
-            let exist = false;
             elements.game.nodes.forEach((element: any) => {
               if(element._id.search('react') === -1){
                 console.log(element.name+" == "+data.title)
                 if(element.name === data.title){
                   cID = element._id;
+                  setCurrentID(element._id);
                 }
                 if(element.name === card){
+                  count = 1;
                   tID = element._id;
                 }
               }
             });
           }
-          apiEditFormNode(title, tID, cID);
-          apiEditNextNodes(tID, cID);
-          createConn(cID, tID);
+          apiEditFormNode(title, tID, data.id);
+          if(card !== ""){
+            if(count === 1)
+              createConn(data.id, tID);
+            else{
+              data.createNodeConnectionForm(card)
+              setTimeout(async () => {
+              const lastConnTarget = await getLastConnection(data.id)
+              apiEditNextNodes(lastConnTarget.nodeLastConnection[0].target, data.id)
+              data.onFormSaveClick()
+              }, 5000)
+            }
+          }
       }
       if(update > 0)
         createNextNodes();
     },[update])
 
-    const createConn = async (cID: string, tID:string) => {     
+    const createConn = async (cID: string, tID:string) => {
+      apiEditNextNodes(tID, cID);     
         await fetch(api_url+'connection/create', {
           method: 'POST',
           headers: {
@@ -153,6 +178,8 @@ function CustomNodeComponent({ data }: any){
 
   useEffect(() => {
     getForms();
+    setTitle(data.title)
+  //  updateNodeForm()
   }, [])
 
   const getForms = async () => {
@@ -163,8 +190,22 @@ function CustomNodeComponent({ data }: any){
         'Content-Type': 'application/json'
       }
     });
-    console.log(connectionsResult);
+  
     return connectionsResult;
+  }
+
+  const updateNodeForm = async () => {
+    const formulario = await getForms();
+    const formularioJson = await formulario.json().toString();
+    await fetch(`${api_url}node/edit/form/${data.id}`, {
+      method: 'PUT',
+      headers: {
+        "Access-Control-Allow-Origin" : "*"
+      },
+      body: JSON.stringify({ 
+        form: [{'result':true, 'count':42}, {'result':false, 'count':62}]
+      })
+    });
   }
 
   return (
@@ -173,7 +214,7 @@ function CustomNodeComponent({ data }: any){
         <Handle type='source' id='b' position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: '40%', borderRadius: '50%' }} />
         <Handle type='source' id='c' position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: '60%', borderRadius: '50%' }} />
         <div className="body_container">
-            <label className="title">{data.title? data.title : 'Cartão sem nome'}</label>
+            <label className="title">{data.title ? data.title : 'Cartão Sem Nome'}</label>
             <Select
                 value={formType.value === undefined ? options[0] : formType}
                 options={options}
@@ -190,7 +231,7 @@ function CustomNodeComponent({ data }: any){
  
         <div className="form_row">
           <div className="form_group field">
-            <input className="form_field" name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
+            <input className="form_field" value={title} name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
             <label className="form_label" >Título</label>
           </div>
           <div className="form_group field">

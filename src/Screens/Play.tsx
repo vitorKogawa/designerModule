@@ -28,7 +28,7 @@ function Play(props: any){
         });
         if(cont === 0){
             elements[0].data.show = true;
-            setNextNodeID(elements[0].data.nextNodes[1].id)
+            setNextNodeID(elements[0].data.nextNodes[0].id)
             setDuration(elements[0].data.duration);
         }
         setElemUpdated(elements);
@@ -62,19 +62,37 @@ function Play(props: any){
         setElemUpdated(elements)
     }
 
+    const getForm = (id:any) => {
+        return fetch(`${api_url}node/${id}`, {
+            method: 'GET',
+            headers: {
+              "Access-Control-Allow-Origin" : "*", 
+              'Content-Type': 'application/json'
+            }
+          }).then(result => result.json());
+        
+    }
+
     return(
         <div>
             {elemUpdated.map((element:any, index:any) => {
                 if(element.data !== undefined && element.data.show){
                     if(element.type === 'formType'){
+                        /* getForm(element.id).then(result => {
+                            const formString = result.gameNode.form;
+
+                            formString.map((item:any, index:any) => {
+                                console.log(item)
+                            })
+                         });*/
                         return(
                             <CardForm
                                 key={index}
                                 backgroundColor={element.data.bgColor}
-                                choices={element.data.nextNodes[0].id}
+                                choices={element.data.nextNodes[0] ? element.data.nextNodes[0].id : ""}
                                 title={"Formulário"}
                                 onChoiceClick={onChoiceClick}
-                            />  
+                            /> 
                         )
                     }else{
                         return(
