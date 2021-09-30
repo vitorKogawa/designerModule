@@ -5,6 +5,19 @@
     cursor: grab;
 }
 
+.ImgStyleForm {
+    object-fit: contain;
+    height: 70%;
+    width: 100%;
+    cursor: grab;
+}
+
+.NodeCardForm {
+    margin-top: 42px;
+    width: 200px;
+    height: 15vh;
+}
+
 .NodeCard {
     width: 200px;
     height: 20vh;

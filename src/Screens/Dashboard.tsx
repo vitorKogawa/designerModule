@@ -49,7 +49,7 @@ function App() {
         <div className="GamesContainer">
         {gameList.map((item: any, index: any) => {
           console.log(item)
-          return <CardGame onCardClick={() => onCardClick(item._id)} key={index} src={`http://localhost:8080/games/${item.image}`} title={item.title} description={item.description}/>
+          return <CardGame idGame={item._id} onCardClick={() => onCardClick(item._id)} key={index} src={`http://localhost:8080/games/${item.image}`} title={item.title} description={item.description}/>
         })}
         </div>
         }
