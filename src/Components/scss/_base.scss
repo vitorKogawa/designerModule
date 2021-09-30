@@ -1,0 +1,18 @@
+@mixin flex-center(){
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// font styles
+
+$primary: #F8BA63;
+$accent: #C8553D;
+$primaryBackground: #FEF7EC;
+$accentBackground: #B6BFCD;
+$text-normal: #F3F4F7;
+$border-normal: #CED4DE;
+$text-subtle: #E7EAEE;
+$border-subtle: #5A6A87;
+$background: #B6BFCD;
+$surface: #404E5C;

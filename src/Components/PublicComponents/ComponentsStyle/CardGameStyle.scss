@@ -1,0 +1,40 @@
+.CardContainer {
+    width: 15vw;
+    height: 35vh;
+    margin: 0 1vw 3vh 0;
+    background-color: #ebebeb;
+    box-shadow: 0 1px 8px rgba(0,0,0,.5);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.ImgContainer {
+    margin: 5% 5% 2% 5%;
+    width: 90%;
+    height: 50%;
+    border-radius: 10px;
+    background-color: rgb(170, 248, 242); 
+}
+
+.ImgStyle {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    cursor: pointer !important;
+}
+
+.CardDescription {
+    width: 100%;
+    
+    h2{
+        margin: 0;
+        text-align: center;
+        color: black;
+    }
+
+    p{
+        text-align: center;
+        margin: 2% 5% 2% 5%;
+        color: #646464;
+    }
+}

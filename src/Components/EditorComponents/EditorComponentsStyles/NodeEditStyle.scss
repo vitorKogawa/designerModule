@@ -1,0 +1,137 @@
+@import '../../scss/base.scss';
+
+.form_row {
+    @include flex-center();
+    flex-direction: row;
+    justify-content: space-around;
+    padding-bottom: 20px;
+    width: 50vw;
+}
+
+.right {
+    justify-content: flex-end !important;
+}
+
+.end {
+    padding-bottom: 0 !important;
+}
+
+.node_title {
+    text-align: center;
+}
+
+.form_group {
+    position: relative;
+    padding: 15px 0 0;
+    width: 45%;
+}
+
+.three_cols {
+    @include flex-center();
+    flex-direction: column;
+    width: 35% !important;
+}
+
+.three_cols > .inpt_file {
+    width: 80%;
+}
+
+.form_field {
+    font-family: inherit;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid #9b9b9b;
+    outline: 0;
+    font-size: 1.3rem;
+    color: #8b927d;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+    font-family: 'Nunito Light', 'sans-serif';
+    font-weight: 'lighter'
+}
+
+.alone {
+    font-size: 22px !important;
+}
+
+.form_field::placeholder {
+    color: transparent;
+}
+
+.form_field:placeholder-shown ~ .form_label {
+    font-size: 1.3rem;
+    cursor: text;
+    top: 20px;
+}
+
+.form_label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #8b927d;
+}
+.form_field:focus {
+    padding-bottom: 6px;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image-slice: 1;
+}
+.form_field:focus ~ .form_label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #11998e;
+}
+
+.form_field:required, .form_field:invalid {
+    box-shadow: none;
+}
+
+.color_front {
+    background-color: #ffffff;
+    width: 100px;
+    height: 50px;
+    border-radius: 10px;
+    border-color: transparent;
+    padding: 5px;
+    cursor:not-allowed;
+}
+
+.button_style {
+	border-radius:13px;
+	border:1px solid #13d8c8;
+	display:inline-block;
+	cursor:pointer;
+	color:#13d8c8;
+	font-family:Arial;
+	font-size:17px;
+	padding:10px 30px;
+    margin-right: 5%;
+    margin-top: 2%;
+}
+
+
+.button_style:hover {
+    color: #00ff62;
+    border:1px solid #00ff62;
+}
+
+.cancel {
+    font-size:17px;
+    margin-top: 2%;
+    cursor:pointer;
+    margin-right: 5%;
+}
+
+.cancel:hover {
+    color:rgb(245, 71, 71);
+}
+
+.one {
+    width: 100% !important;
+}
