@@ -1,0 +1,25 @@
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+//App.scss
+@import './App.scss';
+
+//Editor components
+@import './Components/EditorComponents/EditorComponentsStyles/CustomNodeComponent.scss';
+@import './Components/EditorComponents/EditorComponentsStyles/NodeEditStyle.scss';
+@import './Components/EditorComponents/EditorComponentsStyles/Sidebar.scss';
+@import './Components/EditorComponents/EditorComponentsStyles/TopMenuStyle.scss';
+
+//Game components
+@import './Components//GameComponents/GameComponentsStyle/Card.scss';
+
+//Public components
+@import './Components/PublicComponents/ComponentsStyle/CardGameStyle.scss';
+@import './Components/PublicComponents/ComponentsStyle/RightMenuStyle.scss';

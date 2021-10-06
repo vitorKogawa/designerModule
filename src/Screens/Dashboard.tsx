@@ -1,4 +1,4 @@
-import '../App.css';
+import '../App.scss';
 import { RightMenu } from '../Components/PublicComponents/RightMenu';
 import { CardGame } from '../Components/PublicComponents/CardGame';
 import { useEffect, useState } from 'react';
