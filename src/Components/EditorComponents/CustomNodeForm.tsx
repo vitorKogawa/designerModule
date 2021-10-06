@@ -13,6 +13,7 @@ function CustomNodeComponent({ data }: any){
     const [currentID, setCurrentID] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [update, setUpdate] = useState(0);
+    const [options, setOptions] = useState(Array());
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
@@ -167,36 +168,34 @@ function CustomNodeComponent({ data }: any){
         padding: '0.16666666666667em 0.5em'
       };
       
-      const options = [
-        { value: 'Chocolate', label: 'Chocolate' },
-        { value: 'Vanilla', label: 'Vanilla' }
-      ]
-      
   const onFormTypeChange = (e:any) => {
     setFormType({value: e.value, label: e.label})
   }
 
   useEffect(() => {
+    async function getForms(){
+      const connectionsResult = await fetch('https://analyticsmodule-papiroproject.herokuapp.com/questionnaires/templates/TestePlataforma/LDhkmZP2tkXBTmrB4TNjKQQtXftJBJT337YZVumerK4ensx6Z4afxLy3kuQPJZGFEqW7jnLNYJFYKefbWUhp24MtzGa5T2fDg3Nvnp3DfPXhc27cW7kXZQ3SpJ2XGMxv', {
+        method: 'GET',
+        headers: {
+          "Access-Control-Allow-Origin" : "*", 
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await connectionsResult.json();
+      result.forEach((element:any) => {
+        setOptions(arr => [...arr, {value: element.questionnaireTitle, label: element.questionnaireTitle}])
+      });
+      console.log(options)
+      return result;
+    }
     getForms();
     setTitle(data.title)
   //  updateNodeForm()
   }, [])
 
-  const getForms = async () => {
-    const connectionsResult = await fetch('https://analyticsmodule-papiroproject.herokuapp.com/questionnaires/templates/GUESS-18/LDhkmZP2tkXBTmrB4TNjKQQtXftJBJT337YZVumerK4ensx6Z4afxLy3kuQPJZGFEqW7jnLNYJFYKefbWUhp24MtzGa5T2fDg3Nvnp3DfPXhc27cW7kXZQ3SpJ2XGMxv', {
-      method: 'GET',
-      headers: {
-        "Access-Control-Allow-Origin" : "*", 
-        'Content-Type': 'application/json'
-      }
-    });
-  
-    return connectionsResult;
-  }
-
   const updateNodeForm = async () => {
-    const formulario = await getForms();
-    const formularioJson = await formulario.json().toString();
+   // const formulario = await getForms();
+    //const formularioJson = formulario.json().toString();
     await fetch(`${api_url}node/edit/form/${data.id}`, {
       method: 'PUT',
       headers: {

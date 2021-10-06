@@ -13,6 +13,36 @@ function Play(props: any){
     const [elemUpdated, setElemUpdated] = useState(Array());
     const [duration, setDuration] = useState(0);
     const [nextNodeID, setNextNodeID] = useState("");
+    let gameID = location.state.gameID;
+
+    useEffect(() => {
+        async function sendMessage(){
+            var m = new Date();
+            const offsetMs = m.getTimezoneOffset() * 60 * 1000;
+            const dateLocal = new Date(m.getTime() - offsetMs);
+            const dateAndTimeNow = dateLocal.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " ");
+            try{
+                await fetch(api_url+'message/send', {
+                    method: 'POST',
+                    headers: {
+                        "Access-Control-Allow-Origin" : "*", 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        type: 'game-start',
+                        gameID: gameID,
+                        userID: firebase.auth().currentUser?.uid,
+                        dateAndTime: dateAndTimeNow,
+                    })
+                });
+            } catch(err){
+                console.log("erro ao enviar mensagem: "+err)
+            }
+        }
+            sendMessage();
+        }, [])
+
+    
 
     useEffect(() => {
         let cont = 0;
@@ -49,6 +79,26 @@ function Play(props: any){
         }
     }, [duration])
 
+    const sendMessageCard = async (lastNodeId:string) => {
+        try{
+            await fetch(api_url+'message/send', {
+                method: 'POST',
+                headers: {
+                    "Access-Control-Allow-Origin" : "*", 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    type: 'card-change',
+                    gameID: gameID,
+                    userID: firebase.auth().currentUser?.uid,
+                    lasNode: lastNodeId
+                })
+            });
+        } catch(err){
+            console.log("erro ao enviar mensagem: "+err)
+        }
+    }
+
     const onChoiceClick = async (id:any) => {
         setNextFormNode(id);
         await elements.map((item:any, index:any) => {
@@ -57,6 +107,9 @@ function Play(props: any){
                 if(item.data.nextNodes[0] != undefined)
                     setNextNodeID(item.data.nextNodes[0].id)
                 setDuration(item.data.duration)
+                
+                sendMessageCard(item.data.nextNodes[0].id)
+
             }
         })
         setElemUpdated(elements)

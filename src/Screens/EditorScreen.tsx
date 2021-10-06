@@ -680,6 +680,7 @@ function EditorScreen(props: any){
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ 
+                type: 'game-create-update',
                 game: result.game
             })
         });

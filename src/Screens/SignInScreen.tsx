@@ -28,6 +28,7 @@ const uiConfig = {
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify({ 
+                type: 'create',
                 userID: firebase.auth().currentUser?.uid,
                 userName: firebase.auth().currentUser?.displayName,
                 userEmail: firebase.auth().currentUser?.email

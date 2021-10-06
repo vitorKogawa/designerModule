@@ -83,6 +83,7 @@ export const RightMenu = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ 
+                    type: 'game-create-update',
                     game: game
                 })
             });
