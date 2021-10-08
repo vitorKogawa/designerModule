@@ -1,9 +1,13 @@
 const { resolve } = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const config = {
-  mode: "development",
+  mode: "production",
+  devtool: "source-map",
   entry: {
     index: "./src/index.tsx",
   },
@@ -35,7 +39,25 @@ const config = {
       }
     ],
   },
+  optimization: {
+    minimize: true,
+    minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            format: {
+              comments: false,
+            }
+          },
+          extractComments: false,
+          parallel: true,
+        }),
+        new CssMinimizerPlugin({
+          parallel: true
+        })
+    ]
+  },
   plugins: [
+    new BundleAnalyzerPlugin(),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "index.html",
