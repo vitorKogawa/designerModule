@@ -51,15 +51,19 @@ function Play(props: any){
                 if(element.data.nodeStart === true){
                     element.data.show = true;
                     cont += 1;
-                    setNextNodeID(element.data.nextNodes[1].id)
+                    if(elements[0].data.nextNodes.length > 2)
+                        setNextNodeID(element.data.nextNodes[1].id)
+                    else if(elements[0].data.nextNodes.length === 1)
+                        setNextNodeID(element.data.nextNodes[0].id)
                     setDuration(element.data.duration)
                 }
             }
         });
         if(cont === 0){
             elements[0].data.show = true;
-            setNextNodeID(elements[0].data.nextNodes[0].id)
             setDuration(elements[0].data.duration);
+            if(elements[0].data.nextNodes.length > 0)
+                setNextNodeID(elements[0].data.nextNodes[0].id)
         }
         setElemUpdated(elements);
     }, [])
@@ -104,12 +108,11 @@ function Play(props: any){
         await elements.map((item:any, index:any) => {
             if(item.id === id){
                 item.data.show = true;
-                if(item.data.nextNodes[0] != undefined)
+                if(item.data.nextNodes[0] != undefined){
                     setNextNodeID(item.data.nextNodes[0].id)
+                    sendMessageCard(item.data.nextNodes[0].id)
+                }
                 setDuration(item.data.duration)
-                
-                sendMessageCard(item.data.nextNodes[0].id)
-
             }
         })
         setElemUpdated(elements)
