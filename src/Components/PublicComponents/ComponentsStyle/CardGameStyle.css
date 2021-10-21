@@ -5,9 +5,30 @@
     background-color: #ebebeb;
     box-shadow: 0 1px 8px rgba(0,0,0,.5);
     border-radius: 8px;
+    padding: 5px;
+}
+
+.gameDel{
+    cursor: pointer;
+    float: right; 
+    color: black;
+}
+
+.gameDel:hover{
+    color: red;
+}
+
+.optionsDelete{
+    display: flex;
+    justify-content: space-around;
+}
+
+.optionsDelete label{
+    cursor:pointer;
 }
 
 .ImgContainer {
+    cursor: pointer;
     margin: 5% 5% 2% 5%;
     width: 90%;
     height: 50%;
@@ -19,9 +40,11 @@
     object-fit: contain;
     height: 100%;
     width: 100%;
+    cursor: pointer !important;
 }
 
 .CardDescription {
+    cursor: pointer;
     width: 100%;
 }
 

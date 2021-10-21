@@ -5,6 +5,19 @@
     cursor: grab;
 }
 
+.ImgStyleForm {
+    object-fit: contain;
+    height: 70%;
+    width: 100%;
+    cursor: grab;
+}
+
+.NodeCardForm {
+    margin-top: 42px;
+    width: 200px;
+    height: 15vh;
+}
+
 .NodeCard {
     width: 200px;
     height: 20vh;
@@ -15,14 +28,15 @@
     position: absolute;
     bottom: 8px;
     left: 5vw;
-    width: 40vw;
+    width: 20vw;
     height: 20vh;
     background-color: transparent;
-    box-shadow: inset 0px -80px 36px -40px rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0px -80px 36px -40px rgba(255, 255, 255, 0.4);
 }
 
 .SidebarSubContainer {
     display: flex;
     flex-direction: row;
-
+    justify-content: center;
+    align-items: center;
 }

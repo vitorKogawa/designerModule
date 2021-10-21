@@ -1,31 +1,31 @@
-import { Position, Handle, HandleType } from 'react-flow-renderer';
-import { handleRight, handleTop, handleLeft } from './Data/data'
+import { Position, Handle } from 'react-flow-renderer';
+import './EditorComponentsStyles/CustomNodeComponent.css';
+import ReactMarkdown from 'react-markdown'
+import gfm from 'remark-gfm'
 
 function CustomNodeComponent({ data }: any){
 
-  const customNodeStyles = {
-    background: '#9CA8B3',
-    color: '#FFF',
-    padding: 10,
-  };
-  
   return (
-    <div style={customNodeStyles}>
-      {handleLeft.map((item: any, index: any) => {
-        return <Handle key={index} type={item.type as HandleType} id={item.id} position={Position.Left} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: item.position, borderRadius: '50%' }} />
-      })}
-      {handleTop.map((item: any, index: any) => {
-        return <Handle key={index} type={item.type as HandleType} id={item.id} position={Position.Top} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, left: item.position, borderRadius: '50%' }} />
-      })}
-      {handleRight.map((item: any, index: any) => {
-        return <Handle key={index} type={item.type as HandleType} id={item.id} position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: item.position, borderRadius: '50%' }} />
-      })}
-
-      <div>{data.text}</div>
-      <p>Imagem:</p>
-      <input type="file" />
-      <p>História:</p>
-      <textarea onChange={data.onChange}/>
+    <div className="customNodeContainer">
+        <Handle type='target' id='a' position={Position.Left} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, borderRadius: '50%' }} />
+        <Handle type='source' id='b' position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: '40%', borderRadius: '50%' }} />
+        <Handle type='source' id='c' position={Position.Right} style={{border: 0, background: 'rgba(0,0,0,0.0)', width: 10, height: 10, top: '60%', borderRadius: '50%' }} />
+      <div className="body_container">
+        <label className="title">{data.title? data.title : 'Cartão sem nome'}</label>
+        <div className="tags_container">
+          {data.tagsArray.map((element: any, i:any) => {
+            return (<span style={{backgroundColor: element.color}} className="tag" key={i}>{element.name}</span>)
+          })}
+        </div>
+        <span>Descrição - Clique em editar.</span>
+       {/* <ReactMarkdown className="markHistory" plugins={[gfm]} children={data.history ? data.history : 'Descrição do cartão - clique em editar.'} />*/}
+      </div>
+      <div className="edit_container">
+        <div className="edit_button" onClick={data.onEditClick}>
+          <span>editar</span>
+        </div> 
+      </div>
+      
     </div>
   );
 };
