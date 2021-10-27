@@ -300,10 +300,10 @@ const options = [
             </div>
           </div>
           <div className="form_row">
-            <div  className="form_group three_cols">
+          {/*  <div  className="form_group three_cols">
               <p>Cartão de início</p>
               <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedStart : startNode} onChange={() => onStartNodechange()} />
-            </div>
+            </div> */}
             <div  className="form_group three_cols">
               <p>Cartão final</p>
               <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedEnd : endNode} onChange={() => onEndNodechange()}/>

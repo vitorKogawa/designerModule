@@ -40,13 +40,11 @@ function Play(props: any){
             }
         }
             sendMessage();
-        }, [])
-
-    
+        }, [])    
 
     useEffect(() => {
         let cont = 0;
-        elements.forEach((element:any) => {
+    /*    elements.forEach((element:any) => {
             if(element.data !== undefined){
                 if(element.data.nodeStart === true){
                     element.data.show = true;
@@ -58,7 +56,7 @@ function Play(props: any){
                     setDuration(element.data.duration)
                 }
             }
-        });
+        });*/
         if(cont === 0){
             elements[0].data.show = true;
             setDuration(elements[0].data.duration);
@@ -74,6 +72,9 @@ function Play(props: any){
             let interval = setInterval(() => {
                 countDuration += 1;
                 console.log(countDuration);
+                var contContainer = document.getElementById("durationContainer") as any;
+                let countDurationScrenn = countDuration;
+                contContainer.innerHTML = "Tempo para responder: " + duration + "s | timer: " + countDurationScrenn++;
                 if(countDuration === duration){
                     clearInterval(interval);
                     onChoiceClick(nextNodeID);
@@ -134,13 +135,6 @@ function Play(props: any){
             {elemUpdated.map((element:any, index:any) => {
                 if(element.data !== undefined && element.data.show){
                     if(element.type === 'formType'){
-                        /* getForm(element.id).then(result => {
-                            const formString = result.gameNode.form;
-
-                            formString.map((item:any, index:any) => {
-                                console.log(item)
-                            })
-                         });*/
                         return(
                             <CardForm
                                 key={index}
@@ -153,16 +147,21 @@ function Play(props: any){
                     }else{
                         console.log(element.data)
                         return(
-                            <Card 
-                                key={index}
-                                backgroundColor={element.data.bgColor}
-                                nodeColor={element.data.nodeColor}
-                                history={element.data.compiled_content}
-                                src={`${api_url}nodes/`+element.data.image}
-                                choices={element.data.nextNodes}
-                                title={element.data.title}
-                                onChoiceClick={onChoiceClick}
-                            />  
+                            <div>
+                                <div id="durationContainer">
+                                
+                                </div>    
+                                <Card 
+                                    key={index}
+                                    backgroundColor={element.data.bgColor}
+                                    nodeColor={element.data.nodeColor}
+                                    history={element.data.compiled_content}
+                                    src={`${api_url}nodes/`+element.data.image}
+                                    choices={element.data.nextNodes}
+                                    title={element.data.title}
+                                    onChoiceClick={onChoiceClick}
+                                />  
+                            </div>
                         )
                     }
                 }
