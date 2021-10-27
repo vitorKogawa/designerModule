@@ -151,10 +151,12 @@ function Play(props: any){
                             /> 
                         )
                     }else{
+                        console.log(element.data)
                         return(
                             <Card 
                                 key={index}
                                 backgroundColor={element.data.bgColor}
+                                nodeColor={element.data.nodeColor}
                                 history={element.data.compiled_content}
                                 src={`${api_url}nodes/`+element.data.image}
                                 choices={element.data.nextNodes}

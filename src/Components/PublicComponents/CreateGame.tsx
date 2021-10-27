@@ -53,15 +53,15 @@ export default function CreateGame(props: any){
           <div className="form_row">
             <div className="form_group three_cols">
               <p>Default Node Color:</p>
-              <input className="color_front" type="color" onChange={props.onChangeNodeColor} disabled={true}/>
+              <input className="color_front" type="color" value='#251403' onChange={props.onChangeNodeColor} disabled={true}/>
             </div>
             <div  className="form_group three_cols">
               <p>Default Text Color:</p>
-              <input className="color_front" type="color" onChange={props.onChangeTextColor} disabled={true}/>
+              <input className="color_front" type="color" value='#FFFFFF' onChange={props.onChangeTextColor} disabled={true}/>
             </div>
             <div className="form_group three_cols">
               <p>Default Background Color:</p>
-              <input className="color_front" type="color" onChange={props.onChangeBackgroundColor} disabled={true}/>
+              <input className="color_front" type="color" value='#c2a767' onChange={props.onChangeBackgroundColor} disabled={true}/>
             </div>
           </div>
           <div className="form_row">
