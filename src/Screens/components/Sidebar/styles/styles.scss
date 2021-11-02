@@ -1,0 +1,29 @@
+@import '../../../../../scss/custom.scss';
+
+.nav-item
+{
+    font: {
+        size: 16px;
+    };
+    color: $primary;
+    &:hover
+    {
+        background-color: $primaryBackground;
+        color: $primary;
+        border: $primary;
+    }
+}
+
+.btn-primary
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $primary;
+    border: #F8BA63;
+    &:hover
+    {
+        background-color: #fff;
+        color: #F8BA63;
+    }
+};
