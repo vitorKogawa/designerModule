@@ -1,0 +1,13 @@
+@import './../../../../../../../scss/custom.scss';
+
+.nav-item
+{
+    font-size: 20px;
+}
+
+.active
+{
+    background-color: $primaryBackground;
+    color: $primary;
+    border: $primaryBackground;
+}
