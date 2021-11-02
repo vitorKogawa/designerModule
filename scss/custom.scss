@@ -1,0 +1,31 @@
+$primary: #F8BA63;
+$accent: #C8553D;
+$primaryBackground: #FEF7EC;
+$accentBackground: #B6BFCD;
+$text-normal: #F3F4F7;
+$border-normal: #CED4DE;
+$text-subtle: #E7EAEE;
+$border-subtle: #5A6A87;
+$background: #B6BFCD;
+$surface: #404E5C;
+
+$theme-colors: (
+    "primary": $primary,
+);
+
+$custom-colors: (
+    "accent": $accent,
+    "primaryBackground": $primaryBackground,
+    "accentBackground": $accentBackground, 
+    "text-normal": $text-normal,
+    "border-normal": $border-normal,
+    "text-subtle": $text-subtle,
+    "border-subtle": $border-subtle,
+    "background": $background,
+    "surface": $surface
+);
+
+$theme-colors: map-merge($theme-colors , $custom-colors );
+
+@import "./../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./../node_modules/bootstrap/scss/reboot";
