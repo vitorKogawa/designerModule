@@ -141,6 +141,7 @@ function Play(props: any){
                                 backgroundColor={element.data.bgColor}
                                 choices={element.data.nextNodes[0] ? element.data.nextNodes[0].id : ""}
                                 title={"Formulário"}
+                                formContent={element.data.form}
                                 onChoiceClick={onChoiceClick}
                             /> 
                         )

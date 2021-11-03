@@ -186,16 +186,14 @@ function CustomNodeComponent({ data }: any){
         setOptions(arr => [...arr, {value: element.questionnaireTitle, label: element.questionnaireTitle}])
       });
       console.log(options)
+      //updateNodeForm(result)
       return result;
     }
     getForms();
     setTitle(data.title)
-  //  updateNodeForm()
   }, [])
 
-  const updateNodeForm = async () => {
-   // const formulario = await getForms();
-    //const formularioJson = formulario.json().toString();
+  const updateNodeForm = async (result: any) => {
     await fetch(`${api_url}node/edit/form/${data.id}`, {
       method: 'PUT',
       headers: {
