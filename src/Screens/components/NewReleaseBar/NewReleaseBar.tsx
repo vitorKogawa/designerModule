@@ -37,6 +37,7 @@ const NewReleaseBar: React.FC = () => {
                             title={item.title}
                             content={item.content}
                             index={index}
+                            key={`newReleaseBarItem-${index}`}
                         />
                     )
                 }

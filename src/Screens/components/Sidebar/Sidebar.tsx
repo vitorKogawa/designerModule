@@ -66,12 +66,13 @@ const Sidebar: React.FC = () => {
                     <img src={papiroLogo} alt="Papiro logo" />
                 </Link>
                 {
-                    sidebarTopics.map((topic: ISidebarTopic) =>
+                    sidebarTopics.map((topic: ISidebarTopic, index: number) =>
                         <SidebarTopic
                             icon={topic.icon}
                             path={topic.path}
                             title={topic.title}
                             isActive={splitLocation[0] === topic.path ? true : false}
+                            key={`sidebarTopic-${index}`}
                         />
                     )
                 }
