@@ -20,7 +20,7 @@ const Router:React.FC = () => {
                     <PrivateRoute exact path="/editor" component={EditorScreen} />
                     <PrivateRoute exact path="/play" component={Play} />
                     {
-                        DASHBOARD_ROUTES.map((route: IDashboardRoutes) => <Route path={route.pathRoute} component={route.componentRoute} />)
+                        DASHBOARD_ROUTES.map((route: IDashboardRoutes, index: number) => <Route path={route.pathRoute} component={route.componentRoute} key={`dashboardRoute-${index}`} />)
                     }
                 </Switch>
             </BrowserRouter>
