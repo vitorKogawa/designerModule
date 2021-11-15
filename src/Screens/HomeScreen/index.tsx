@@ -3,8 +3,10 @@ import { Sidebar } from './../components/Sidebar/Sidebar'
 import { GameCard } from './../components/GameCard/GameCard'
 import { IGameCard } from '../components/GameCard/interfaces/IGameCard'
 import { NewReleaseBar } from '../components/NewReleaseBar/NewReleaseBar'
+import { BsJoystick } from 'react-icons/bs'
 import '../../../node_modules/bootstrap/dist/css/bootstrap.css'
 import './styles.scss'
+import { AddNewGameModal } from './components/AddNewGameModal/AddNewGameModal'
 
 
 const HomeScreen: React.FC = () => {
@@ -74,17 +76,19 @@ const HomeScreen: React.FC = () => {
                             <h3>Your Games</h3>
                         </div>
                         <div className="col d-flex flex-row justify-content-end p-0">
-                            <button className="btn btn-primary">
+                            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gameCardModal">
                                 Add Game
                             </button>
+                            <AddNewGameModal />
                         </div>
                     </div>
                     <div className="row flex-row flex-wrap w-100">
                         {
-                            arrayGameCards.map((card: IGameCard) =>
+                            arrayGameCards.map((card: IGameCard, index: number) =>
                                 <GameCard
                                     imgUrl="https://images.unsplash.com/photo-1634745687108-c1b946a4852d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8TThqVmJMYlRSd3N8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
                                     title={card.title}
+                                    key={`gamecard-${index}`}
                                 // content={card.content}
                                 />
                             )
@@ -93,7 +97,7 @@ const HomeScreen: React.FC = () => {
                 </div>
 
                 <div className="col-3 bg-surface sticky-top min-vh-100 p-1">
-                    <NewReleaseBar/>
+                    <NewReleaseBar />
                 </div>
             </div>
         </div>
