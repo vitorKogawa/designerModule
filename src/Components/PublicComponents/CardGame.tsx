@@ -36,7 +36,6 @@ export const CardGame = (props: any) => {
                 </div>
                 <div className="CardDescription" onClick={props.onCardClick}>
                     <h2>{props.title}</h2>
-                    <p>{props.description}</p>
                 </div>
                 <p onClick={open} className="gameDel">Excluir</p>
             </div>
