@@ -1,5 +1,4 @@
 import React from 'react'
-import { NewReleaseBar } from '../../../components/NewReleaseBar/NewReleaseBar'
 import { Sidebar } from '../../../components/Sidebar/Sidebar'
 
 const BuildingGame: React.FC = () => {
