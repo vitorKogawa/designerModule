@@ -19,7 +19,7 @@ import { SidebarTopic } from './components/SidebarTopic/SidebarTopic';
 import papiroLogo from './../../../Assets/img/papiro1.png';
 import './styles/styles.scss'
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC = (props) => {
     const splitLocation = useLocation().pathname.split(",");
     const sidebarTopics: ISidebarTopic[] = [
         {
@@ -82,6 +82,7 @@ const Sidebar: React.FC = () => {
                         More
                     </Link>
                 </li>
+                { props.children }
                 <ButtonSidebar label="New Game" />
             </div>
 
