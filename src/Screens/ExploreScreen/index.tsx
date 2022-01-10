@@ -8,7 +8,7 @@ const ExploreScreen: React.FC = () => {
         <div className="container-fluid bg-primary min-vh-100">
             <div className="row">
                 <div className="col bg-surface min-vh-100">
-                    <Sidebar />
+                    <Sidebar/>
                 </div>
 
                 <div className="col-8 d-flex flex-row flex-wrap justify-content-center align-items-center p-0">
