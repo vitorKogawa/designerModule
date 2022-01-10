@@ -1,10 +1,23 @@
 import React from 'react'
 import { IGameCard } from './interfaces/IGameCard'
 import { BsPen, BsPlay } from 'react-icons/bs'
-import './styles/styles.scss'
 import { Link } from 'react-router-dom'
+import { useHistory } from "react-router-dom";
+import './styles/styles.scss'
 
 const GameCard: React.FC<IGameCard> = (props) => {
+    const history = useHistory();
+
+    const handleClickCard = (gameID: string) => {
+        history.push({
+            pathname: '/editor',
+            search: '?game=' + gameID,
+            state: {
+                gameID: gameID
+            }
+        })
+    }
+
     return (
         <div className="col-3 card m-2 p-0">
             <img src={props.imgUrl} className="card-img-top" alt={props.imgUrl} />
@@ -13,14 +26,14 @@ const GameCard: React.FC<IGameCard> = (props) => {
                 <p className="card-text">{props.content ? props.content : ""}</p>
                 <div className="row">
                     <div className="col">
-                        <Link to="#" className ="btn btn-primary w-100 rounded-0">
-                            <BsPen/>
-                        </Link>
+                        <button onClick={() => handleClickCard(props.gameID)} className="btn btn-primary w-100 rounded-0">
+                            <BsPen />
+                        </button>
                     </div>
                     <div className="col">
-                        <Link to="#" className ="btn btn-primary w-100 rounded-0">
-                            <BsPlay/>
-                        </Link>
+                        <button className="btn btn-primary w-100 rounded-0">
+                            <BsPlay />
+                        </button>
                     </div>
                 </div>
             </div>
