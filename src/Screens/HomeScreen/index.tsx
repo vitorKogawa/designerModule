@@ -3,11 +3,10 @@ import { Sidebar } from './../components/Sidebar/Sidebar'
 import { GameCard } from './../components/GameCard/GameCard'
 import { IGameCard } from '../components/GameCard/interfaces/IGameCard'
 import { NewReleaseBar } from '../components/NewReleaseBar/NewReleaseBar'
-import { BsJoystick } from 'react-icons/bs'
+import { AddNewGameModal } from './components/AddNewGameModal/AddNewGameModal'
 import '../../../node_modules/bootstrap/dist/css/bootstrap.css'
 import './styles.scss'
-import { AddNewGameModal } from './components/AddNewGameModal/AddNewGameModal'
-
+import { IGame } from './interfaces/IGame'
 
 const HomeScreen: React.FC = () => {
     const arrayGameCards = [
@@ -67,7 +66,7 @@ const HomeScreen: React.FC = () => {
         <div className="container-fluid bg-surface min-vh-100">
             <div className="row">
                 <div className="col bg-surface min-vh-100">
-                    <Sidebar />
+                    <Sidebar/>
                 </div>
 
                 <div className="col-7 d-flex flex-column">
@@ -84,14 +83,15 @@ const HomeScreen: React.FC = () => {
                     </div>
                     <div className="row flex-row flex-wrap w-100">
                         {
-                            arrayGameCards.map((card: IGameCard, index: number) =>
-                                <GameCard
-                                    imgUrl="https://images.unsplash.com/photo-1634745687108-c1b946a4852d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8TThqVmJMYlRSd3N8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60"
-                                    title={card.title}
-                                    key={`gamecard-${index}`}
-                                // content={card.content}
-                                />
-                            )
+                            // arrayGameCards.map((game: IGame, index: number) => {
+                            //     return (
+                            //         <GameCard
+                            //             gameID={index}
+                            //             title={game.title}
+
+                            //         />
+                            //     )
+                            // })
                         }
                     </div>
                 </div>
