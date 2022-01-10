@@ -10,7 +10,7 @@ import { IDashboardRoutes } from "./interfaces/IRoutes"
 
 const DASHBOARD_ROUTES: IDashboardRoutes[] = [
     {
-        pathRoute: '/home',
+        pathRoute: '/home-teste',
         componentRoute: HomeScreen
     },
     {
