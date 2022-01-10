@@ -32,7 +32,7 @@ const uiConfig = {
                 userName: firebase.auth().currentUser?.displayName,
                 userEmail: firebase.auth().currentUser?.email
               })
-          }).then(() => window.location.assign('/dashboard'));
+          }).then(() => window.location.assign('/home'));
         } catch(err){
             console.log("erro ao enviar mensagem: "+err)
         }
