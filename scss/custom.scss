@@ -9,8 +9,18 @@ $border-subtle: #5A6A87;
 $background: #B6BFCD;
 $surface: #404E5C;
 
+$pallet-1: #F8BA63;
+$pallet-2: #C8553D;
+$pallet-3: #000000;
+
 $theme-colors: (
     "primary": $primary,
+);
+
+$palletColorsForNewGame: (
+    "pallet-1": $pallet-1,
+    "pallet-2": $pallet-2,
+    "pallet-3": $pallet-3
 );
 
 $custom-colors: (
@@ -26,6 +36,7 @@ $custom-colors: (
 );
 
 $theme-colors: map-merge($theme-colors , $custom-colors );
+$theme-colors: map-merge($theme-colors , $palletColorsForNewGame );
 
 @import "./../node_modules/bootstrap/scss/bootstrap.scss";
 @import "./../node_modules/bootstrap/scss/reboot";
