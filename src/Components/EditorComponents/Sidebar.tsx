@@ -3,7 +3,7 @@ import './EditorComponentsStyles/Sidebar.css';
 import nodeImg from '../../Assets/img/node.png';
 import nodeFormImg from '../../Assets/img/nodeForm.jpg';
 
-export default function Sidebar(){
+export default function Sidebar2(){
   const onDragStart = (event: any, nodeType: any) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';

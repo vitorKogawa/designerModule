@@ -1,5 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
+import ReactFlow, { 
+    removeElements,
+    addEdge, 
+    MiniMap, 
+    Controls, 
+    Background, 
+    Elements, 
+    Edge, 
+    Connection, 
+    OnLoadParams, 
+    BackgroundVariant, 
+    ArrowHeadType,
+    BackgroundProps
+} from 'react-flow-renderer';
 // import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
 import { CustomNode } from './../Components/EditorComponents/CustomNodeComponent';
 import CustomNodeForm from '../Components/EditorComponents/CustomNodeForm';
@@ -15,7 +28,10 @@ import { Sidebar } from './components/Sidebar/Sidebar';
 import { api } from './../services/api'
 import { IGame, INode } from './HomeScreen/interfaces/IGame';
 import { INodeConnection } from './HomeScreen/interfaces/INodeConnection';
-
+import { EdgeProps } from 'react-flow-renderer'
+import Sidebar2 from './../Components/EditorComponents/Sidebar'
+import { DragAndDrop } from './components/DragAndDrop/DragAndDrop'
+import './editorscreen.scss'
 
 const nodeTypes = {
   special: CustomNode,
@@ -106,7 +122,7 @@ function EditorScreen(props: any) {
   const [compiledContent, setCompiledContent] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-
+  
   interface ILabel { label: string, color: string }
 
   //implementando novos estados
@@ -116,13 +132,15 @@ function EditorScreen(props: any) {
   let nodesElements: INode[]
   let nodesConnections: INodeConnection[]
 
-
+  //dados do jogo
   useEffect(() => {
     api.get(`/game/${urlParams.get('game')}`)
       .then(response => setGameData(response.data.game))
       .catch(error => console.error(error))
   }, [])
 
+
+  //pegando conexões entre os nós
   useEffect(() => {
     api.get(`/connection/${urlParams.get('game')}`)
       .then(response => setNodesConnections(response.data.nodeConnection))
@@ -139,7 +157,7 @@ function EditorScreen(props: any) {
         'Content-Type': 'application/json'
       }
     });
-    console.log('fetch:', gamesResult)
+    // console.log('fetch:', gamesResult)
     return gamesResult;
   }
 
@@ -154,7 +172,7 @@ function EditorScreen(props: any) {
       }
     });
 
-    // console.log(connectionsResult);
+    console.log(connectionsResult);
     return connectionsResult;
   }
 
@@ -203,10 +221,24 @@ function EditorScreen(props: any) {
             source: nodeConnection.source,
             target: nodeConnection.target,
             gameId: nodeConnection.gameId,
-            __v: nodeConnection.__v
+            __v: nodeConnection.__v,
+            animated: true,
+            arrowHeadType: 'arrowclosed' as ArrowHeadType,
+            // style: { color: "white", stroke: "white" },
+            sourceHandle: "b",
+            targetHandle: "a"
           })
         })
       })
+      if (savedElements.length !== 0) {
+        setElements(savedElements);
+      }
+
+      function onFormSaveClick() {
+        setUpdate(update => update = update + 1)
+      }
+
+      populate_2()
     }
 
     async function populate() {
@@ -307,6 +339,7 @@ function EditorScreen(props: any) {
     }
   }, [currentNodeInfo])
 
+  //id: id do node
   const onEditClick = async (id: any) => {
     setAlt1Disabled(false);
     setAlt2Disabled(false);
@@ -315,13 +348,21 @@ function EditorScreen(props: any) {
     setDisabledAuxAlt(true);
     setDisabledAuxCard(true);
     setSelectedTags([])
+    
+    //endpoint: http://localhost:8080/label
     const labelList = await fetch(api_url + 'label', {
-      method: 'GET',
+      method: 'GET', 
       headers: {
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json'
       }
     });
+
+    console.log(labelList)
+
+    //endpoint: http://localhost:8080/label
+    // const findAllLabels = await api.get('/label')
+
     setCurrentID(id);
     setUpdateCurrentID(true);
     const result = await labelList.json();
@@ -337,6 +378,8 @@ function EditorScreen(props: any) {
       });
 
       const resultNode = await nodeResult.json();
+      console.log('nodeResult aqui: ', nodeResult);
+      
       setCurrentNodeInfo(resultNode);
     } else {
       setCurrentNodeInfo('unsaved');
@@ -979,14 +1022,15 @@ function EditorScreen(props: any) {
       })
     });
   }
+
   return (
-    <div className="container-fluid bg-surface min-vh-100">
+    <div className="container-fluid min-vh-100">
       <div className="row">
         <div className="col bg-surface min-vh-100">
           <Sidebar />
         </div>
 
-        <div className="col-10 d-flex flex-column bg-surface m-0 p-0">
+        <div className="col-10 d-flex bg-surface flex-column m-0 p-0">
           <div className="reactflow-wrapper" ref={reactFlowWrapper}>
             <ReactFlow
               onPaneClick={claick}
@@ -1007,7 +1051,7 @@ function EditorScreen(props: any) {
                 }
               }}
             /> */}
-              <MiniMap />
+              <MiniMap className="reactflow-minimap"/>
               <NodeEdit
                 openModal={modalIsOpen}
                 closeModal={onRequestClose}
@@ -1038,15 +1082,17 @@ function EditorScreen(props: any) {
               elem={elements}
               gameID={urlParams.get('game')}
             /> */}
+              
               <Controls />
               <Background
-                variant={'lines' as BackgroundVariant | undefined}
+                variant={'lines' as BackgroundVariant}
                 size={0.1}
-                color="#404E5C"
-                gap={35}
-              />
+                color="#fff"
+                gap={10}
+                />
+              <DragAndDrop/>
             </ReactFlow>
-            {/* <Sidebar /> */}
+            {/* <Sidebar2/> */}
           </div>
         </div>
       </div>

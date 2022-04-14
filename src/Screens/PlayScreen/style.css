@@ -1,0 +1,70 @@
+.container-page
+{
+    background-image: url('https://wallpapercave.com/wp/wp8595666.jpg');
+    background-position: center;
+    background-repeat: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-width: 100vw;
+    min-height: 100vh;
+}
+
+.card-game-wrapper
+{
+    width: 500px;
+    height: 700px;
+    background-color: #40403E;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+}
+
+.card-game-header 
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card-game-header-attribute > svg
+{
+    width: 50px;
+    height: 50px;
+    color: #fff;
+}
+
+.card-game-body
+{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.card-game-body-description > p
+{
+    color: #fff;
+    font-size: 18px;
+
+    margin: 10px 0px;
+}
+
+.card-game-body-img
+{
+    background-image: url('https://i.pinimg.com/originals/95/91/08/959108f77d6fa0fbb800e94e29aa51be.png');
+    background-repeat: none;
+    background-position: center;
+    background-size: cover;
+    object-fit: cover;
+
+    width: 100%;
+    height: 400px;
+
+    border-radius: 10px;
+}

@@ -1,0 +1,30 @@
+.dnd-wrapper
+{
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    background-color: #5A6A87;
+
+    position: absolute;
+    bottom: 0;
+    z-index: 9;
+}
+
+.dnd-node
+{
+    border: none;
+    border-radius: 10px;
+    padding: 20px 10px;
+
+    color: #000;
+    background-color: #FEF7EC;
+    margin: 10px;
+
+    box-shadow: 1px 1px 2px 2px #212121;
+    font-weight: bold;
+}
+

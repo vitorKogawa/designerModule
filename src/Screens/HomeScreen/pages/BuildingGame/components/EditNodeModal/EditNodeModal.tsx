@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
 import { BsFillPencilFill, BsEyeFill } from 'react-icons/bs'
+import { MyEditor } from './../../../../../components/TextEditor/TextEditor'
 import './styles/styles.scss'
 
 const PathTab: React.FC = () => {
@@ -106,7 +107,7 @@ const EditNodeModal: React.FC<IEditNodeModal> = (props) => {
                 <BsFillPencilFill />
             </Button>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} size="xl">
                 <Modal.Header closeButton>
                     {/* <Modal.Title>{props.id}</Modal.Title> */}
                     <Button className="btn-sm p-1 d-flex justify-content-around align-items-center">
@@ -137,11 +138,12 @@ const EditNodeModal: React.FC<IEditNodeModal> = (props) => {
                             >
                                 Markdown field (without preview)
                             </label>
-                            <textarea
+                            <MyEditor/>
+                            {/* <textarea
                                 id="inputEditGameMarkdown"
                                 className="form-control"
                                 placeholder="Lorem ipsum dolor sit amet, consectet ui i iadipiscing elit."
-                            />
+                            /> */}
                         </div>
                         <div className="mb-3">
                             <div className="row">

@@ -10,6 +10,10 @@ import Play from '../Screens/Play';
 import { DASHBOARD_ROUTES } from './config/DashboardRoutes'
 import { IDashboardRoutes } from './config/interfaces/IRoutes';
 
+
+//teste
+import { PlayScreen } from './../Screens/PlayScreen/index'
+
 const Router:React.FC = () => {
     return (
         <AuthProvider>
