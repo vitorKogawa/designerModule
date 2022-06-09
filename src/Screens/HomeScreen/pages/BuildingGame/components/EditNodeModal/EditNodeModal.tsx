@@ -107,7 +107,7 @@ const EditNodeModal: React.FC<IEditNodeModal> = (props) => {
                 <BsFillPencilFill />
             </Button>
 
-            <Modal show={show} onHide={handleClose} size="xl">
+            <Modal show={show} onHide={handleClose} size="lg">
                 <Modal.Header closeButton>
                     {/* <Modal.Title>{props.id}</Modal.Title> */}
                     <Button className="btn-sm p-1 d-flex justify-content-around align-items-center">
