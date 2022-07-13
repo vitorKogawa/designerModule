@@ -32,6 +32,7 @@ import { EdgeProps } from 'react-flow-renderer'
 import Sidebar2 from './../Components/EditorComponents/Sidebar'
 import { DragAndDrop } from './components/DragAndDrop/DragAndDrop'
 import './editorscreen.scss'
+import { ModalAttributesAndEvents } from './components/ButtonAttributesAndEvents';
 
 const nodeTypes = {
   special: CustomNode,
@@ -1091,6 +1092,7 @@ function EditorScreen(props: any) {
                 gap={10}
                 />
               <DragAndDrop/>
+              <ModalAttributesAndEvents/>
             </ReactFlow>
             {/* <Sidebar2/> */}
           </div>

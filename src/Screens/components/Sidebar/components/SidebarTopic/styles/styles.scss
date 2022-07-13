@@ -7,7 +7,7 @@
 
 .active
 {
+    color: $primary !important;
     background-color: $primaryBackground;
-    color: $primary;
-    border: $primaryBackground;
+    border-color: $primaryBackground;
 }

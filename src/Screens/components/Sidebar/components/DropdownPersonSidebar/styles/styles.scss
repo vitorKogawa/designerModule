@@ -1,32 +1,16 @@
 @import './../../../../../../../scss/custom.scss';
 
-.accordion-item
-{
-    background-color: #000;
+.accordion-button {
+    background-color: $surface !important;
+    color: $text-normal !important;
+    border: none !important;
 }
 
-// .accordion-header
-// {
-//     background-color: yellow;
-// }
+.accordion-button::after {
+    // background-color: $text-normal;
+    color: $text-normal !important;
+}
 
-// .accordion-button
-// {
-//     background-color: pink;
-// }
-
-
-// .collapsed
-// {
-//     background-color: brown;
-// }
-
-// .accordion-item
-// {
-//     background-color: red;
-// }
-
-// .accordion-body
-// {
-//     background-color: #fff;
-// }
+.accordion-button > svg {
+    margin-right: 20px;
+}

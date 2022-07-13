@@ -16,7 +16,10 @@ const HomeScreen: React.FC = () => {
   //pegar todos os jogos do usuário
   useEffect(() => {
     api.get(`/game/userGames/${firebase.auth().currentUser?.uid}`)
-      .then(result => setGameList(result.data.game))
+      .then(result => {
+        console.log(result.data)
+        setGameList(result.data.game)
+      })
       .catch(error => console.error(error))
   }, [])
 
@@ -27,7 +30,7 @@ const HomeScreen: React.FC = () => {
           <Sidebar />
         </div>
 
-        <div className="col-7 d-flex flex-column my-1">
+        <div className="col-7 d-flex flex-column my-1 p-0">
           <div className="row flex-row justify-align-content-between w-100">
             <div className="col d-flex flex-row justify-content-start p-0">
               <h3 className="text-white">Your Games</h3>
@@ -36,26 +39,23 @@ const HomeScreen: React.FC = () => {
               <AddNewGameModal />
             </div>
           </div>
-          <div className="row flex-row flex-wrap w-100">
-
-            {
-              getGameList.length === 0 ?
-                <p className="description">Não há jogos criados. Para começar, você pode criar um novo jogo no menu ao lado.</p>
-                :
-                <div className="GamesContainer">
-                  {
-                    getGameList.map((game: IGame) =>
-                      <GameCard
-                        gameID={game._id}
-                        title={game.title}
-                        content={game.description}
-                        imgUrl={'https://images.unsplash.com/photo-1637779692999-26cdadc69c1f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' || `http://localhost:8080/games/${game.image}`}
-                        key={game._id}
-                      />
-                    )
-                  }
-                </div>
-            }
+          <div className="row w-100 d-flex flex-row flex-wrap justify-content-center p-0 m-0">
+            {/* <div className="card-wrapper-content"> */}
+              {
+                getGameList.length === 0 ?
+                  <p className="description">Não há jogos criados. Para começar, você pode criar um novo jogo no menu ao lado.</p>
+                  :
+                  getGameList.map((game: IGame) =>
+                    <GameCard
+                      gameID={game._id}
+                      title={game.title}
+                      content={game.description}
+                      imgUrl={!game.image || game.image === "default.jpg" ? "http://localhost:8080/home/card/img/default.jpg" : `http://localhost:8080/home/card/img/${game.image}`}
+                      key={game._id}
+                    />
+                  )
+              }
+            {/* </div> */}
           </div>
         </div>
 

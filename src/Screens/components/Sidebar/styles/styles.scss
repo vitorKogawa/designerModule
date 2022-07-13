@@ -2,19 +2,19 @@
 
 .nav-item
 {
+    color: $primary;
+    margin: 1em 0em;
+    padding: 10px;
+    transition: ease-in-out .1s;
     font: {
         size: 16px;
     };
-    color: $primary;
     &:hover
     {
         background-color: $primaryBackground;
         color: $primary;
         border: $primary;
     };
-    border-radius: 5px;
-    margin: 5px 0px;
-    padding: 10px;
 }
 
 .btn-primary    
@@ -30,3 +30,7 @@
         color: #F8BA63;
     }
 };
+
+.navbar-brand > img {
+    padding: 1em 0.5em;
+}

@@ -14,3 +14,12 @@
     justify-content: center;
     align-items: center;
 }
+
+.card-wrapper{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0px !important;
+    padding: 0px !important;
+}

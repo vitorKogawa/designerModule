@@ -86,7 +86,7 @@ const Sidebar: React.FC = (props) => {
                 <ButtonSidebar label="New Game" />
             </div>
 
-            <DropdownPersonSidebar />
+            <DropdownPersonSidebar username="Fulano de Tal"/>
         </nav>
     )
 }
