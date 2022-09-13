@@ -4,3 +4,13 @@
 {
     border: none;
 }
+
+.row
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.reactflow-wrapper{
+    padding: 0px;
+}
