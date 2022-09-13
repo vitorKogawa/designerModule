@@ -1,5 +1,3 @@
-import { ArrowHeadType } from "react-flow-renderer";
-
 interface INodeConnection {
     __id: string,
     source: string,
@@ -7,7 +5,7 @@ interface INodeConnection {
     gameId: string,
     __v: number,
     animated?: boolean,
-    arrowHeadType?: ArrowHeadType,
+    arrowHeadType?: any,
     sourceHandle?: string,
     targetHandle?: string
 }
