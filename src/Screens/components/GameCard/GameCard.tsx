@@ -3,8 +3,8 @@ import { IGameCard } from './interfaces/IGameCard'
 import { BsPen, BsPlay } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 import { useHistory } from "react-router-dom";
-import './styles/styles.scss'
 import { Background } from 'react-flow-renderer';
+import './styles/styles.scss'
 
 const GameCard: React.FC<IGameCard> = (props) => {
     const history = useHistory();
