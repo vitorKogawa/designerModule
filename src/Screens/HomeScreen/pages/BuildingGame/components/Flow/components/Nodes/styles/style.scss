@@ -1,0 +1,67 @@
+body .react-flow__node {
+    padding: 0px;
+    background-color: transparent;
+}
+
+.my-card {
+    border: none;
+    border-radius: 12px;
+    background-color: #FEF7EC;
+}
+
+
+.my-card-header {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+
+}
+
+.my-card-header>svg {
+    background-color: #F8BA63;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+
+    width: 2em;
+    height: 2em;
+    padding: 0.3em;
+}
+
+.my-card-body {
+    display: flex;
+    align-items: center;
+}
+
+.my-card-body,
+.my-card-footer {
+    padding: 1em;
+}
+
+.my-card-title {
+    font-weight: bold;
+}
+
+.my-card-footer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.my-card-footer-item {
+    width: 50px;
+    height: 10px;
+    border-radius: 20px;
+    margin: 0em 0.1em;
+}
+
+.pallet-1 {
+    background-color: #F8BA63;
+}
+
+.pallet-2 {
+    background-color: #C8553D;
+}
+
+.pallet-3 {
+    background-color: #000000;
+}
