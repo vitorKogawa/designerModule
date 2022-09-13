@@ -4,7 +4,7 @@ import { HomeScreen } from '../Screens/HomeScreen/HomeScreen'; //homepage
 import SignInScreen from '../Screens/SignInScreen';
 import PrivateRoute from './PrivateRoute';
 import { AuthProvider } from "./Auth";
-import EditorScreen from '../Screens/EditorScreen';
+import { EditorScreen } from '../Screens/EditorScreen';
 import Play from '../Screens/Play';
 
 import { DASHBOARD_ROUTES } from './config/DashboardRoutes'
@@ -13,6 +13,7 @@ import { IDashboardRoutes } from './config/interfaces/IRoutes';
 
 //teste
 import { PlayScreen } from './../Screens/PlayScreen/index'
+import { BuildingGame } from '../Screens/HomeScreen/pages/BuildingGame/BuildingGame';
 
 const Router:React.FC = () => {
     return (
@@ -22,6 +23,7 @@ const Router:React.FC = () => {
                     <Route exact path="/" component={SignInScreen} />
                     <PrivateRoute exact path="/home" component={HomeScreen} />
                     <PrivateRoute exact path="/editor" component={EditorScreen} />
+                    {/* <PrivateRoute exact path="/build-game" component={BuildingGame} /> */}
                     <PrivateRoute exact path="/play" component={Play} />
                     {
                         DASHBOARD_ROUTES.map((route: IDashboardRoutes, index: number) => <Route path={route.pathRoute} component={route.componentRoute} key={`dashboardRoute-${index}`} />)
