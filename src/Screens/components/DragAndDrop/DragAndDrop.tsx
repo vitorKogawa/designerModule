@@ -10,13 +10,27 @@ const DragAndDrop: React.FC = () => {
 
   return (
     <div className="dnd-wrapper">
+      {/* <div
+        className="dnd-node"
+        onDragStart={(event) => onDragStart(event, "initialNode")}
+        draggable
+      >
+        Initial Node
+      </div> */}
       <div
         className="dnd-node"
         onDragStart={(event) => onDragStart(event, "special")}
         draggable
       >
-        Default Card
+        Common Node
       </div>
+      {/* <div
+        className="dnd-node"
+        onDragStart={(event) => onDragStart(event, "finalNode")}
+        draggable
+      >
+        Final Node
+      </div> */}
     </div>
   );
 };
