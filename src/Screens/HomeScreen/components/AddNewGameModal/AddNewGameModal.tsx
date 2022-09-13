@@ -35,18 +35,18 @@ const AddNewGameModal: React.FC = () => {
         setArrayFiles(arrayFiles.concat(newFiles))
     }
     
-    useEffect(() => {
-        if(gameCreatedId !== null){
-            history.push({
-                pathname: '/editor',
-                search: '?game='+gameCreatedId,
-                state: {
-                  gameId: gameCreatedId
-                }
-              })
-        }
-        // eslint-disable-next-line
-      }, [gameCreatedId]);
+    // useEffect(() => {
+    //     if(gameCreatedId !== null){
+    //         history.push({
+    //             pathname: '/editor',
+    //             search: '?game='+gameCreatedId,
+    //             state: {
+    //               gameId: gameCreatedId
+    //             }
+    //           })
+    //     }
+    //     // eslint-disable-next-line
+    //   }, [gameCreatedId]);
 
     const sendMessage = async (game:any) => {
         try{
