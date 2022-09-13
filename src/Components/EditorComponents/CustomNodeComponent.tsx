@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { BsLightning, BsRecordCircle } from 'react-icons/bs'
 import { Position, Handle } from 'react-flow-renderer';
 import { EditNodeModal } from '../../Screens/HomeScreen/pages/BuildingGame/components/EditNodeModal/EditNodeModal';
-import './EditorComponentsStyles/CustomNodeComponent.scss'
+// import './EditorComponentsStyles/CustomNodeComponent.scss'
 
 const CustomNode: React.FC<{ id: number }> = (props) => {
   return (
