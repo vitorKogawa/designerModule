@@ -1,7 +1,7 @@
 import { AnalyticsScreen } from "../../Screens/AnalyticsScreen"
 import { ExploreScreen } from "../../Screens/ExploreScreen"
 import { HomeScreen } from "../../Screens/HomeScreen"
-import { BuildingGame } from "../../Screens/HomeScreen/pages/BuildingGame"
+import { BuildingGame } from "../../Screens/HomeScreen/pages/BuildingGame/BuildingGame"
 import { LibraryScreen } from "../../Screens/LibraryScreen"
 import { ListScreen } from "../../Screens/ListsScreen"
 import { ProfileScreen } from "../../Screens/ProfileScreen"
