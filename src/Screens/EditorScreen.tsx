@@ -1,20 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, {
-    removeElements,
-    addEdge,
-    MiniMap,
-    Controls,
-    Background,
-    Elements,
-    Edge,
-    Connection,
-    OnLoadParams,
-    BackgroundVariant,
-    ArrowHeadType,
-    BackgroundProps
-} from 'react-flow-renderer';
-// import CustomNodeComponent from '../Components/EditorComponents/CustomNodeComponent';
-import { CustomNode } from './../Components/EditorComponents/CustomNodeComponent';
+import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
+import { CustomNode } from '../Components/EditorComponents/CustomNodeComponent';
 import CustomNodeForm from '../Components/EditorComponents/CustomNodeForm';
 // import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
@@ -23,28 +9,20 @@ import { api_url } from '../public/variables';
 import firebase from 'firebase/app';
 import "firebase/auth";
 import showdown from 'showdown';
-import './../Components/EditorComponents/EditorComponentsStyles/NodeEditStyle.scss'
-import { Sidebar } from './components/Sidebar/Sidebar';
-import { api } from './../services/api'
-import { IGame, INode } from './HomeScreen/interfaces/IGame';
-import { INodeConnection } from './HomeScreen/interfaces/INodeConnection';
-import { EdgeProps } from 'react-flow-renderer'
-import Sidebar2 from './../Components/EditorComponents/Sidebar'
-import { DragAndDrop } from './components/DragAndDrop/DragAndDrop'
-import { ModalAttributesAndEvents } from './components/ButtonAttributesAndEvents';
+
 import './editorscreen.scss'
-import InitialNode from './HomeScreen/pages/BuildingGame/components/Flow/components/Nodes/InitialNode/InitialNode';
+import { DragAndDrop } from './components/DragAndDrop/DragAndDrop';
+import { ModalAttributesAndEvents } from './components/ButtonAttributesAndEvents';
+import { Sidebar } from './components/Sidebar/Sidebar';
 import CommonNode from './HomeScreen/pages/BuildingGame/components/Flow/components/Nodes/CommonNode/CommonNode';
-// import FinalNode from './HomeScreen/pages/BuildingGame/components/Flow/components/Nodes/FinalNode/FinalNode';
+
 
 const nodeTypes = {
-    // initialNode: InitialNode,
     special: CommonNode,
-    // finalNode: FinalNode,
     formType: CustomNodeForm
 };
 
-const EditorScreen: React.FC = (props: any) => {
+function EditorScreen(props: any) {
     let initialElements = [
         {
             id: "1000",
@@ -129,33 +107,7 @@ const EditorScreen: React.FC = (props: any) => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
-    interface ILabel { label: string, color: string }
-
-    //implementando novos estados
-    const [getGameData, setGameData] = useState<IGame>();
-    const [getNodesConnections, setNodesConnections] = useState<INodeConnection[]>([])
-    let elementsLabels: ILabel[]
-    let nodesElements: INode[]
-    let nodesConnections: INodeConnection[]
-
-    //dados do jogo
-    useEffect(() => {
-        api.get(`/game/${urlParams.get('game')}`)
-            .then(response => setGameData(response.data.game))
-            .catch(error => console.error(error))
-    }, [])
-
-
-    //pegando conexões entre os nós
-    useEffect(() => {
-        api.get(`/connection/${urlParams.get('game')}`)
-            .then(response => setNodesConnections(response.data.nodeConnection))
-            .catch(error => console.error(error))
-    }, [])
-
-    //pegando os dados do jogo
     const getNodes = async () => {
-        //localhost:8080/game/616891e32d2f7b39202f5186
         const gamesResult = await fetch(api_url + 'game/' + urlParams.get('game'), {
             method: 'GET',
             headers: {
@@ -163,13 +115,10 @@ const EditorScreen: React.FC = (props: any) => {
                 'Content-Type': 'application/json'
             }
         });
-        // console.log('fetch:', gamesResult)
         return gamesResult;
     }
 
-    //pegando as conexões entre os nós
     const getConnections = async () => {
-        //localhost:8080/connection/616891e32d2f7b39202f5186
         const connectionsResult = await fetch(api_url + 'connection/' + urlParams.get('game'), {
             method: 'GET',
             headers: {
@@ -178,74 +127,70 @@ const EditorScreen: React.FC = (props: any) => {
             }
         });
 
-        console.log(connectionsResult);
         return connectionsResult;
     }
 
     useEffect(() => {
-        const populate_2 = () => {
-            getGameData?.nodes.map((node: INode) => {
-                //pegando os labels
-                node.labels.map((label: ILabel) => {
-                    elementsLabels.push({
-                        'label': label.label,
-                        'color': label.color
-                    })
+        async function populate() {
+            const connectionsResult = await getConnections();
+            const connRes = await connectionsResult.json();
+            const gamesResult = await getNodes();
+            const result = await gamesResult.json();
+            result.nodes.map((item: any, index: any) => {
+                item.labels.map((item: any) => {
+                    savedElementsLabels.push(
+                        { 'name': item.label, 'color': item.color }
+                    )
                 })
-
-                //pegando os nodes
-                nodesElements.push({
-                    _id: node._id,
-                    nodeType: node.nodeType,
-                    markdownContent: node.markdownContent,
-                    compiled_content: node.compiled_content,
-                    name: node.name,
-                    startNode: node.startNode,
-                    endNode: node.endNode,
-                    duration: node.duration,
-                    textColor: node.textColor,
-                    backgroundColor: node.backgroundColor,
-                    nodeColor: node.nodeColor,
-                    nextNodes: node.nextNodes,
-                    nodeImage: node.nodeImage,
-                    theme: node.theme,
-                    // onEditClick: () => onEditClick(node._id),
-                    // onFormSaveClick: () => onFormSaveClick(),
-                    // createNodeConnectionForm: (card: any) => createNodeConnectionForm(card),
-                    // show: false,
-                    // tagsArray: savedElementsLabels,
-                    position: node.position,
-                    __v: node.__v,
-                    form: node.form,
-                    labels: node.labels
+                savedElements.push({
+                    id: item._id,
+                    type: item.nodeType,
+                    data: {
+                        id: item._id,
+                        history: item.markdownContent,
+                        compiled_content: item.compiled_content,
+                        title: item.name,
+                        nodeStart: item.startNode,
+                        nodeEnd: item.endNode,
+                        duration: item.duration,
+                        textColor: item.textColor,
+                        bgColor: item.backgroundColor,
+                        nodeColor: item.nodeColor,
+                        nextNodes: item.nextNodes,
+                        image: item.nodeImage,
+                        theme: item.theme,
+                        onEditClick: () => onEditClick(item._id),
+                        onFormSaveClick: () => onFormSaveClick(),
+                        createNodeConnectionForm: (card: any) => createNodeConnectionForm(card),
+                        show: false,
+                        // eslint-disable-next-line
+                        tagsArray: savedElementsLabels
+                    },
+                    position: item.position
                 })
-
-                //pegando as conexões entre os nodes
-                getNodesConnections.map((nodeConnection: INodeConnection, index: number) => {
-                    nodesConnections.push({
-                        __id: nodeConnection.__id,
-                        source: nodeConnection.source,
-                        target: nodeConnection.target,
-                        gameId: nodeConnection.gameId,
-                        __v: nodeConnection.__v,
-                        animated: true,
-                        arrowHeadType: 'arrowclosed' as ArrowHeadType,
-                        // style: { color: "white", stroke: "white" },
-                        sourceHandle: "b",
-                        targetHandle: "a"
-                    })
+                savedElementsLabels = []
+            })
+            connRes.nodeConnection.map((item: any, index: any) => {
+                savedElements.push({
+                    id: item._id,
+                    source: item.source,
+                    target: item.target,
+                    animated: true,
+                    arrowHeadType: 'arrowclosed' as ArrowHeadType,
+                    style: { color: "white", stroke: "white" },
+                    sourceHandle: "b",
+                    targetHandle: "a"
                 })
             })
             if (savedElements.length !== 0) {
                 setElements(savedElements);
             }
-
-            function onFormSaveClick() {
-                setUpdate(update => update = update + 1)
-            }
-
-            populate_2()
         }
+        function onFormSaveClick() {
+            setUpdate(update => update = update + 1)
+        }
+
+        populate()
     }, [update])
 
     const onElementsRemove = async (elementsToRemove: Elements) => {
@@ -262,9 +207,7 @@ const EditorScreen: React.FC = (props: any) => {
             })
         });
     }
-
     const onConnect = (params: Edge | Connection) => setElements((els: any) => addEdge({ ...params, animated: true, arrowHeadType: 'arrowclosed' as ArrowHeadType, style: { color: 'white', stroke: 'white' } }, els));
-
     const onLoad = (_reactFlowInstance: OnLoadParams) => {
         setReactFlowInstance(_reactFlowInstance);
     }
@@ -280,7 +223,6 @@ const EditorScreen: React.FC = (props: any) => {
         }
     }, [currentNodeInfo])
 
-    //id: id do node
     const onEditClick = async (id: any) => {
         setAlt1Disabled(false);
         setAlt2Disabled(false);
@@ -289,8 +231,6 @@ const EditorScreen: React.FC = (props: any) => {
         setDisabledAuxAlt(true);
         setDisabledAuxCard(true);
         setSelectedTags([])
-
-        //endpoint: http://localhost:8080/label
         const labelList = await fetch(api_url + 'label', {
             method: 'GET',
             headers: {
@@ -298,12 +238,6 @@ const EditorScreen: React.FC = (props: any) => {
                 'Content-Type': 'application/json'
             }
         });
-
-        console.log(labelList)
-
-        //endpoint: http://localhost:8080/label
-        // const findAllLabels = await api.get('/label')
-
         setCurrentID(id);
         setUpdateCurrentID(true);
         const result = await labelList.json();
@@ -319,8 +253,6 @@ const EditorScreen: React.FC = (props: any) => {
             });
 
             const resultNode = await nodeResult.json();
-            console.log('nodeResult aqui: ', nodeResult);
-
             setCurrentNodeInfo(resultNode);
         } else {
             setCurrentNodeInfo('unsaved');
@@ -558,7 +490,6 @@ const EditorScreen: React.FC = (props: any) => {
         setConstHistory(event);
         setCheckStatus((oldState: any) => ({ ...oldState, desc: true }))
     }
-
     const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value)
         setConstTitle(event.target.value)
@@ -595,11 +526,9 @@ const EditorScreen: React.FC = (props: any) => {
     const onChangeTagName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTagName(event.target.value)
     }
-
     const onChangeColor = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTagColor(event.target.value);
     }
-
     const onChangeOption = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOption(event.target.value);
         if (event.target.value !== "") {
@@ -757,6 +686,7 @@ const EditorScreen: React.FC = (props: any) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    type: 'game-create-update',
                     game: result.game
                 })
             });
@@ -793,13 +723,12 @@ const EditorScreen: React.FC = (props: any) => {
                 setTargetID(jsonSaved.gameNode._id)
                 setUpdateCon(true)
             }
-            sendMessage();
+            // sendMessage();
         } catch (err) {
             console.log("erro ao criar tag: " + err)
         }
         setUpdate(update => update = update + 1)
     }
-
     const apiEditNextNodes = async (nextNodes: any) => {
         await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
             method: 'PUT',
@@ -963,7 +892,6 @@ const EditorScreen: React.FC = (props: any) => {
             })
         });
     }
-
     return (
         <div className="container-fluid min-vh-100">
             <div className="row">
@@ -985,13 +913,6 @@ const EditorScreen: React.FC = (props: any) => {
                             onDragOver={onDragOver}
                             nodeTypes={nodeTypes}
                         >
-                            {/* <MiniMap
-              nodeColor={(node) => {
-                switch (node.type) {
-                  default: return '#f5e0db';
-                }
-              }}
-            /> */}
                             <MiniMap className="reactflow-minimap" />
                             <NodeEdit
                                 openModal={modalIsOpen}
@@ -1016,14 +937,6 @@ const EditorScreen: React.FC = (props: any) => {
                                 card2Disabled={card2Disabled}
                                 currentNodeInfo={currentNodeInfo} //currentNodeInfo
                             />
-                            {/* <TopMenu 
-              saveTags={saveTags} 
-              onChangeTagName={onChangeTagName} 
-              onChangeColor={onChangeColor}
-              elem={elements}
-              gameID={urlParams.get('game')}
-            /> */}
-
                             <Controls />
                             <Background
                                 variant={'lines' as BackgroundVariant}
@@ -1032,14 +945,17 @@ const EditorScreen: React.FC = (props: any) => {
                                 gap={10}
                             />
                             <DragAndDrop />
-                            <ModalAttributesAndEvents />
+                            <div>
+                                <ModalAttributesAndEvents elements={elements}/>
+                            </div>
                         </ReactFlow>
-                        {/* <Sidebar2/> */}
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
+
+// export default EditorScreen;
 
 export { EditorScreen };
