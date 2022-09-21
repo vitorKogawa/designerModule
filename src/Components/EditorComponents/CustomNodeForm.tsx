@@ -177,7 +177,7 @@ function CustomNodeComponent({ data }: any){
   }
 
   useEffect(() => {
-    getForms();
+    // getForms();
     setTitle(data.title)
   //  updateNodeForm()
   }, [])
