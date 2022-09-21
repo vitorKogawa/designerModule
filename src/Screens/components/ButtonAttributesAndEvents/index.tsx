@@ -8,7 +8,11 @@ import { api } from '../../../services/api';
 
 import './styles/style.scss'
 
-const ModalAttributesAndEvents: React.FC = () => {
+interface IModalAttributesAndEvents {
+    elements: any
+}
+
+const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) => {
     //modal
     const [lgShow, setLgShow] = useState(false);
     //tabs
@@ -114,7 +118,7 @@ const ModalAttributesAndEvents: React.FC = () => {
         const newEvent = {
             name: getEventName,
             source_type: getEventSourceType,
-            source_id:  getEventSourceID,
+            source_id: getEventSourceID,
             operator: getEventOperator,
             value: String(getEventValue),
             target_type: getEventTargetType,
@@ -123,11 +127,11 @@ const ModalAttributesAndEvents: React.FC = () => {
         }
 
         await api.post('events/create', newEvent)
-        .then(response => {
-            console.log(response.data, response.status)
-        }).catch(error => {
-            console.log(error)
-        })
+            .then(response => {
+                console.log(response.data, response.status)
+            }).catch(error => {
+                console.log(error)
+            })
     }
     //Eventos para o formulário de cadastro do atributo[END]
 
@@ -144,9 +148,9 @@ const ModalAttributesAndEvents: React.FC = () => {
             <Button
                 onClick={() => setLgShow(true)}
                 className="btn btn-primary position-absolute bottom-0 end-0 m-2"
-                style={{ zIndex: 999 }}
+                style={{ zIndex: 999, display: props.elements.length > 0 ? 'block' : 'none' }}
             >
-                Atributos / Eventos
+                Atributos {props.elements.length >= 2 ? '/ Eventos' : ''}
             </Button>
 
 
@@ -214,49 +218,55 @@ const ModalAttributesAndEvents: React.FC = () => {
                             </Form>
                         </Tab>
                         <Tab eventKey="eventos" title="Eventos">
-                            <Form onSubmit={handleSubmit_Events}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Nome do Evento</Form.Label>
-                                    <Form.Control type="text" onChange={handleEventName} />
-                                </Form.Group>
+                            {
+                                props.elements.length >= 2 ?
+                                    <Form onSubmit={handleSubmit_Events}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Nome do Evento</Form.Label>
+                                            <Form.Control type="text" onChange={handleEventName} />
+                                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Source Type</Form.Label>
-                                    <Form.Select aria-label="Selecione o source type do evento" onChange={handleEventSourceType}>
-                                        <option value="source_type_1">source_type_1</option>
-                                        <option value="source_type_2">source_type_2</option>
-                                        <option value="source_type_3">source_type_3</option>
-                                    </Form.Select>
-                                </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Source Type</Form.Label>
+                                            <Form.Select aria-label="Selecione o source type do evento" onChange={handleEventSourceType}>
+                                                {
+                                                    props.elements.map((item: any) => <option value={item.id}>{item.id}</option>)
+                                                }
+                                            </Form.Select>
+                                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Operador do evento</Form.Label>
-                                    <Form.Control type="text" onChange={handleEventOperator} />
-                                </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Operador do evento</Form.Label>
+                                            <Form.Control type="text" onChange={handleEventOperator} />
+                                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Valor do evento</Form.Label>
-                                    <Form.Control type="text" onChange={handleEventValue} />
-                                </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Valor do evento</Form.Label>
+                                            <Form.Control type="text" onChange={handleEventValue} />
+                                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Target Type</Form.Label>
-                                    <Form.Select aria-label="Selecione o target type do evento" onChange={handleEventTargetType}>
-                                        <option value="target_type_1">target_type_1</option>
-                                        <option value="target_type_2">target_type_2</option>
-                                        <option value="target_type_3">target_type_3</option>
-                                    </Form.Select>
-                                </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Target Type</Form.Label>
+                                            <Form.Select aria-label="Selecione o target type do evento" onChange={handleEventTargetType}>
+                                                {
+                                                    props.elements.map((item: any) => <option value={item.id}>{item.id}</option>)
+                                                }
+                                            </Form.Select>
+                                        </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Modificador do evento</Form.Label>
-                                    <Form.Control type="number" onChange={handleEventModifier} />
-                                </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Modificador do evento</Form.Label>
+                                            <Form.Control type="number" onChange={handleEventModifier} />
+                                        </Form.Group>
 
-                                <Button variant="primary" type="submit">
-                                    Cadastrar Evento
-                                </Button>
-                            </Form>
+                                        <Button variant="primary" type="submit">
+                                            Cadastrar Evento
+                                        </Button>
+                                    </Form>
+                                    :
+                                    <h2>É necssário no mínimo 2 nós criados para configuração de um novo Evento</h2>
+                            }
+
                         </Tab>
                     </Tabs>
 
