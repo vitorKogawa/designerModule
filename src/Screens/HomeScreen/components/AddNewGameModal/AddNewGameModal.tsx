@@ -85,7 +85,7 @@ const AddNewGameModal: React.FC = () => {
             .then(response => {
                 console.log(response.data)
                 setGameCreatedId(response.data._id)
-                sendMessage(response.data)
+                // sendMessage(response.data)
             })
             .catch(error => console.error(error))
         }
