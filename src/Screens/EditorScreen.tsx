@@ -115,6 +115,7 @@ function EditorScreen(props: any) {
                 'Content-Type': 'application/json'
             }
         });
+        // console.log(gamesResult)
         return gamesResult;
     }
 
@@ -136,7 +137,7 @@ function EditorScreen(props: any) {
             const connRes = await connectionsResult.json();
             const gamesResult = await getNodes();
             const result = await gamesResult.json();
-            result.nodes.map((item: any, index: any) => {
+            result.game.nodes.map((item: any, index: any) => {
                 item.labels.map((item: any) => {
                     savedElementsLabels.push(
                         { 'name': item.label, 'color': item.color }
@@ -301,6 +302,7 @@ function EditorScreen(props: any) {
                 tagsArray: Array()
             },
         };
+        console.log(`Newnode => ${ newNode.data.createNodeConnection }`)
         setElements((es: Elements) => es.concat(newNode));
         if (origin === 1) {
             apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor, type);
@@ -317,6 +319,7 @@ function EditorScreen(props: any) {
     }, [targetID])
 
     useEffect(() => {
+        console.log("createConn... ")
         const createConn = async () => {
             if (updateCon) {
                 setNextNodes([...Array({ id: targetID, choice: auxCardAlt[count] })]);
@@ -644,6 +647,7 @@ function EditorScreen(props: any) {
     }
 
     const createNodeConnection = () => {
+        console.log("CreateConnection... ")
         auxCardName.forEach(no => {
             if (no !== '') {
                 let exist = false;
