@@ -137,7 +137,7 @@ function EditorScreen(props: any) {
             const connRes = await connectionsResult.json();
             const gamesResult = await getNodes();
             const result = await gamesResult.json();
-            result.game.nodes.map((item: any, index: any) => {
+            result.nodes.map((item: any, index: any) => {
                 item.labels.map((item: any) => {
                     savedElementsLabels.push(
                         { 'name': item.label, 'color': item.color }
@@ -318,8 +318,12 @@ function EditorScreen(props: any) {
         }
     }, [targetID])
 
+
     useEffect(() => {
         console.log("createConn... ")
+        console.log(`Count => ${ count }`)
+        console.log(`updatecon => ${ updateCon }`)
+        console.log(`auxCardName => ${ auxCardName }`)
         const createConn = async () => {
             if (updateCon) {
                 setNextNodes([...Array({ id: targetID, choice: auxCardAlt[count] })]);
@@ -361,6 +365,7 @@ function EditorScreen(props: any) {
     }, [selectedTags])
 
     const onDrop = (event: any) => {
+        console.log("onDrop...")
         if (elements.length >= 1)
             if (elements[0].id.search('1000') !== -1)
                 elements.splice(0, 1);
@@ -630,6 +635,7 @@ function EditorScreen(props: any) {
     }
 
     const createNodeConnectionForm = (card: any) => {
+        console.log("CreateNodeConnectionForm...")
         if (card !== '') {
             numberAux = numberAux + 1;
             const position = {
