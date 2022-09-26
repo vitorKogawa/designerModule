@@ -230,7 +230,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                             <Form.Label>Source Type</Form.Label>
                                             <Form.Select aria-label="Selecione o source type do evento" onChange={handleEventSourceType}>
                                                 {
-                                                    props.elements.map((item: any) => <option value={item.id}>{item.id}</option>)
+                                                    props.elements.map((item: any) => <option value={item.id} key={item.id}>{item.id}</option>)
                                                 }
                                             </Form.Select>
                                         </Form.Group>
@@ -249,7 +249,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                             <Form.Label>Target Type</Form.Label>
                                             <Form.Select aria-label="Selecione o target type do evento" onChange={handleEventTargetType}>
                                                 {
-                                                    props.elements.map((item: any) => <option value={item.id}>{item.id}</option>)
+                                                    props.elements.map((item: any) => <option value={item.id} key={item.id}>{item.id}</option>)
                                                 }
                                             </Form.Select>
                                         </Form.Group>
