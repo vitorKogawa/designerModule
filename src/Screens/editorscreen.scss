@@ -1,5 +1,30 @@
+@import '../../scss/custom.scss';
+
 .react-flow__controls
 {
     position: absolute;
-    top: 0;
+    top: 1em;
+}
+
+.btn-play-wrapper{  
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+    padding: 0.2em;
+
+    position: absolute;
+    bottom: 5.5em;
+    right: 0;
+
+    z-index: 10;
+}
+
+.my-btn-play{
+    border: none;
+    border-radius: 0.2em;
+    background-color: #fff;
+    color: #212121;
+    font-size: 20px;
 }

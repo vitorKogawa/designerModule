@@ -1,28 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactFlow, { removeElements, addEdge, MiniMap, Controls, Background, Elements, Edge, Connection, OnLoadParams, BackgroundVariant, ArrowHeadType } from 'react-flow-renderer';
-import { CustomNode } from '../Components/EditorComponents/CustomNodeComponent';
+import { CustomNodeComponent } from '../Components/EditorComponents/CustomNodeComponent';
 import CustomNodeForm from '../Components/EditorComponents/CustomNodeForm';
 // import Sidebar from '../Components/EditorComponents/Sidebar';
 import NodeEdit from '../Components/EditorComponents/NodeEdit';
 import TopMenu from '../Components/EditorComponents/TopMenu';
 import { api_url } from '../public/variables';
 import firebase from 'firebase/app';
-import "firebase/auth";
 import showdown from 'showdown';
 
-import './editorscreen.scss'
 import { DragAndDrop } from './components/DragAndDrop/DragAndDrop';
 import { ModalAttributesAndEvents } from './components/ButtonAttributesAndEvents';
 import { Sidebar } from './components/Sidebar/Sidebar';
-import CommonNode from './HomeScreen/pages/BuildingGame/components/Flow/components/Nodes/CommonNode/CommonNode';
+import "firebase/auth";
+import './editorscreen.scss'
+import { IAttribute } from './HomeScreen/interfaces/IAttributes';
+import { api } from '../services/api';
+import { BsPlay } from 'react-icons/bs'
+import { useHistory } from 'react-router-dom';
+// import CommonNode from './HomeScreen/pages/BuildingGame/components/Flow/components/Nodes/CommonNode/CommonNode';
 
 
 const nodeTypes = {
-    special: CommonNode,
+    special: CustomNodeComponent,
     formType: CustomNodeForm
 };
 
 function EditorScreen(props: any) {
+    const nav_history = useHistory();
+
     let initialElements = [
         {
             id: "1000",
@@ -50,7 +56,7 @@ function EditorScreen(props: any) {
     const [numberPositionX, setNumberPositionX] = useState(800);
     const reactFlowWrapper = useRef(null as any | null);
     const [checkStatus, setCheckStatus] = useState(arrayCheck)
-    const [elements, setElements] = useState(initialElements as any);
+    const [elements, setElements] = useState<any[]>(initialElements as any);
     const [idNumber, setIdNumber] = useState('0');
     const [reactFlowInstance, setReactFlowInstance] = useState(null as any | null);
     const [history, setHistory] = useState('');
@@ -106,6 +112,19 @@ function EditorScreen(props: any) {
     const [compiledContent, setCompiledContent] = useState('');
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    const [getAttributes, setAttributes] = useState<IAttribute[]>([])
+
+
+    //controle de estado para modal
+    const [modalShow, setModalShow] = useState(false);
+
+    useEffect(() => {
+        const getAllAttributes = async () => await api.get('/attributes')
+            .then(response => setAttributes(response.data.attributes))
+            .catch(error => console.error(error))
+
+        getAllAttributes()
+    }, [])
 
     const getNodes = async () => {
         const gamesResult = await fetch(api_url + 'game/' + urlParams.get('game'), {
@@ -225,6 +244,11 @@ function EditorScreen(props: any) {
     }, [currentNodeInfo])
 
     const onEditClick = async (id: any) => {
+        //abrindo modal
+        console.log("onEditClick...")
+        console.log(id)
+        setModalShow(true)
+
         setAlt1Disabled(false);
         setAlt2Disabled(false);
         setCard1Disabled(false);
@@ -302,7 +326,7 @@ function EditorScreen(props: any) {
                 tagsArray: Array()
             },
         };
-        console.log(`Newnode => ${ newNode.data.createNodeConnection }`)
+        console.log(`Newnode => ${newNode.data.createNodeConnection}`)
         setElements((es: Elements) => es.concat(newNode));
         if (origin === 1) {
             apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor, type);
@@ -320,10 +344,6 @@ function EditorScreen(props: any) {
 
 
     useEffect(() => {
-        console.log("createConn... ")
-        console.log(`Count => ${ count }`)
-        console.log(`updatecon => ${ updateCon }`)
-        console.log(`auxCardName => ${ auxCardName }`)
         const createConn = async () => {
             if (updateCon) {
                 setNextNodes([...Array({ id: targetID, choice: auxCardAlt[count] })]);
@@ -495,10 +515,12 @@ function EditorScreen(props: any) {
 
     const onChangeDescription = (event: any) => {
         setHistory(event)
-        setConstHistory(event);
+        setConstHistory(event.blocks.map((item: any) => item.text).join('\n'));
         setCheckStatus((oldState: any) => ({ ...oldState, desc: true }))
     }
+
     const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value)
         setTitle(event.target.value)
         setConstTitle(event.target.value)
         setCheckStatus((oldState: any) => ({ ...oldState, title: true }))
@@ -629,7 +651,9 @@ function EditorScreen(props: any) {
     }, [constNodeColor])
 
     const claick = () => {
+        console.log("NextNodes: ", nextNodes)
         console.log("Elements: ", elements);
+        console.log(typeof elements);
         console.log("Tags: ", tags)
         console.log("SelectedTags: ", selectedTags)
     }
@@ -833,7 +857,7 @@ function EditorScreen(props: any) {
     }, [compiledContent])
 
     const apiEditNodes = async (name: string, duration: string, markdownContent: string, theme: any) => {
-        setCompiledContent(converter.makeHtml(markdownContent))
+        // setCompiledContent(converter.makeHtml(markdownContent))
         try {
             await fetch(`${api_url}node/edit/${currentID}`, {
                 method: 'PUT',
@@ -902,6 +926,19 @@ function EditorScreen(props: any) {
             })
         });
     }
+
+    const onClickPlay = () => {
+        const url = new URL(window.location.href)
+        const gameID = url.searchParams.get("game")
+
+        nav_history.push({
+            pathname: '/play',
+            search: `?game=${gameID}`
+        })
+
+        window.localStorage.setItem("elements", JSON.stringify(elements))
+    }
+
     return (
         <div className="container-fluid min-vh-100">
             <div className="row">
@@ -910,6 +947,12 @@ function EditorScreen(props: any) {
                 </div>
 
                 <div className="col-10 d-flex bg-surface flex-column m-0 p-0">
+                    <div className="btn-play-wrapper">
+                        <button className="my-btn-play" onClick={onClickPlay}>
+                            <BsPlay />
+                            Play
+                        </button>
+                    </div>
                     <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                         <ReactFlow
                             onPaneClick={claick}
@@ -946,6 +989,10 @@ function EditorScreen(props: any) {
                                 card1Disabled={card1Disabled}
                                 card2Disabled={card2Disabled}
                                 currentNodeInfo={currentNodeInfo} //currentNodeInfo
+
+
+                                show={modalShow}
+                                onHide={() => setModalShow(false)}
                             />
                             <Controls />
                             <Background
@@ -956,7 +1003,7 @@ function EditorScreen(props: any) {
                             />
                             <DragAndDrop />
                             <div>
-                                <ModalAttributesAndEvents elements={elements}/>
+                                <ModalAttributesAndEvents elements={elements} attributes={getAttributes} />
                             </div>
                         </ReactFlow>
                     </div>
