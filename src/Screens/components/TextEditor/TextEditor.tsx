@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { EditorState } from "draft-js";
-import { Editor } from 'react-draft-wysiwyg';
+import { Editor, RawDraftContentState } from 'react-draft-wysiwyg';
 import "draft-js/dist/Draft.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./styles/style.scss"
 
+interface ITextEditor {
+  onChangeDescription: Function
+}
 
-const MyEditor: React.FC = () => {
+const MyEditor: React.FC<ITextEditor> = (props) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
+
+  const onContentChange = (event: RawDraftContentState) => props.onChangeDescription(event)
+  
 
   return <Editor 
     editorState={editorState} 
@@ -21,6 +27,8 @@ const MyEditor: React.FC = () => {
         link: { inDropdown: true },
         history: { inDropdown: true },
     }}
+    onChange={(event) => onContentChange(event)}
+    placeholder="testando para ver se o componente aceita um placeholder."
     />;
 };
 
