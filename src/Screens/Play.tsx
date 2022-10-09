@@ -7,8 +7,10 @@ import CardForm from '../Components/GameComponents/CardForm';
 import { api_url } from '../public/variables';
 
 function Play(props: any){
-    const location:any = useLocation();
-    let elements = JSON.parse(location.state.elements);
+    // const location:any = useLocation();
+    // let elements = JSON.parse(location.state.elements);
+    let elements = JSON.parse(window.localStorage.getItem("elements") as any)
+    console.log(elements)
     const [nextFormNode, setNextFormNode] = useState("");
     const [elemUpdated, setElemUpdated] = useState(Array());
     const [duration, setDuration] = useState(0);
