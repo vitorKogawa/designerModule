@@ -1,15 +1,17 @@
 import { extname } from 'path';
-import React, { ChangeEvent, FormEvent, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react'
 import { Button, Modal, Tabs, Tab, Form } from 'react-bootstrap';
 import { SyntheticEvent } from 'react-draft-wysiwyg';
 import { BsPlus } from 'react-icons/bs'
 import Swal from 'sweetalert2';
 import { api } from '../../../services/api';
+import { IAttribute } from '../../HomeScreen/interfaces/IAttributes';
 
 import './styles/style.scss'
 
 interface IModalAttributesAndEvents {
     elements: any
+    attributes: IAttribute[]
 }
 
 const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) => {
@@ -17,6 +19,8 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     const [lgShow, setLgShow] = useState(false);
     //tabs
     const [key, setKey] = useState('atributos');
+
+    useEffect(() => console.log(props.elements), [])
 
 
 
@@ -42,11 +46,8 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     const [getEventValue, setEventValue] = useState<number>(0)
     const [getEventTargetType, setEventTargetType] = useState<string>("")
     const [getEventTargetID, setEventTargetID] = useState<string>("")
-    const [getEventModifier, setEventModifier] = useState<number>(0)
+    const [getEventModifier, setEventModifier] = useState<string>("")
     //variaveis para formulário de cadastro do evento [END]
-
-
-
 
 
     //funções para o formulário de cadastro do atributo[START]
@@ -79,10 +80,11 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
             headers: {
                 "Content-Type": "multipart/form-data",
             }
-        }).then(response => Math.trunc(response.status / 100) == 2 ? sucessMessage('Uhuuu!!', 'Atributo cadastrado com sucesso!') : errorMessage('Eita!', 'Falha ao cadastrar atributo.')
+        }).then(response => Math.trunc(response.status / 100) === 2 ? sucessMessage('Uhuuu!!', 'Atributo cadastrado com sucesso!') : errorMessage('Eita!', 'Falha ao cadastrar atributo.')
         ).catch(error => console.error(error))
 
     }
+
 
     const errorMessage = (title: string, text: string) => Swal.fire({
         icon: 'error',
@@ -102,16 +104,20 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     //funções para o formulário de cadastro do atributo[END]
 
 
-
-
-
     //Eventos para o formulário de cadastro do atributo[START]
     const handleEventName = (event: ChangeEvent<HTMLInputElement>) => setEventName(event.target.value)
-    const handleEventSourceType = (event: ChangeEvent<HTMLSelectElement>) => setEventSourceType(event.target.value)
+    const handleEventSourceType = (event: ChangeEvent<HTMLSelectElement>) => {
+        setEventSourceType(event.target.value)
+        setEventSourceID(event.target.value)
+    }
     const handleEventOperator = (event: ChangeEvent<HTMLInputElement>) => setEventOperator(event.target.value)
     const handleEventValue = (event: ChangeEvent<HTMLInputElement>) => setEventValue(Number(event.target.value))
-    const handleEventTargetType = (event: ChangeEvent<HTMLSelectElement>) => setEventTargetType(event.target.value)
-    const handleEventModifier = (event: ChangeEvent<HTMLInputElement>) => setEventModifier(Number(event.target.value))
+    const handleEventTargetType = (event: ChangeEvent<HTMLSelectElement>) => {
+        setEventTargetType(event.target.value)
+        setEventTargetID(event.target.value)
+    }
+    const handleEventModifier = (event: ChangeEvent<HTMLSelectElement>) => setEventModifier(event.target.value)
+
     const handleSubmit_Events = async (event: FormEvent) => {
         event.preventDefault()
 
@@ -126,6 +132,8 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
             modifier: String(getEventModifier)
         }
 
+        // console.log(newEvent)
+
         await api.post('events/create', newEvent)
             .then(response => {
                 console.log(response.data, response.status)
@@ -133,22 +141,13 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                 console.log(error)
             })
     }
-    //Eventos para o formulário de cadastro do atributo[END]
-
-
-
-
-
-    //Eventos para cadastro de eventos[START]
-    //Eventos para cadastro de eventos[END]
-
 
     return (
         <React.Fragment>
             <Button
                 onClick={() => setLgShow(true)}
                 className="btn btn-primary position-absolute bottom-0 end-0 m-2"
-                style={{ zIndex: 999, display: props.elements.length > 0 ? 'block' : 'none' }}
+                style={{ zIndex: 999, display: props.elements.length >= 1 ? 'block' : 'none' }}
             >
                 Atributos {props.elements.length >= 2 ? '/ Eventos' : ''}
             </Button>
@@ -196,7 +195,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                     <Form.Control type="text" onChange={handleAttributeDefaultValue} />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3">
+                                {/* <Form.Group className="mb-3">
                                     <Form.Check
                                         type="switch"
                                         id="chbx_attribute_player"
@@ -204,7 +203,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                         onClick={() => handleIsAttributPlayer(!getIsAttributePlayer)}
                                         checked={getIsAttributePlayer}
                                     />
-                                </Form.Group>
+                                </Form.Group> */}
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Selecione um ícone para este atributo</Form.Label>
@@ -229,6 +228,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Source Type</Form.Label>
                                             <Form.Select aria-label="Selecione o source type do evento" onChange={handleEventSourceType}>
+                                                <option value="">Selecione o nó de origem</option>
                                                 {
                                                     props.elements.map((item: any) => <option value={item.id} key={item.id}>{item.id}</option>)
                                                 }
@@ -248,6 +248,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Target Type</Form.Label>
                                             <Form.Select aria-label="Selecione o target type do evento" onChange={handleEventTargetType}>
+                                                <option value="">Selecione o nó de disparo</option>
                                                 {
                                                     props.elements.map((item: any) => <option value={item.id} key={item.id}>{item.id}</option>)
                                                 }
@@ -255,8 +256,13 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                         </Form.Group>
 
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Modificador do evento</Form.Label>
-                                            <Form.Control type="number" onChange={handleEventModifier} />
+                                            <Form.Label>Modificador do evento (Atributo a ser afetado)</Form.Label>
+                                            <Form.Select aria-label="Selecione o atributo a ser alterado" onChange={handleEventModifier}>
+                                                <option value="">Selecione o atributo a ser alterado</option>
+                                                {
+                                                    props.attributes.map((attr: IAttribute) => <option value={attr._id} key={attr._id}>{attr.name}</option>)
+                                                }
+                                            </Form.Select>
                                         </Form.Group>
 
                                         <Button variant="primary" type="submit">
@@ -264,7 +270,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                         </Button>
                                     </Form>
                                     :
-                                    <h2>É necssário no mínimo 2 nós criados para configuração de um novo Evento</h2>
+                                    <h3>É necessário no mínimo 2 nós criados para configuração de um novo Evento</h3>
                             }
 
                         </Tab>
