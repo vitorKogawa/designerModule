@@ -138,7 +138,7 @@ const EditNodeModal: React.FC<IEditNodeModal> = (props) => {
                             >
                                 Markdown field (without preview)
                             </label>
-                            <MyEditor/>
+                            {/* <MyEditor/> */}
                             {/* <textarea
                                 id="inputEditGameMarkdown"
                                 className="form-control"
