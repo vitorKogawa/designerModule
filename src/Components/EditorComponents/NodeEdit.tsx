@@ -1,14 +1,105 @@
-import { useEffect, useState } from 'react';
-import Modal from 'react-modal';
+import { useEffect, useState, Fragment } from 'react';
+// import Modal from 'react-modal';
 import Switch from "react-switch";
 import Select from 'react-select';
 import MDEditor from '@uiw/react-md-editor';
 import { api_url } from '../../public/variables';
+import { Modal, Button } from 'react-bootstrap'
+import Spinner from 'react-bootstrap/Spinner'
 
 import './EditorComponentsStyles/NodeEditStyle.css';
+import './../scss/nodedit.scss';
+import { BsEyeFill } from 'react-icons/bs';
+import { MyEditor } from '../../Screens/components/TextEditor/TextEditor'
+import { Link } from 'react-router-dom';
 
-export default function NodeEdit(props: any){
-  
+
+const PathTab: React.FC = () => {
+  return (
+    <Fragment>
+      <div className="mb-3">
+        <button className="btn btn-outline-primary">
+          Add new
+        </button>
+      </div>
+      <div className="row mb-3">
+        <div className="col">
+          <label
+            htmlFor="choiceField"
+            className="form-label"
+          >
+            Choice
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Small"
+            id="choiceField"
+          />
+        </div>
+        <div className="col">
+          <label
+            htmlFor="cardField"
+            className="form-label"
+          >
+            Card
+          </label>
+          <select
+            className="form-select"
+            placeholder="Small"
+            aria-label="Small"
+            id="cardField"
+          >
+            <option selected>Small</option>
+          </select>
+        </div>
+      </div>
+    </Fragment>
+  )
+}
+
+const TagTab: React.FC = () => {
+  return (
+    <Fragment>
+      <label
+        htmlFor="newTagsField"
+        className="form-label"
+      >
+        New Tags
+      </label>
+      <select
+        className="form-select"
+        placeholder="Small"
+        id="newTagsField"
+        aria-label="Large"
+      >
+        <option selected>Large</option>
+      </select>
+
+    </Fragment>
+  )
+}
+
+const ColorTab: React.FC = () => {
+  return (
+    <div className="row">
+      <div className="col-8">
+        <label htmlFor="colorPallete" className="form-label">Color pallete</label>
+        <select name="colorPallete" id="colorPallete" className="form-select">
+          <option selected>Medium</option>
+        </select>
+      </div>
+      <div className="col-4 d-flex align-items-end">
+        <button className="btn btn-pallet-1 mx-1 w-25 h-50 rounded-pill" onClick={() => console.log("pallet-1")}></button>
+        <button className="btn btn-pallet-2 mx-1 w-25 h-50 rounded-pill" onClick={() => console.log("pallet-2")}></button>
+        <button className="btn btn-pallet-3 mx-1 w-25 h-50 rounded-pill" onClick={() => console.log("pallet-3")}></button>
+      </div>
+    </div>
+  )
+}
+
+export default function NodeEdit(props: any) {
+
   const [nodeInfo, setNodeInfo] = useState(false);
   const [nodeName, setNodeName] = useState('');
   const [duration, setDuration] = useState(0);
@@ -22,126 +113,128 @@ export default function NodeEdit(props: any){
   const [card1ID, setCard1ID] = useState('');
   const [card2ID, setCard2ID] = useState('');
   const [themeSwitch, setThemeSwitch] = useState('');
-  const [theme, setTheme] = useState({value: '', label: ''});
+  const [theme, setTheme] = useState({ value: '', label: '' });
   const [tags, setTags] = useState(Array());
   const [card1, setCard1] = useState('');
   const [card2, setCard2] = useState('');
 
-  
-const groupStyles = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-};
-const groupBadgeStyles = {
-  backgroundColor: '#EBECF0',
-  borderRadius: '2em',
-  color: '#172B4D',
-  display: 'inline-block',
-  fontSize: 12,
-  lineHeight: '1',
-  minWidth: 1,
-  padding: '0.16666666666667em 0.5em'
-};
 
-const options = [
-  { value: 'Chocolate', label: 'Chocolate' },
-  { value: 'Vanilla', label: 'Vanilla' }
-]
+  const groupStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  };
+  const groupBadgeStyles = {
+    backgroundColor: '#EBECF0',
+    borderRadius: '2em',
+    color: '#172B4D',
+    display: 'inline-block',
+    fontSize: 12,
+    lineHeight: '1',
+    minWidth: 1,
+    padding: '0.16666666666667em 0.5em'
+  };
 
-  const formatGroupLabel = (data:any) => (
+  const options = [
+    { value: 'Chocolate', label: 'Chocolate' },
+    { value: 'Vanilla', label: 'Vanilla' }
+  ]
+
+  const formatGroupLabel = (data: any) => (
     <div style={groupStyles}>
       <span>{data.label}</span>
       <span style={groupBadgeStyles}>{data.options.length}</span>
     </div>
   );
   const customStyles = {
-      overlay: {
-          zIndex: 1000,
-          height: '100vh',
-          backgroundColor: 'rgba(0, 2, 5, 0.8)'
-      },
-      content : {
-        borderRadius: '5%',
-        border: '0',
-        overflowy: 'auto',
-        maxHeight: '90vh',
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        boxShadow: '0 0 30px 0 rgba(0, 0, 0, 0.25)',
-        paddingBottom: '20px',
-        backgroundColor: '#262626',
-        color: '#8b927d',
-      }
-    };
-
-    const getNode = async (id:number, card:number) => {
-      const nodeResult = await fetch(api_url+'node/'+id, {
-        method: 'GET',
-        headers: {
-          "Access-Control-Allow-Origin" : "*", 
-          'Content-Type': 'application/json'
-        }
-      });
-      const result = await nodeResult.json();
-      if(card === 1)
-        setCard1(result.gameNode.name);
-      else if(card === 2)
-        setCard2(result.gameNode.name)
+    overlay: {
+      zIndex: 1000,
+      height: '100vh',
+      backgroundColor: 'rgba(0, 2, 5, 0.8)'
+    },
+    content: {
+      borderRadius: '5%',
+      border: '0',
+      overflowy: 'auto',
+      maxHeight: '90vh',
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      boxShadow: '0 0 30px 0 rgba(0, 0, 0, 0.25)',
+      paddingBottom: '20px',
+      backgroundColor: '#262626',
+      color: '#8b927d',
     }
+  };
+
+  const getNode = async (id: number, card: number) => {
+    const nodeResult = await fetch(api_url + 'node/' + id, {
+      method: 'GET',
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json'
+      }
+    });
+    const result = await nodeResult.json();
+    if (card === 1)
+      setCard1(result.gameNode.name);
+    else if (card === 2)
+      setCard2(result.gameNode.name)
+  }
 
   useEffect(() => {
-    if(card1 !== '')
+    if (card1 !== '')
       console.log(card1)
-    if(card2 !== '')
+    if (card2 !== '')
       console.log(card2)
   }, [card1, card2])
 
+  useEffect(() => setNodeInfo(true), [])
+
   useEffect(() => {
-      Modal.setAppElement('#root');
-      if(props.currentNodeInfo !== null){
-        const themeType = {value: props.currentNodeInfo.gameNode.theme, label: props.currentNodeInfo.gameNode.theme}
-        setNodeInfo(true);
-        setNodeName(props.currentNodeInfo.gameNode.name);
-        setTheme(themeType);
-        setDuration(props.currentNodeInfo.gameNode.duration);
-        setNodeColor(props.currentNodeInfo.gameNode.nodeColor);
-        setTextColor(props.currentNodeInfo.gameNode.textColor);
-        setBackgroundColor(props.currentNodeInfo.gameNode.backgroundColor);
-        setStartNode(props.currentNodeInfo.gameNode.startNode);
-        setEndNode(props.currentNodeInfo.gameNode.endNode);
-        setTags(props.currentNodeInfo.gameNode.labels);
-        if(props.currentNodeInfo.gameNode.nextNodes.length !== 0){
-          getNode(props.currentNodeInfo.gameNode.nextNodes[0].id, 1);
-          setAlt1(props.currentNodeInfo.gameNode.nextNodes[0].choice);
-          setCard1ID(props.currentNodeInfo.gameNode.nextNodes[0].id);
-          if(props.currentNodeInfo.gameNode.nextNodes.length === 2){
-            getNode(props.currentNodeInfo.gameNode.nextNodes[1].id, 2);
-            setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
-            setCard2ID(props.currentNodeInfo.gameNode.nextNodes[1].id);
-          }else{
-            setAlt2('');
-            setCard2('');
-          }
-        }
-        else{
-          setAlt1('');
-          setCard1('');
+    // Modal.setAppElement('#root');
+    if (props.currentNodeInfo !== null) {
+      const themeType = { value: props.currentNodeInfo.gameNode.theme, label: props.currentNodeInfo.gameNode.theme }
+      setNodeInfo(true);
+      setNodeName(props.currentNodeInfo.gameNode.name);
+      setTheme(themeType);
+      setDuration(props.currentNodeInfo.gameNode.duration);
+      setNodeColor(props.currentNodeInfo.gameNode.nodeColor);
+      setTextColor(props.currentNodeInfo.gameNode.textColor);
+      setBackgroundColor(props.currentNodeInfo.gameNode.backgroundColor);
+      setStartNode(props.currentNodeInfo.gameNode.startNode);
+      setEndNode(props.currentNodeInfo.gameNode.endNode);
+      setTags(props.currentNodeInfo.gameNode.labels);
+      if (props.currentNodeInfo.gameNode.nextNodes.length !== 0) {
+        getNode(props.currentNodeInfo.gameNode.nextNodes[0].id, 1);
+        setAlt1(props.currentNodeInfo.gameNode.nextNodes[0].choice);
+        setCard1ID(props.currentNodeInfo.gameNode.nextNodes[0].id);
+        if (props.currentNodeInfo.gameNode.nextNodes.length === 2) {
+          getNode(props.currentNodeInfo.gameNode.nextNodes[1].id, 2);
+          setAlt2(props.currentNodeInfo.gameNode.nextNodes[1].choice);
+          setCard2ID(props.currentNodeInfo.gameNode.nextNodes[1].id);
+        } else {
           setAlt2('');
           setCard2('');
         }
-      }    
+      }
+      else {
+        setAlt1('');
+        setCard1('');
+        setAlt2('');
+        setCard2('');
+      }
+    }
   }, [props.currentNodeInfo])
 
-  const onNameChange = (event:any) => {
+  const onNameChange = (event: any) => {
     setNodeName(event.target.value);
     props.onChangeTitle(event);
   }
-  const onDurationChange = (event:any) => {
+  const onDurationChange = (event: any) => {
     setDuration(event.target.value);
     props.onChangeDuration(event)
   }
@@ -154,42 +247,42 @@ const options = [
     setEndNode(!endNode);
     props.onChangeNodeEnd();
   }
-  const onAlt1Change = (event:any) => {
-  //  setAlt1(event.target.value);
+  const onAlt1Change = (event: any) => {
+    //  setAlt1(event.target.value);
     props.onChangeOption(event);
   }
-  const onAlt2Change = (event:any) => {
-   // setAlt2(event.target.value);
+  const onAlt2Change = (event: any) => {
+    // setAlt2(event.target.value);
     props.onChangeOption(event);
   }
-  const onCard1Change = (event:any) => {
-  //  setCard1(event.target.value);
+  const onCard1Change = (event: any) => {
+    //  setCard1(event.target.value);
     props.onChangeNoLigacao(event);
   }
-  const onCard2Change = (event:any) => {
-   // setCard2(event.target.value);
+  const onCard2Change = (event: any) => {
+    // setCard2(event.target.value);
     props.onChangeNoLigacao(event);
   }
 
-  const onTagsChange = (e:any) => {
+  const onTagsChange = (e: any) => {
     let x = Array();
-    e.map((item:any) => {
-      x.push({'label':item.label, 'value': item.label, 'color': item.color});
+    e.map((item: any) => {
+      x.push({ 'label': item.label, 'value': item.label, 'color': item.color });
       setTags(x);
       return 0
     })
     props.handleInputChange(e);
   }
 
-  const onThemeChange = (e:any) => {
+  const onThemeChange = (e: any) => {
     setThemeSwitch(e.value);
-    setTheme({value: e.value, label: e.label})
+    setTheme({ value: e.value, label: e.label })
     props.onChangeTheme(e);
   }
 
   useEffect(() => {
-    if(themeSwitch !== ''){
-      switch (themeSwitch){
+    if (themeSwitch !== '') {
+      switch (themeSwitch) {
         case 'Chocolate':
           setNodeColor('#a1e346');
           setBackgroundColor('#689b22');
@@ -199,127 +292,278 @@ const options = [
           setNodeColor('#257488');
           setBackgroundColor('#9bc7d3');
           setTextColor('#1c1c1c')
-        break;
+          break;
       }
     }
   }, [themeSwitch])
 
-  return(
-      <Modal
-        isOpen={props.openModal}
-        onRequestClose={props.closeModal}
-        style={customStyles}
-      >
-        {!nodeInfo ? 
-          <span>Loading...</span>
-        :
-        <form>
-          <div className="form_row">
-            <div className="form_group one">
-              <MDEditor
-                value={props.currentNodeInfo === 'unsaved' ? '' : props.currentNodeInfo.gameNode.markdownContent}
-                onChange={props.onChangeDescription}
-                style={{marginTop: '20px'}}
-              />
-              <label className="form_label alone">Descrição</label>
-            </div>
-          </div>
-          <div className="form_row">
-            <div className="form_group field">
-              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : nodeName} name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
-              <label className="form_label" >Título</label>
-            </div>
-            <div className="form_group field">
-              <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : duration} name="duracao" placeholder="Duração" type="number" onChange={e => onDurationChange(e)}/>
-              <label className="form_label">Duração</label>
-            </div>
-          </div>
-          <div className="form_row">
-            <div className="form_group field"> 
-              <label className="form_label alone">Tags:</label>  
-            </div>
-            <div className="form_group field"> 
-              <Select
-                value={props.currentNodeInfo === 'unsaved' ? undefined : tags}
-                isMulti
-                name="colors"
-                options={props.tagOptions}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(e) => onTagsChange(e)}
-              />
-            </div>
-          </div>
-          <div className="form_row">
-            <div className="form_group field"> 
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt1Disabled} onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)}/>
-              <label className="form_label">Alternativa</label>
-            </div>
-            <div className="form_group field">
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card1Disabled} onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
-              <label className="form_label">Card</label>
-            </div>
-          </div>
-          {/************************************************************************* */}
-          <div className="form_row">
-            <div className="form_group field"> 
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt2Disabled} onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)}/>
-              <label className="form_label">Alternativa</label>
-            </div>
-            <div className="form_group field">
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card2Disabled} onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
-              <label className="form_label">Card</label>
-            </div>
-          </div>
-          {/************************************************************************* */}
-          <div className="form_row">
-            <div className="form_group field"> 
-              <label className="form_label alone">Tema:</label>  
-            </div>
-            <div className="form_group field"> 
-              <Select
-                value={theme.value === undefined ? options[0] : theme}
-                options={options}
-                formatGroupLabel={formatGroupLabel}
-                onChange={(e) => onThemeChange(e)}
-              />
-            </div>
-          </div>
-          <div className="form_row">
-            <div className="form_group three_cols">
-              <p>Node Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : nodeColor} className="color_front" type="color" disabled={true}/>
-            </div>
-            <div  className="form_group three_cols">
-              <p>Text Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : textColor} className="color_front" type="color" disabled={true} />
-            </div>
-            <div  className="form_group three_cols">
-              <p>Background Color:</p>
-              <input value={props.currentNodeInfo === 'unsaved' ? undefined : backgroundColor} className="color_front" type="color" disabled={true} />
-            </div>
-          </div>
-          <div className="form_row">
-            <div  className="form_group three_cols">
-              <p>Cartão de início</p>
-              <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedStart : startNode} onChange={() => onStartNodechange()} />
-            </div>
-            <div  className="form_group three_cols">
-              <p>Cartão final</p>
-              <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedEnd : endNode} onChange={() => onEndNodechange()}/>
-            </div>
-            <div  className="form_group three_cols">
-              <p>Imagem de fundo:</p>
-              <input className="inpt_file" type="file" onChange={props.onChangeNodeImage}/>
-            </div>
-          </div>
-          <hr></hr>
-          <div className="form_row right end">
-            <span className="cancel" onClick={props.closeModal}>Cancelar</span> 
-            <span className="button_style" onClick={props.onSaveChanges}>Salvar</span> 
-          </div>
-        </form>
-         }
-      </Modal>
-  );
+
+  const [getIsStartNode, setIsStartNode] = useState<boolean | undefined>(false);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleSaveChanges = () => handleClose()
+
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Edição de nós
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {
+          !nodeInfo ?
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            :
+            <form>
+              <div className="mb-3">
+                <label
+                  htmlFor="cardField"
+                  className="form-label"
+                >
+                  Title
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Small"
+                  id="cardField"
+                  onChange={(event) => onNameChange(event)}
+                />
+              </div>
+              <div className="mb-3">
+                <label
+                  htmlFor="inputEditGameMarkdown"
+                  className="form-label"
+                >
+                  Markdown field (without preview)
+                </label>
+                <MyEditor
+                  onChangeDescription={props.onChangeDescription}
+                />
+              </div>
+              <div className="mb-3">
+                <div className="row">
+                  <div className="row">
+
+                    <div className="row">
+                      <div className="col">
+                        <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="" name="Option" placeholder="Alternativa" type="text" disabled={props.alt1Disabled} onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)} />
+                        <label className="">Alternativa</label>
+                      </div>
+                      <div className="">
+                        <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="" name="Node" placeholder="Nó" type="text" disabled={props.card1Disabled} onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
+                        <label className="">Card</label>
+                      </div>
+
+                      <div className="col">
+                        <div className="">
+                          <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="" name="Option" placeholder="Alternativa" type="text" disabled={props.alt2Disabled} onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)} />
+                          <label className="">Alternativa</label>
+                        </div>
+                        <div className="">
+                          <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="" name="Node" placeholder="Nó" type="text" disabled={props.card2Disabled} onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
+                          <label className="">Card</label>
+                        </div>
+                      </div>
+                    </div>
+
+
+                  </div>
+                  <div className="col">
+                    <div className="form-check form-switch">
+                      <input className="form-check-input" type="checkbox" role="switch" id="switchStartNode" onClick={() => setIsStartNode(!getIsStartNode)} checked={getIsStartNode} />
+                      <label className="form-check-label" htmlFor="switchStartNode">Start Node</label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="form-check form-switch">
+                      <input className="form-check-input" type="checkbox" role="switch" id="switchEndNode" onClick={() => setIsStartNode(!getIsStartNode)} checked={!getIsStartNode} />
+                      <label className="form-check-label" htmlFor="switchEndNode">End Node</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <ul className="nav nav-tabs">
+                  <li className="nav-item">
+                    <Link className="nav-link active" id="path-tab" data-bs-toggle="tab" data-bs-target="#path" to="#">Path</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" id="tag-tab" data-bs-toggle="tab" data-bs-target="#tag" to="#">Tags</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" id="color-tab" data-bs-toggle="tab" data-bs-target="#color" to="#">Colors</Link>
+                  </li>
+                </ul>
+
+                <div className="tab-content bg-white" id="editGameModalTabContent">
+                  <div className="tab-pane fade" id="path" aria-labelledby="path-tab">
+                    <PathTab />
+                  </div>
+                  <div className="tab-pane fade" id="tag" aria-labelledby="tag-tab">
+                    <TagTab />
+                  </div>
+                  <div className="tab-pane fade" id="color" aria-labelledby="color-tab">
+                    <ColorTab />
+                  </div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <label
+                  htmlFor="bgcDefaultField"
+                  className="form-label"
+                >
+                  Default Background
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Small"
+                  id="bgcDefaultField"
+                />
+              </div>
+            </form>
+
+        }
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onSaveChanges}>Salvar</Button>
+        <Button onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  )
+
+  // return(
+  //     <Modal
+  //       isOpen={props.openModal}
+  //       onRequestClose={props.closeModal}
+  //       style={customStyles}
+  //     >
+  //       {!nodeInfo ? 
+  //         <span>Loading...</span>
+  //       :
+  //       <form>
+  //         <div className="form_row">
+  //           <div className="form_group one">
+  //             <MDEditor
+  //               // value={props.currentNodeInfo === 'unsaved' ? '' : props.currentNodeInfo.gameNode.markdownContent}
+  //               // onChange={props.onChangeDescription}
+  //               style={{marginTop: '20px'}}
+  //             />
+  //             <label className="form_label alone">Descrição</label>
+  //           </div>
+  //         </div>
+  //         <div className="form_row">
+  //           <div className="form_group field">
+  //             <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : nodeName} name="title" placeholder="Title" type="text" onChange={e => onNameChange(e)}/>
+  //             <label className="form_label" >Título</label>
+  //           </div>
+  //           <div className="form_group field">
+  //             <input className="form_field" value={props.currentNodeInfo === 'unsaved' ? undefined : duration} name="duracao" placeholder="Duração" type="number" onChange={e => onDurationChange(e)}/>
+  //             <label className="form_label">Duração</label>
+  //           </div>
+  //         </div>
+  //         <div className="form_row">
+  //           <div className="form_group field"> 
+  //             <label className="form_label alone">Tags:</label>  
+  //           </div>
+  //           <div className="form_group field"> 
+  //             <Select
+  //               value={props.currentNodeInfo === 'unsaved' ? undefined : tags}
+  //               isMulti
+  //               name="colors"
+  //               options={props.tagOptions}
+  //               className="basic-multi-select"
+  //               classNamePrefix="select"
+  //               onChange={(e) => onTagsChange(e)}
+  //             />
+  //           </div>
+  //         </div>
+  //         <div className="form_row">
+
+
+  //           <div className="form_group field"> 
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt1} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt1Disabled} onChange={e => setAlt1(e.target.value)} onBlur={e => onAlt1Change(e)}/>
+  //             <label className="form_label">Alternativa</label>
+  //           </div>
+
+
+  //           <div className="form_group field">
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : card1} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card1Disabled} onChange={e => setCard1(e.target.value)} onBlur={e => onCard1Change(e)} />
+  //             <label className="form_label">Card</label>
+  //           </div>
+
+
+  //         </div>
+  //         {/************************************************************************* */}
+  //         <div className="form_row">
+  //           <div className="form_group field"> 
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : alt2} className="form_field" name="Option" placeholder="Alternativa" type="text" disabled={props.alt2Disabled} onChange={e => setAlt2(e.target.value)} onBlur={e => onAlt2Change(e)}/>
+  //             <label className="form_label">Alternativa</label>
+  //           </div>
+  //           <div className="form_group field">
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : card2} className="form_field" name="Node" placeholder="Nó" type="text" disabled={props.card2Disabled} onChange={e => setCard2(e.target.value)} onBlur={e => onCard2Change(e)} />
+  //             <label className="form_label">Card</label>
+  //           </div>
+  //         </div>
+  //         {/************************************************************************* */}
+  //         {/* <div className="form_row">
+  //           <div className="form_group field"> 
+  //             <label className="form_label alone">Tema:</label>  
+  //           </div>
+  //           <div className="form_group field"> 
+  //             <Select
+  //               value={theme.value === undefined ? options[0] : theme}
+  //               options={options}
+  //               formatGroupLabel={formatGroupLabel}
+  //               onChange={(e) => onThemeChange(e)}
+  //             />
+  //           </div>
+  //         </div> */}
+  //         <div className="form_row">
+  //           <div className="form_group three_cols">
+  //             <p>Node Color:</p>
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : nodeColor} className="color_front" type="color" disabled={true}/>
+  //           </div>
+  //           <div  className="form_group three_cols">
+  //             <p>Text Color:</p>
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : textColor} className="color_front" type="color" disabled={true} />
+  //           </div>
+  //           <div  className="form_group three_cols">
+  //             <p>Background Color:</p>
+  //             <input value={props.currentNodeInfo === 'unsaved' ? undefined : backgroundColor} className="color_front" type="color" disabled={true} />
+  //           </div>
+  //         </div>
+  //         <div className="form_row">
+  //           <div  className="form_group three_cols">
+  //             <p>Cartão de início</p>
+  //             <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedStart : startNode} onChange={() => onStartNodechange()} />
+  //           </div>
+  //           <div  className="form_group three_cols">
+  //             <p>Cartão final</p>
+  //             <Switch checked={props.currentNodeInfo === 'unsaved' ? props.checkedEnd : endNode} onChange={() => onEndNodechange()}/>
+  //           </div>
+  //           <div  className="form_group three_cols">
+  //             <p>Imagem de fundo:</p>
+  //             <input className="inpt_file" type="file" onChange={props.onChangeNodeImage}/>
+  //           </div>
+  //         </div>
+  //         <hr></hr>
+  //         <div className="form_row right end">
+  //           <span className="cancel" onClick={props.closeModal}>Cancelar</span> 
+  //           <span className="button_style" onClick={props.onSaveChanges}>Salvar</span> 
+  //         </div>
+  //       </form>
+  //        }
+  //     </Modal>
+  // );
 }
