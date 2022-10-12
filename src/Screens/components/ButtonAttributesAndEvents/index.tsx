@@ -6,6 +6,7 @@ import { BsPlus } from 'react-icons/bs'
 import Swal from 'sweetalert2';
 import { api } from '../../../services/api';
 import { IAttribute } from '../../HomeScreen/interfaces/IAttributes';
+import { IEvents } from '../../HomeScreen/interfaces/IEvents';
 
 import './styles/style.scss'
 
@@ -26,6 +27,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     const [getIsAttributePlayer, setIsAttributePlayer] = useState<boolean>(false);
     const [getArrayFiles, setArrayFiles] = useState([]) //upload da imagem do icone do atributo.
     const [getAttributes, setAttributes] = useState<IAttribute[]>([])
+    const [getEvents, setEvents] = useState<IEvents[]>([])
     //variaveis para formulário de cadastro dos atributos [END]
 
 
@@ -58,13 +60,22 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
         setArrayFiles(getArrayFiles.concat(newFiles))
     }
 
-    
+    //capturando todos os atributos cadastrados no banco
     useEffect(() => {
         const getAllAttributes = async () => await api.get('/attributes')
             .then(response => setAttributes(response.data.attributes))
             .catch(error => console.error(error))
 
         getAllAttributes()
+    }, [])
+
+    //capturando todos os eventos cadastrados no banco
+    useEffect(() => {
+        const getAllEvents = async () => await api.get('/events')
+            .then(response => setEvents(response.data.events))
+            .catch(error => console.error(error))
+
+        getAllEvents()
     }, [])
 
 
@@ -264,6 +275,15 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                                 <option value="">Selecione o atributo a ser alterado</option>
                                                 {
                                                     getAttributes.map((attr: IAttribute) => <option value={attr._id} key={attr._id}>{attr.name}</option>)
+                                                }
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Eventos cadastrados (Campo somente de visualização)</Form.Label>
+                                            <Form.Select aria-label="Selecione o atributo a ser alterado">
+                                                {
+                                                    getEvents.map((event: IEvents) => <option value={event.value} key={event.value}>{event.name}</option>)
                                                 }
                                             </Form.Select>
                                         </Form.Group>
