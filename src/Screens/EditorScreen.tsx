@@ -112,19 +112,10 @@ function EditorScreen(props: any) {
     const [compiledContent, setCompiledContent] = useState('');
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const [getAttributes, setAttributes] = useState<IAttribute[]>([])
 
 
     //controle de estado para modal
     const [modalShow, setModalShow] = useState(false);
-
-    useEffect(() => {
-        const getAllAttributes = async () => await api.get('/attributes')
-            .then(response => setAttributes(response.data.attributes))
-            .catch(error => console.error(error))
-
-        getAllAttributes()
-    }, [])
 
     const getNodes = async () => {
         const gamesResult = await fetch(api_url + 'game/' + urlParams.get('game'), {
@@ -245,8 +236,6 @@ function EditorScreen(props: any) {
 
     const onEditClick = async (id: any) => {
         //abrindo modal
-        console.log("onEditClick...")
-        console.log(id)
         setModalShow(true)
 
         setAlt1Disabled(false);
@@ -326,7 +315,6 @@ function EditorScreen(props: any) {
                 tagsArray: Array()
             },
         };
-        console.log(`Newnode => ${newNode.data.createNodeConnection}`)
         setElements((es: Elements) => es.concat(newNode));
         if (origin === 1) {
             apiSaveNodes(title, false, false, '0', '', Array(), position, nodeColor, textColor, bgColor, type);
@@ -345,8 +333,15 @@ function EditorScreen(props: any) {
 
     useEffect(() => {
         const createConn = async () => {
+            console.log("Createconn")
             if (updateCon) {
+                console.log("IF createconn")
+                console.log(`COUNT => ${count}`)
+                console.log(`TargetID => ${targetID}\nauxCardAlt => ${auxCardAlt[count]}`)
+
+                console.log(`Antes: next nodes => ${nextNodes}`)
                 setNextNodes([...Array({ id: targetID, choice: auxCardAlt[count] })]);
+                console.log(`Depois: next nodes => ${nextNodes}`)
                 await fetch(api_url + 'connection/create', {
                     method: 'POST',
                     headers: {
@@ -764,6 +759,7 @@ function EditorScreen(props: any) {
         setUpdate(update => update = update + 1)
     }
     const apiEditNextNodes = async (nextNodes: any) => {
+        console.log(`API EDIT NEXT NODES => ${nextNodes}`)
         await fetch(`${api_url}node/edit/nextnodes/${currentID}`, {
             method: 'PUT',
             headers: {
@@ -774,7 +770,7 @@ function EditorScreen(props: any) {
                 nextNodes: nextNodes
             })
         });
-        setNextNodes({ ...Array({ id: 'err', choice: 'err' }) });
+        // setNextNodes({ ...Array({ id: 'err', choice: 'err' }) });
     }
 
     const apiEditEndNode = async (endNode: boolean) => {
@@ -1003,7 +999,7 @@ function EditorScreen(props: any) {
                             />
                             <DragAndDrop />
                             <div>
-                                <ModalAttributesAndEvents elements={elements} attributes={getAttributes} />
+                                <ModalAttributesAndEvents elements={elements} />
                             </div>
                         </ReactFlow>
                     </div>

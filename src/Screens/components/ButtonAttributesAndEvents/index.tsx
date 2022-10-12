@@ -11,7 +11,6 @@ import './styles/style.scss'
 
 interface IModalAttributesAndEvents {
     elements: any
-    attributes: IAttribute[]
 }
 
 const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) => {
@@ -19,12 +18,6 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     const [lgShow, setLgShow] = useState(false);
     //tabs
     const [key, setKey] = useState('atributos');
-
-    useEffect(() => console.log(props.elements), [])
-
-
-
-
     //variaveis para formulário de cadastro dos atributos [START]
     const [getAttributeName, setAttributeName] = useState<string>("");
     const [getAttributeType, setAttributeType] = useState<string>("");
@@ -32,6 +25,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     const [getAttributeDefaultValue, setAttributeDefaultValue] = useState<number>(0);
     const [getIsAttributePlayer, setIsAttributePlayer] = useState<boolean>(false);
     const [getArrayFiles, setArrayFiles] = useState([]) //upload da imagem do icone do atributo.
+    const [getAttributes, setAttributes] = useState<IAttribute[]>([])
     //variaveis para formulário de cadastro dos atributos [END]
 
 
@@ -63,6 +57,17 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
         Object.values(files).map((file: any) => newFiles.push(file))
         setArrayFiles(getArrayFiles.concat(newFiles))
     }
+
+    
+    useEffect(() => {
+        const getAllAttributes = async () => await api.get('/attributes')
+            .then(response => setAttributes(response.data.attributes))
+            .catch(error => console.error(error))
+
+        getAllAttributes()
+    }, [])
+
+
     //enviando dados para o backend
     const handleSubmit_Attributes = async (event: FormEvent) => {
         event.preventDefault()
@@ -131,8 +136,6 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
             target_id: getEventTargetID,
             modifier: String(getEventModifier)
         }
-
-        // console.log(newEvent)
 
         await api.post('events/create', newEvent)
             .then(response => {
@@ -260,7 +263,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                                             <Form.Select aria-label="Selecione o atributo a ser alterado" onChange={handleEventModifier}>
                                                 <option value="">Selecione o atributo a ser alterado</option>
                                                 {
-                                                    props.attributes.map((attr: IAttribute) => <option value={attr._id} key={attr._id}>{attr.name}</option>)
+                                                    getAttributes.map((attr: IAttribute) => <option value={attr._id} key={attr._id}>{attr.name}</option>)
                                                 }
                                             </Form.Select>
                                         </Form.Group>
