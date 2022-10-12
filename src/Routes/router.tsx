@@ -24,7 +24,7 @@ const Router:React.FC = () => {
                     <PrivateRoute exact path="/home" component={HomeScreen} />
                     <PrivateRoute exact path="/editor" component={EditorScreen} />
                     {/* <PrivateRoute exact path="/build-game" component={BuildingGame} /> */}
-                    <PrivateRoute exact path="/play" component={Play} />
+                    <PrivateRoute exact path="/play" component={PlayScreen} />
                     {
                         DASHBOARD_ROUTES.map((route: IDashboardRoutes, index: number) => <Route path={route.pathRoute} component={route.componentRoute} key={`dashboardRoute-${index}`} />)
                     }
