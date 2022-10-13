@@ -1,3 +1,46 @@
-form{
-    background-color: #fff;
+@import "./../../../../../scss/custom.scss";
+
+form {
+    background-color: $surface;
+}
+
+.modal-header {
+    background-color: $surface;
+}
+
+.modal-title {
+    color: $text-normal;
+}
+
+.modal-body {
+    background-color: $surface;
+}
+
+.modal-footer
+{
+    background-color: $surface;
+}
+
+.form-label {
+    color: $text-normal;
+}
+
+// body .nav-link{
+//     background-color: $surface;
+//     color: $text-normal;
+// }
+
+// body .nav-link > .active {
+//     background-color: $surface;
+// }
+
+body .form-control{
+    background-color: $surface;
+    border-color: $border-normal;
+}
+
+body .form-select {
+    background-color: $surface;
+    border-color: $border-normal;
+    color: $text-normal;
 }
