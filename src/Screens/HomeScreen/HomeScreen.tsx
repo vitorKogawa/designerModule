@@ -47,7 +47,7 @@ const HomeScreen: React.FC = () => {
                       gameID={game._id}
                       title={game.title}
                       content={game.description}
-                      imgUrl={!game.image || game.image === "default.jpg" ? "http://localhost:8080/home/card/img/default.jpg" : `http://localhost:8080/home/card/img/${game.image}`}
+                      imgUrl={!game.image || game.image === "default.jpg" ? "http://localhost:3333/home/card/img/games/default.jpg" : `http://localhost:3333/home/card/img/games/${game.image}`}
                       key={game._id}
                     />
                   )

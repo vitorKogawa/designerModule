@@ -1,10 +1,12 @@
 import React from 'react'
 import { IGameCard } from './interfaces/IGameCard'
-import { BsPen, BsPlay } from 'react-icons/bs'
+import { BsPen, BsPlay, BsFillTrashFill } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 import { useHistory } from "react-router-dom";
 import { Background } from 'react-flow-renderer';
 import './styles/styles.scss'
+import Swal from 'sweetalert2';
+import { api } from '../../../services/api';
 
 const GameCard: React.FC<IGameCard> = (props) => {
     const history = useHistory();
@@ -17,6 +19,39 @@ const GameCard: React.FC<IGameCard> = (props) => {
                 gameID: gameID
             }
         })
+    }
+
+    const onRemoveGame = (gameID: string) => {
+        return (
+            Swal.fire({
+                title: 'Você tem certeza que deseja excluir este jogo ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F8BA63',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, tenho certeza !'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await api.delete(`/game/${gameID}`)
+                        .then(() => {
+                            Swal.fire(
+                                'Jogo removido!',
+                                'Seu jogo foi removido com sucesso.',
+                                'success'
+                            ).finally(() => window.location.reload())
+                        })
+                        .catch(error => {
+                            console.error(error)
+                            Swal.fire(
+                                'Falha ao remover jogo!',
+                                'Falha ao remover jogo, favor tente mais tarde.',
+                                'error'
+                            )
+                        })
+
+                }
+            })
+        )
     }
 
     return (
@@ -35,6 +70,9 @@ const GameCard: React.FC<IGameCard> = (props) => {
                     </a>
                     <a href="#" className="btn btn-play">
                         <BsPlay />
+                    </a>
+                    <a href="#" className="btn btn-delete" onClick={() => onRemoveGame(props.gameID)}>
+                        <BsFillTrashFill />
                     </a>
                 </div>
             </div>

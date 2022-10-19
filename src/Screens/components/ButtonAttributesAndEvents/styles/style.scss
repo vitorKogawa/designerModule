@@ -1,46 +1,55 @@
 @import "./../../../../../scss/custom.scss";
 
-form {
-    background-color: $surface;
+.card-wrapper{
+    display: flex;
+    flex-direction: column !important;
+    border: 1px solid $border-normal;
+    border-radius: 1em;
+    padding: 0.5em;
+    margin: 0.5em !important;
+    min-width: 15%;
 }
 
-.modal-header {
-    background-color: $surface;
+
+.card-footer{
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
 }
 
-.modal-title {
-    color: $text-normal;
+.card-footer > button {
+    border-radius: 0.5em;
+    width: 100%;
+    margin: 0.5em;
+    padding: 0.2em 0em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
 }
 
-.modal-body {
-    background-color: $surface;
+.btn-trash {
+    background-color: #BF455B;
 }
 
-.modal-footer
-{
-    background-color: $surface;
+.btn-edit {
+    background-color: $primary;
+    font-size: 10px;
 }
 
-.form-label {
-    color: $text-normal;
+.card-body-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-// body .nav-link{
-//     background-color: $surface;
-//     color: $text-normal;
-// }
-
-// body .nav-link > .active {
-//     background-color: $surface;
-// }
-
-body .form-control{
-    background-color: $surface;
-    border-color: $border-normal;
+.card-body-img > img {
+    width: 5em;
+    height: 5em;
 }
 
-body .form-select {
-    background-color: $surface;
-    border-color: $border-normal;
-    color: $text-normal;
+.card-body-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
 }

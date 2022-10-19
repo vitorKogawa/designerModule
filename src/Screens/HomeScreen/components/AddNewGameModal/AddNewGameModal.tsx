@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom'
 import "firebase/auth"
 import './styles/styles.scss'
 import { extname } from 'path'
+import Swal from 'sweetalert2'
 
 const AddNewGameModal: React.FC = () => {
     const history = useHistory();
@@ -16,7 +17,7 @@ const AddNewGameModal: React.FC = () => {
     const [isTemplate, setIsTemplate] = useState<boolean>(false);
     const [nodeColor, setNodeColor] = useState<string>("");
     const [textColor, setTextColor] = useState<string>("");
-    
+
     const [backgroundImage, setBackgroundImage] = useState(null as any | null);
     const [logoImage, setLogoImage] = useState<FileList | null>();
     const [gameCreatedId, setGameCreatedId] = useState(null as any | null);
@@ -26,7 +27,7 @@ const AddNewGameModal: React.FC = () => {
     const handleGameTitle = (event: ChangeEvent<HTMLInputElement>) => setGameTitle(event.target.value)
     const handleGameDescription = (event: ChangeEvent<HTMLTextAreaElement>) => setGameDescription(event.target.value)
     const handleDefaultBackground = (event: ChangeEvent<HTMLInputElement>) => setDefaultBackgroundColor(event.target.value)
-    const handleColorPallete = (event: ChangeEvent<HTMLSelectElement>) => setDefaultColorPallete(event.target.value) 
+    const handleColorPallete = (event: ChangeEvent<HTMLSelectElement>) => setDefaultColorPallete(event.target.value)
     const handleInputFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         let files: any = event.target.files
         let newFiles: any = []
@@ -34,7 +35,7 @@ const AddNewGameModal: React.FC = () => {
         Object.values(files).map((file: any) => newFiles.push(file))
         setArrayFiles(arrayFiles.concat(newFiles))
     }
-    
+
     // useEffect(() => {
     //     if(gameCreatedId !== null){
     //         history.push({
@@ -48,14 +49,14 @@ const AddNewGameModal: React.FC = () => {
     //     // eslint-disable-next-line
     //   }, [gameCreatedId]);
 
-    const sendMessage = async (game:any) => {
-        try{
+    const sendMessage = async (game: any) => {
+        try {
             console.log(game);
             await api.post('/message/send', game)
-            .then(response => response)
-            .catch(error => console.error(error))
-        } catch(err){
-            console.log("erro ao enviar mensagem: "+err)
+                .then(response => response)
+                .catch(error => console.error(error))
+        } catch (err) {
+            console.log("erro ao enviar mensagem: " + err)
         }
     }
 
@@ -74,7 +75,7 @@ const AddNewGameModal: React.FC = () => {
         formData.set("background_image", backgroundImage);
         arrayFiles.map((file: any) => formData.append("image", file.slice(), `${Date.now()}${extname(file.name)}`))
 
-        if(userID.currentUser){
+        if (userID.currentUser) {
             formData.append("userID", userID.currentUser.uid);
 
             await api.post('/game/create', formData, {
@@ -82,15 +83,28 @@ const AddNewGameModal: React.FC = () => {
                     "Content-Type": "multipart/form-data",
                 }
             })
-            .then(response => {
-                console.log(response.data)
-                setGameCreatedId(response.data._id)
-                // sendMessage(response.data)
-            })
-            .catch(error => console.error(error))
+                .then(response => {
+                    console.log(response.data)
+                    setGameCreatedId(response.data._id)
+                    // sendMessage(response.data)
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Jogo criado com sucesso',
+                        text: 'Seu jogo foi criado com sucesso!'
+                    }).then(() => window.location.reload())
+                })
+                .catch(error => {
+                    console.error(error)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Falha ao criar jogo, favor tente mais tarde.'
+                    })
+
+                })
         }
     }
-    
+
     return (
         <Fragment>
             <button type="button" className="btn btn-primary mx-1" data-bs-toggle="modal" data-bs-target="#gameCardModal">
@@ -106,7 +120,7 @@ const AddNewGameModal: React.FC = () => {
                         <div className="modal-body">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <input 
+                                    <input
                                         type="file"
                                         className="form-control"
                                         id="inputGameTitle"
@@ -115,17 +129,17 @@ const AddNewGameModal: React.FC = () => {
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="inputGameTitle" className="form-label">Title</label>
-                                    <input 
+                                    <input
                                         type="text"
                                         className="form-control"
-                                        id="inputGameTitle" 
+                                        id="inputGameTitle"
                                         placeholder="Large"
-                                        onChange={handleGameTitle}    
+                                        onChange={handleGameTitle}
                                     />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="gameDescription" className="form-label">Description</label>
-                                    <textarea 
+                                    <textarea
                                         className="form-control"
                                         id="gameDescription"
                                         onChange={handleGameDescription}
@@ -137,7 +151,7 @@ const AddNewGameModal: React.FC = () => {
                                     </div>
                                     <div className="gameContent d-flex flex-column">
                                         <label htmlFor="defaultColor" className="form-label">Default background</label>
-                                        <input 
+                                        <input
                                             type="text"
                                             className="form-control"
                                             id="defaultColor"
@@ -164,7 +178,7 @@ const AddNewGameModal: React.FC = () => {
                                 </div>
                                 <div className="modal-footer">
                                     {/* <button type="button" className="btn btn-primary w-100" onClick={() => window.location.href = "/build-game"}>Create a new game!</button> */}
-                                    <input type="submit" value="Create a new game!" className="btn btn-primary w-100"/>
+                                    <input type="submit" value="Create a new game!" className="btn btn-primary w-100" />
                                 </div>
                             </form>
 

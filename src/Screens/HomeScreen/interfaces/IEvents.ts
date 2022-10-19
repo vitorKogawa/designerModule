@@ -1,4 +1,5 @@
 interface IEvents {
+    _id: string,
     name: string,
     source_type: string,
     source_id: string,
@@ -6,7 +7,8 @@ interface IEvents {
     value: number,
     target_type: string,
     target_id: string,
-    modifier: string
+    modifier: string,
+    __v: number
 }
 
 export type { IEvents }
