@@ -636,7 +636,7 @@ const Card: React.FC<IAttributeOrEvent> = (props) => {
 
 
                         <Button variant="primary" type="submit">
-                            Cadastrar Atributo
+                            Atualizar Atributo
                         </Button>
                     </Form>
                 </Modal.Body>
