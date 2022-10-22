@@ -28,7 +28,7 @@ const MyEditor: React.FC<ITextEditor> = (props) => {
         history: { inDropdown: true },
     }}
     onChange={(event) => onContentChange(event)}
-    placeholder="testando para ver se o componente aceita um placeholder."
+    placeholder="Adicione uma descrição para o jogo :)."
     />;
 };
 
