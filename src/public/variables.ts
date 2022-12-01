@@ -1,1 +1,1 @@
-export const api_url = 'http://localhost:3333/' //'https://backend-designer-module.herokuapp.com/'
+export const api_url = process.env.REACT_APP_API_URL //'https://backend-designer-module.herokuapp.com/'

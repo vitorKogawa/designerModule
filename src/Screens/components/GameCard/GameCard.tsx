@@ -32,7 +32,7 @@ const GameCard: React.FC<IGameCard> = (props) => {
                 confirmButtonText: 'Sim, tenho certeza !'
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    await api.delete(`/game/${gameID}`)
+                    await api.delete(`game/${gameID}`)
                         .then(() => {
                             Swal.fire(
                                 'Jogo removido!',

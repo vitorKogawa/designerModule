@@ -52,7 +52,7 @@ const AddNewGameModal: React.FC = () => {
     const sendMessage = async (game: any) => {
         try {
             console.log(game);
-            await api.post('/message/send', game)
+            await api.post('message/send', game)
                 .then(response => response)
                 .catch(error => console.error(error))
         } catch (err) {
@@ -78,7 +78,7 @@ const AddNewGameModal: React.FC = () => {
         if (userID.currentUser) {
             formData.append("userID", userID.currentUser.uid);
 
-            await api.post('/game/create', formData, {
+            await api.post('game/create', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 }

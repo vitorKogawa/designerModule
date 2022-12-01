@@ -15,7 +15,7 @@ const HomeScreen: React.FC = () => {
 
   //pegar todos os jogos do usuário
   useEffect(() => {
-    api.get(`/game/userGames/${firebase.auth().currentUser?.uid}`)
+    api.get(`game/userGames/${firebase.auth().currentUser?.uid}`)
       .then(result => setGameList(result.data.game))
       .catch(error => console.error(error))
   }, [])

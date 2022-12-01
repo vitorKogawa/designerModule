@@ -87,7 +87,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
 
     //capturando todos os atributos cadastrados no banco
     useEffect(() => {
-        const getAllAttributes = async () => await api.get('/attributes')
+        const getAllAttributes = async () => await api.get('attributes')
             .then(response => setAttributes(response.data.attributes))
             .catch(error => console.error(error))
 
@@ -97,7 +97,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
     //capturando todos os eventos cadastrados no banco
     useEffect(() => {
         const aux: string[] = []
-        const getAllEvents = async () => await api.get('/events')
+        const getAllEvents = async () => await api.get('events')
             .then(response => {
                 setEvents(response.data.events)
 
@@ -106,7 +106,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
                 const ids = source_ids.concat(target_ids)
 
 
-                ids.map(async (id: string) => await api.get(`/node/${id}`)
+                ids.map(async (id: string) => await api.get(`node/${id}`)
                     .then(response => response.data.gameNode === null ? aux.push(id) : "")
                     .catch(error => console.error(error)))
 
@@ -132,7 +132,7 @@ const ModalAttributesAndEvents: React.FC<IModalAttributesAndEvents> = (props) =>
         formData.set('player_attr', String(getIsAttributePlayer));
         getArrayFiles.map((file: any) => formData.append("icon", file.slice(), `${Date.now()}${extname(file.name)}`))
 
-        await api.post('/attributes/create', formData, {
+        await api.post('attributes/create', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
@@ -468,7 +468,7 @@ const Card: React.FC<IAttributeOrEvent> = (props) => {
             confirmButtonText: 'Sim'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await api.delete(`/${tipo === "attribute" ? "attributes" : "events"}/${id}`)
+                await api.delete(`${tipo === "attribute" ? "attributes" : "events"}/${id}`)
                     .then(response => Swal.fire(
                         {
                             title: `${tipo === "attribute" ? "Atributo" : "Evento"} removido com sucesso!`,
@@ -486,7 +486,7 @@ const Card: React.FC<IAttributeOrEvent> = (props) => {
     }
 
     const getAttribute = async (id: string) => {
-        return await api.get<IAttribute>(`/attributes/${id}`)
+        return await api.get<IAttribute>(`attributes/${id}`)
             .then(response => {
                 setAttributeName(response.data.name)
                 setAttributeType(response.data.type)
@@ -497,7 +497,7 @@ const Card: React.FC<IAttributeOrEvent> = (props) => {
     }
 
     const getEvent = async (id: string) => {
-        return await api.get<IEvents>(`/events/${id}`)
+        return await api.get<IEvents>(`events/${id}`)
             .then(response => {
                 setEventName(response.data.name)
                 setEventSourceType(response.data.source_type)
@@ -556,7 +556,7 @@ const Card: React.FC<IAttributeOrEvent> = (props) => {
 
         console.log(formData.get("name"), getAttributeType, getAttributeMaxValue, getAttributeDefaultValue, showModalEditAttribute.id)
 
-        await api.put(`/attributes/${ showModalEditAttribute.id }`, formData, {
+        await api.put(`attributes/${ showModalEditAttribute.id }`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
